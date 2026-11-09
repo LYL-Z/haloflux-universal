@@ -59,7 +59,7 @@ Write-Ok "node $nodeVersion"
 $electronCandidates = @(@(
   $env:HALOFLUX_ELECTRON,
   (Join-Path $Root 'node_modules\electron\dist\electron.exe'),
-  'C:\Users\Lenovo\.dsh\electron\electron.exe'
+  (Join-Path $env:USERPROFILE '.dsh\electron\electron.exe')
 ) | Where-Object { $_ -and (Test-Path $_) })
 if ($electronCandidates.Count -eq 0) { Write-Warn 'Electron not found; companion will not launch. Set HALOFLUX_ELECTRON.' }
 else { Write-Ok "electron $($electronCandidates[0])" }

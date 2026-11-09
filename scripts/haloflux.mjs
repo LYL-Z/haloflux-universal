@@ -27,6 +27,11 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { randomBytes, createHash } from 'node:crypto';
 import http from 'node:http';
+import {
+  TASK_NAME, autostartScript, getAutostartStatus, setAutostart,
+  supervisorPaths, Supervisor, discoverHosts, writeJsonFile, readJsonFile,
+  releaseSupervisorLock,
+} from '../packages/service-manager/src/index.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const HOME = process.env.HALOFLUX_HOME || (process.platform === 'win32'
@@ -195,7 +200,7 @@ function electronBinary() {
   const candidates = [
     process.env.HALOFLUX_ELECTRON,
     path.join(ROOT, 'node_modules', 'electron', 'dist', 'electron.exe'),
-    'C:\\Users\\Lenovo\\.dsh\\electron\\electron.exe',
+    path.join(homedir(), '.dsh', 'electron', 'electron.exe'),
   ].filter(Boolean);
   return candidates.find((c) => existsSync(c)) || '';
 }
@@ -239,8 +244,117 @@ async function cmdCollectors(args) {
   return new Promise((resolve) => child.on('exit', (code) => resolve(code ?? 0)));
 }
 
+async function cmdAutostart(args) {
+  if (process.platform !== 'win32') {
+    console.error('autostart is currently implemented for Windows Task Scheduler only');
+    return 2;
+  }
+  const action = args.find((a) => !a.startsWith('--')) || 'status';
+  const asJson = args.includes('--json');
+  const configFile = path.join(HOME, 'autostart.json');
+  const options = {
+    taskName: TASK_NAME,
+    nodePath: process.execPath,
+    scriptPath: path.join(ROOT, 'scripts', 'haloflux.mjs'),
+    root: ROOT,
+    user: process.env.USERNAME || undefined,
+  };
+  if (action === 'install' || action === 'enable' || action === 'disable' || action === 'uninstall') {
+    const result = setAutostart(action, options);
+    if (!result.ok) {
+      console.error(`autostart ${action} failed: ${result.error}`);
+      return 1;
+    }
+    if (action === 'install') {
+      writeJsonFile(configFile, {
+        taskName: TASK_NAME,
+        installedAt: new Date().toISOString(),
+        enabled: true,
+        nodePath: options.nodePath,
+        scriptPath: options.scriptPath,
+        root: ROOT,
+      });
+    } else if (action === 'enable' || action === 'disable') {
+      const cfg = readJsonFile(configFile) || { taskName: TASK_NAME };
+      writeJsonFile(configFile, { ...cfg, enabled: action === 'enable', updatedAt: new Date().toISOString() });
+    } else {
+      try { unlinkSync(configFile); } catch { /* already gone */ }
+    }
+    console.log(`autostart ${action}: ${JSON.stringify(result.json || {})}`);
+    return 0;
+  }
+  if (action !== 'status') {
+    console.error('usage: node scripts/haloflux.mjs autostart install|status|enable|disable|uninstall [--json]');
+    return 2;
+  }
+  const task = getAutostartStatus(options);
+  const cfg = readJsonFile(configFile);
+  const summary = {
+    taskName: TASK_NAME,
+    installed: !!task.installed,
+    enabled: !!task.enabled,
+    state: task.state || 'UNKNOWN',
+    lastRunTime: task.lastRunTime || null,
+    lastTaskResult: task.lastTaskResult ?? null,
+    config: cfg || null,
+    error: task.error || null,
+  };
+  if (asJson) console.log(JSON.stringify(summary, null, 2));
+  else {
+    console.log(`task      ${summary.taskName}`);
+    console.log(`installed ${summary.installed}   enabled=${summary.enabled}   state=${summary.state}`);
+    console.log(`last run  ${summary.lastRunTime || '-'}   result=${summary.lastTaskResult ?? '-'}`);
+    console.log(`config    ${cfg ? configFile : 'not installed by this project'}`);
+    if (summary.error) console.log(`error     ${summary.error}`);
+  }
+  return summary.installed ? 0 : 1;
+}
+
+async function cmdSupervise(args) {
+  const paths = supervisorPaths(HOME);
+  const supervisor = new Supervisor({
+    home: HOME,
+    health: healthy,
+    startBridge: async () => { await cmdBridge(false); },
+    startCollectors: async () => { await cmdCollectors(['start']); },
+    probeHosts: async () => {
+      const state = await fetchState();
+      writeJsonFile(path.join(HOME, 'run', 'hosts.json'), {
+        at: new Date().toISOString(),
+        hosts: discoverHosts({ state }),
+      });
+    },
+  });
+  if (args.includes('--once')) {
+    const lock = await supervisor.init();
+    if (!lock.ok) {
+      console.log(`supervisor already running pid=${lock.existing?.pid || '?'}`);
+      return 0;
+    }
+    try {
+      const result = await supervisor.tick();
+      console.log(`supervisor once action=${result.action} state=${supervisor.machine.state}`);
+      return result.action === 'failed' ? 1 : 0;
+    } finally {
+      releaseSupervisorLock(paths);
+      try { unlinkSync(paths.pid); } catch { /* gone */ }
+    }
+  }
+  const seconds = Number(argValue(args, '--duration', '0'));
+  console.log(`supervisor starting pid=${process.pid} log=${paths.log}`);
+  const result = await supervisor.run({ durationMs: seconds > 0 ? seconds * 1000 : 0 });
+  if (!result.ok) {
+    console.log(`supervisor not started: ${result.reason} pid=${result.existing?.pid || '?'}`);
+    return 0;
+  }
+  console.log(`supervisor stopped state=${result.state}`);
+  return 0;
+}
+
 async function cmdStop() {
   let stopped = 0;
+  const paths = supervisorPaths(HOME);
+  try { writeFileSync(paths.stop, String(Date.now())); } catch { /* best effort */ }
   // Collectors first: they only POST, so stop them before the bridge.
   const collectorEntry = path.join(ROOT, 'scripts', 'collectors.mjs');
   if (existsSync(collectorEntry)) {
@@ -249,6 +363,20 @@ async function cmdStop() {
       child.on('exit', () => resolve());
     });
   }
+  const supPid = readPid('supervisor');
+  if (supPid && alive(supPid)) {
+    // Give the supervisor one tick to observe the stop flag and release its
+    // lock, so Task Scheduler records a clean exit (result 0) instead of 1.
+    const graceful = await waitFor(() => !alive(supPid), 12000, 250);
+    if (graceful) {
+      stopped += 1;
+      console.log(`stopped supervisor pid=${supPid} (graceful)`);
+    } else if (killTree(supPid)) {
+      stopped += 1;
+      console.log(`stopped supervisor pid=${supPid} (forced)`);
+    }
+    clearPid('supervisor');
+  }
   for (const name of ['companion', 'bridge']) {
     const pid = readPid(name);
     if (pid && killTree(pid)) {
@@ -256,6 +384,17 @@ async function cmdStop() {
       console.log(`stopped ${name} pid=${pid}`);
     }
     clearPid(name);
+  }
+  try { unlinkSync(paths.stop); } catch { /* no supervisor */ }
+  // Only clear the singleton lock when the supervisor is really gone; if the
+  // kill failed, removing the lock would allow a duplicate supervisor.
+  let supervisorGone = true;
+  try {
+    const lock = JSON.parse(readFileSync(paths.lock, 'utf8'));
+    supervisorGone = !alive(Number(lock.pid) || 0);
+  } catch { supervisorGone = !existsSync(paths.lock); }
+  if (supervisorGone) {
+    try { unlinkSync(paths.lock); } catch { /* already released */ }
   }
   if (stopped === 0) console.log('nothing running');
   return 0;
@@ -321,7 +460,8 @@ async function cmdStatus(asJson) {
   return 0;
 }
 
-async function cmdDoctor(asJson) {
+async function cmdDoctor(args) {
+  const asJson = args.includes('--json');
   const checks = [];
   const add = (name, ok, detail, hint) => checks.push({ name, ok: !!ok, detail, hint });
 
@@ -342,7 +482,23 @@ async function cmdDoctor(asJson) {
   }
   const backups = existsSync(BACKUPS) ? readdirSync(BACKUPS).filter((d) => statSync(path.join(BACKUPS, d)).isDirectory()) : [];
   add('config backups', backups.length > 0, `${backups.length} snapshot(s) in config/backups`, '安装宿主适配器前会生成备份');
-  add('dsh-haloflux (native overlay)', existsSync('C:/Users/Lenovo/.dsh/profiles/desktop/node_modules/dsh-haloflux'), 'profile node_modules/dsh-haloflux', '由 plugin_manager 安装');
+  add('dsh-haloflux (native overlay)', existsSync(path.join(homedir(), '.dsh', 'profiles', 'desktop', 'node_modules', 'dsh-haloflux')), 'profile node_modules/dsh-haloflux', '由 plugin_manager 安装');
+
+  if (args.includes('--startup')) {
+    const task = getAutostartStatus({ root: ROOT, scriptPath: path.join(ROOT, 'scripts', 'haloflux.mjs') });
+    add('autostart installed', task.installed, task.installed ? `${TASK_NAME} state=${task.state}` : 'not registered', 'node scripts/haloflux.mjs autostart install');
+    add('autostart enabled', task.enabled, task.enabled ? 'enabled' : 'disabled', 'node scripts/haloflux.mjs autostart enable');
+    const supPid = readPid('supervisor');
+    add('supervisor process', alive(supPid), supPid || 'not running', 'node scripts/haloflux.mjs supervise');
+    const supState = readJsonFile(path.join(HOME, 'run', 'supervisor.json'));
+    add('supervisor state', !!supState, supState ? `${supState.state} since ${supState.since}` : 'no state file');
+    const live = await fetchState();
+    for (const row of discoverHosts({ state: live })) {
+      add(`startup:${row.host}`, row.installed && (row.bridgeConnected || row.nativeEventsObserved),
+        `installed=${row.installed} bridge=${row.bridgeConnected} native=${row.nativeEventsObserved} login=${row.login}`,
+        '安装宿主或启动一次真实会话');
+    }
+  }
 
   if (asJson) {
     console.log(JSON.stringify({ version: VERSION, home: HOME, checks }, null, 2));
@@ -359,12 +515,12 @@ async function cmdDoctor(asJson) {
 }
 
 const HOST_CONFIGS = {
-  'deepseek-harness': { detect: ['C:/Users/Lenovo/.dsh'], installHint: 'C:/Users/Lenovo/.dsh' },
-  codex: { detect: ['C:/Users/Lenovo/.codex/config.toml'], installHint: 'C:/Users/Lenovo/.codex' },
-  cursor: { detect: ['D:/cursor/Cursor.exe'], installHint: 'D:/cursor' },
-  workbuddy: { detect: ['C:/Users/Lenovo/.workbuddy/mcp.json'], installHint: 'C:/Users/Lenovo/.workbuddy' },
-  'claude-code': { detect: ['C:/Users/Lenovo/.claude/settings.json'], installHint: 'C:/Users/Lenovo/.claude' },
-  trae: { detect: ['C:/Users/Lenovo/.trae-cn'], installHint: 'C:/Users/Lenovo/.trae-cn' },
+  'deepseek-harness': { detect: ['~/.dsh'], installHint: '~/.dsh' },
+  codex: { detect: ['~/.codex/config.toml'], installHint: '~/.codex' },
+  cursor: { detect: ['~/.cursor', path.join(process.env.LOCALAPPDATA || '', 'Programs', 'Cursor', 'Cursor.exe'), path.join(process.env.PROGRAMFILES || '', 'Cursor', 'Cursor.exe')], installHint: 'Cursor' },
+  workbuddy: { detect: ['~/.workbuddy/mcp.json'], installHint: '~/.workbuddy' },
+  'claude-code': { detect: ['~/.claude/settings.json'], installHint: '~/.claude' },
+  trae: { detect: ['~/.trae-cn'], installHint: '~/.trae-cn' },
 };
 
 function expand(p) {
@@ -495,9 +651,11 @@ async function main() {
     case 'start': return cmdStart(args);
     case 'bridge': return cmdBridge(args.includes('--foreground'));
     case 'companion': return cmdCompanion(args);
+    case 'autostart': return cmdAutostart(args);
+    case 'supervise': return cmdSupervise(args);
     case 'stop': return cmdStop();
     case 'status': return cmdStatus(args.includes('--json'));
-    case 'doctor': return cmdDoctor(args.includes('--json'));
+    case 'doctor': return cmdDoctor(args);
     case 'simulate': return cmdSimulate(args);
     case 'watch': return cmdCollectors(args);
     case 'logs': return cmdLogs(args);
@@ -508,11 +666,11 @@ async function main() {
     case 'help':
     case '--help':
     case '-h':
-      console.log('commands: start bridge companion stop status doctor simulate watch logs backup restore hosts version');
+      console.log('commands: start bridge companion autostart supervise stop status doctor simulate watch logs backup restore hosts version');
       return 0;
     default:
       console.error(`unknown command: ${command}`);
-      console.error('commands: start bridge companion stop status doctor simulate watch logs backup restore hosts version');
+      console.error('commands: start bridge companion autostart supervise stop status doctor simulate watch logs backup restore hosts version');
       return 2;
   }
 }

@@ -91,6 +91,14 @@ export function createEvent(input) {
     source: input.source ?? 'host-native',
     confidence: input.confidence ?? 'confirmed',
     metadata: input.metadata ?? {},
+    ...(input.traceId !== undefined ? { traceId: input.traceId } : {}),
+    ...(input.spanId !== undefined ? { spanId: input.spanId } : {}),
+    ...(input.parentSpanId !== undefined ? { parentSpanId: input.parentSpanId } : {}),
+    ...(input.turnId !== undefined ? { turnId: input.turnId } : {}),
+    ...(input.agentId !== undefined ? { agentId: input.agentId } : {}),
+    ...(input.status !== undefined ? { status: input.status } : {}),
+    ...(input.timestampMonotonic !== undefined ? { timestampMonotonic: input.timestampMonotonic } : {}),
+    ...(input.adapterVersion !== undefined ? { adapterVersion: input.adapterVersion } : {}),
   };
 }
 

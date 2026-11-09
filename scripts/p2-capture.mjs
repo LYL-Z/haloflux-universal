@@ -16,6 +16,7 @@
 import { createServer } from 'node:http';
 import { spawn } from 'node:child_process';
 import { createReadStream, existsSync, statSync, mkdirSync } from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -79,7 +80,7 @@ server.listen(0, '127.0.0.1', () => {
   env.HALOFLUX_RENDER_HEIGHT = String(height);
   env.HALOFLUX_RENDER_DPR = String(dpr);
   console.error(`[p2-capture] ${width}x${height} ${url} -> ${out}`);
-  const child = spawn(process.env.HALOFLUX_ELECTRON || 'C:\\Users\\Lenovo\\.dsh\\electron\\electron.exe', [RENDER_APP], {
+  const child = spawn(process.env.HALOFLUX_ELECTRON || path.join(os.homedir(), '.dsh', 'electron', 'electron.exe'), [RENDER_APP], {
     stdio: ['ignore', 'inherit', 'inherit'],
     windowsHide: true,
     env,

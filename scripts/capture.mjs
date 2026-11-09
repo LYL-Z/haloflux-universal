@@ -26,6 +26,7 @@
 import { spawn } from 'node:child_process';
 import fs from 'node:fs';
 import http from 'node:http';
+import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -36,7 +37,7 @@ const RENDER_APP_DIR = path.join(ROOT, 'scripts', 'render-app');
 const SHOTS_DIR = path.join(ROOT, 'screenshots');
 const REPORT = path.join(SHOTS_DIR, 'capture-report.json');
 const ELECTRON = process.env.HALOFLUX_ELECTRON
-  || 'C:\\Users\\Lenovo\\.dsh\\electron\\electron.exe';
+  || path.join(os.homedir(), '.dsh', 'electron', 'electron.exe');
 
 const PRESETS = ['original', 'minimal', 'sci-fi', 'focus', 'ambient', 'agent-monitor'];
 const STATES = [

@@ -5,7 +5,7 @@
  * Resolves the already-installed Electron (no download, no npm install):
  *   1. $HALOFLUX_ELECTRON
  *   2. node_modules/electron/dist/electron.exe (if a local Electron exists)
- *   3. C:\Users\Lenovo\.dsh\electron\electron.exe (Electron 43.3.0 from DSH)
+ *   3. ~/.dsh/electron/electron.exe (Electron shipped with DeepSeek Harness)
  *   4. `electron` found on PATH
  *
  * Spawns exactly `electron.exe apps/companion/main/main.js` with NO extra argv:
@@ -166,7 +166,7 @@ export function resolveElectron(env = process.env) {
   if (local) return { path: local, source: 'node_modules/electron' };
 
   if (process.platform === 'win32') {
-    const dsh = fileExecutable('C:\\Users\\Lenovo\\.dsh\\electron\\electron.exe');
+    const dsh = fileExecutable(path.join(os.homedir(), '.dsh', 'electron', 'electron.exe'));
     if (dsh) return { path: dsh, source: 'dsh-electron-43.3.0' };
   }
 

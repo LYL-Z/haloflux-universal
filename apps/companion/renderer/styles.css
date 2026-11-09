@@ -1173,6 +1173,56 @@ body.is-simulated .topbar::after {
   .lab-feed-row[aria-selected="true"] { background: #1b1b23; color: #f2f2f7; }
   .lab-feed .lab-rows { max-height: calc(100% - 34px); }
 
+  .lab-evidence {
+    position: fixed;
+    right: 18px;
+    bottom: calc(var(--lab-h, 288px) + 30px);
+    z-index: 60;
+    width: min(380px, calc(100vw - 36px));
+    padding: 12px 14px;
+    border: 1px solid #5a5a66;
+    background: #050507;
+    color: #e8e8ee;
+    font: 10px/1.6 var(--font-mono);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, .6);
+  }
+
+  .lab-evidence-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #33333d;
+    padding-bottom: 6px;
+  }
+
+  .lab-evidence-head h3 {
+    margin: 0;
+    color: #f4f4f8;
+    font: 700 10px var(--font-mono);
+    letter-spacing: .08em;
+  }
+
+  .lab-evidence-head button {
+    border: 1px solid #4a4a55;
+    background: #08080c;
+    color: #c7c7d1;
+    font: 12px var(--font-mono);
+    padding: 0 6px;
+  }
+
+  .lab-evidence-body div {
+    display: grid;
+    grid-template-columns: 92px 1fr;
+    gap: 8px;
+    padding: 2px 0;
+    color: #b9b9c5;
+  }
+
+  .lab-evidence-body strong { color: #f4f4f8; font-weight: 600; overflow-wrap: anywhere; }
+  .lab-evidence-body .lab-evidence-note { color: #8f8f9d; }
+
   .lab-rows {
     list-style: none;
     margin: 0;

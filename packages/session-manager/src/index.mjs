@@ -508,6 +508,12 @@ export class SessionManager {
     // a host-native session must still render as DRV/inferred.
     entry.source = event.source;
     entry.confidence = event.confidence;
+    for (const key of ['traceId', 'spanId', 'parentSpanId', 'turnId', 'agentId', 'status', 'adapterVersion']) {
+      if (typeof event[key] === 'string' && event[key]) entry[key] = event[key];
+    }
+    if (typeof event.timestampMonotonic === 'number' && Number.isFinite(event.timestampMonotonic)) {
+      entry.timestampMonotonic = event.timestampMonotonic;
+    }
     if (event.metadata && typeof event.metadata.label === 'string') entry.label = event.metadata.label;
     if (event.metadata && typeof event.metadata.toolName === 'string') entry.toolName = event.metadata.toolName;
     if (event.metadata && typeof event.metadata.toolCallId === 'string') entry.toolCallId = event.metadata.toolCallId;

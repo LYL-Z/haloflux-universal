@@ -35,6 +35,7 @@ import {
 import { createMockStream } from './mock-session.js';
 import { projectMonitor } from './monitor-projection.mjs';
 import { parseObsidianMetadata } from './obsidian-metadata.mjs';
+import { eventRate, METRIC_REGISTRY } from '../../../packages/analytics/src/index.mjs';
 
 /* ------------------------------------------------------------------ *
  * environment / query
@@ -188,6 +189,10 @@ const els = {
   labFeedFilter: $('lab-feed-filter'),
   labFeedPause: $('lab-feed-pause'),
   labFeedDetail: $('lab-feed-detail'),
+  labEvidence: $('lab-evidence'),
+  labEvidenceTitle: $('lab-evidence-title'),
+  labEvidenceBody: $('lab-evidence-body'),
+  labEvidenceClose: $('lab-evidence-close'),
   feedMode: $('feed-mode'),
   linkStatus: $('link-status'),
   linkText: $('link-text'),
@@ -817,41 +822,33 @@ function canvasContext(canvas) {
   return { ctx, width, height };
 }
 
-/** Tool event arrival rate over the last 120 s, bucketed at 10 s. */
+/** Tool event arrival rate over the last 120 s, bucketed by the analytics engine. */
+let lastRate = null;
+let lastFailureCount = 0;
 function drawRateCanvas(events) {
   const surface = canvasContext(els.labRateCanvas);
   if (!surface) return;
   const { ctx, width, height } = surface;
-  const bucketMs = 10_000;
-  const buckets = 12;
-  const now = Date.now();
-  const windowStart = now - bucketMs * buckets;
-  const counts = new Array(buckets).fill(0);
-  let toolEvents = 0;
-  for (const event of events) {
-    if (typeof event.eventType !== 'string' || !event.eventType.startsWith('tool.')) continue;
-    if (typeof event.timestamp !== 'number' || event.timestamp < windowStart) continue;
-    toolEvents += 1;
-    const index = Math.min(buckets - 1, Math.floor((event.timestamp - windowStart) / bucketMs));
-    counts[index] += 1;
-  }
+  const toolOnly = events.filter((event) => typeof event.eventType === 'string' && event.eventType.startsWith('tool.'));
+  const rate = eventRate(toolOnly, { now: Date.now(), windowMs: 120_000, buckets: 12, cacheLimit: 30 });
+  lastRate = rate;
   ctx.strokeStyle = '#3f3f49';
   ctx.beginPath();
   ctx.moveTo(0, height - 1);
   ctx.lineTo(width, height - 1);
   ctx.stroke();
-  if (toolEvents === 0) {
+  if (rate.count === 0) {
     ctx.fillStyle = '#7d7d8a';
     ctx.fillText('NO TOOL EVENTS IN 120 S WINDOW', 2, Math.max(2, height / 2 - 4));
-    els.labRateWindow.textContent = 'RATE 120s · 10s BUCKET · 0 CACHED';
+    els.labRateWindow.textContent = 'RATE 120s · 10s BUCKET · 0 CACHED (NOT TOTAL)';
     return;
   }
-  const max = Math.max(1, ...counts);
-  const stepX = width / buckets;
+  const max = Math.max(1, ...rate.buckets);
+  const stepX = width / rate.buckets.length;
   ctx.strokeStyle = '#d7d7df';
   ctx.lineWidth = 1;
   ctx.beginPath();
-  counts.forEach((count, index) => {
+  rate.buckets.forEach((count, index) => {
     const x = stepX * index + stepX / 2;
     const y = height - 3 - (count / max) * (height - 8);
     if (index === 0) ctx.moveTo(x, y);
@@ -859,8 +856,8 @@ function drawRateCanvas(events) {
   });
   ctx.stroke();
   ctx.fillStyle = '#8f8f9d';
-  ctx.fillText(`${toolEvents} CACHED`, width - 56, 1);
-  els.labRateWindow.textContent = `RATE 120s · 10s BUCKET · ${toolEvents} CACHED (NOT TOTAL)`;
+  ctx.fillText(`${rate.count} CACHED`, width - 56, 1);
+  els.labRateWindow.textContent = `RATE 120s · 10s BUCKET · ${rate.count} CACHED (NOT TOTAL) · λ=${rate.lambdaPerSecond.toFixed(3)}/s`;
 }
 
 /** Real failures/errors only; absence is explicitly not a pass. */
@@ -880,10 +877,12 @@ function drawFailureCanvas(events) {
   ctx.lineTo(width, height - 1);
   ctx.stroke();
   if (failures.length === 0) {
+    lastFailureCount = 0;
     ctx.fillStyle = '#7d7d8a';
     ctx.fillText('NO FAILURE EVENTS IN 120 S (NOT A PASS)', 2, Math.max(2, height / 2 - 4));
     return;
   }
+  lastFailureCount = failures.length;
   for (const event of failures) {
     const ratio = Math.max(0, Math.min(1, (now - event.timestamp) / windowMs));
     const x = width - ratio * width;
@@ -919,7 +918,47 @@ function drawMatrixCanvas() {
   ctx.strokeRect(0.5, labelHeight + 0.5, width - 1, height - labelHeight - 1);
 }
 
-/** Exactly the bridge's observed events; no invented reasoning or validation. */
+/** Evidence Inspector: formula, inputs, sample size and limitation for a panel. */
+function showEvidence(kind) {
+  if (!els.labEvidence || !els.labEvidenceBody) return;
+  const rows = [];
+  const add = (label, value) => rows.push([label, value == null || value === '' ? '—' : String(value)]);
+  if (kind === 'rate') {
+    const meta = METRIC_REGISTRY.eventRate;
+    els.labEvidenceTitle.textContent = 'TOOL EVENT RATE · EVIDENCE';
+    add('FORMULA', meta.formula);
+    add('WINDOW', lastRate ? `${lastRate.windowMs / 1000}s · ${lastRate.bucketMs / 1000}s buckets` : '120s');
+    add('SAMPLES', lastRate ? lastRate.count : 0);
+    add('λ', lastRate ? `${lastRate.lambdaPerSecond.toFixed(3)} events/s` : '—');
+    add('EVIDENCE', lastRate ? lastRate.evidence : 'UNKNOWN');
+    add('LIMITATION', meta.limitation);
+  } else if (kind === 'failure') {
+    els.labEvidenceTitle.textContent = 'FAILURE TRACE · EVIDENCE';
+    add('FORMULA', 'count of error / tool.fail timestamps inside the 120 s window');
+    add('WINDOW', '120 s');
+    add('SAMPLES', lastFailureCount);
+    add('EVIDENCE', 'OBSERVED_NATIVE if source=host-native; otherwise DERIVED/SIMULATED');
+    add('LIMITATION', 'no failure events is NOT a validation pass; PASS/FAIL stays unknown');
+  } else {
+    els.labEvidenceTitle.textContent = 'AGENT ACTIVITY MATRIX · EVIDENCE';
+    add('FORMULA', 'count of sessions per host × observed state');
+    add('SAMPLES', state.sessions.length);
+    add('HOSTS', projectionHostCount());
+    add('EVIDENCE', 'OBSERVED_NATIVE / DERIVED / SIMULATED per event');
+    add('LIMITATION', 'empty cells mean no session in that state, not a healthy state');
+  }
+  clearNode(els.labEvidenceBody);
+  for (const [label, value] of rows) {
+    const row = make('div');
+    row.append(make('span', '', label), make('strong', '', value));
+    els.labEvidenceBody.appendChild(row);
+  }
+  els.labEvidence.hidden = false;
+}
+
+function projectionHostCount() {
+  return new Set(state.sessions.map((session) => session.host)).size;
+}
 function renderLabMonitor() {
   if (!els.labFeedRows) return;
   const projection = projectMonitor({
@@ -1484,6 +1523,10 @@ function bindEvents() {
     els.labFeedPause.textContent = state.feedPaused ? 'RESUME' : 'PAUSE';
     if (!state.feedPaused) renderLabMonitor();
   });
+  els.labRateCanvas?.addEventListener('click', () => showEvidence('rate'));
+  els.labFailCanvas?.addEventListener('click', () => showEvidence('failure'));
+  els.labMatrixCanvas?.addEventListener('click', () => showEvidence('matrix'));
+  els.labEvidenceClose?.addEventListener('click', () => { if (els.labEvidence) els.labEvidence.hidden = true; });
   els.btnParams?.addEventListener('click', () => openDrawer(els.paramsDrawer));
   els.btnSettings?.addEventListener('click', () => openDrawer(els.settingsDrawer));
   els.btnAbout?.addEventListener('click', openAbout);

@@ -161,7 +161,28 @@ node scripts\haloflux.mjs restore <时间戳>             # 恢复配置备份
 
 项目目录与 `config\backups\` 永不自动删除。详细步骤见 [docs/05-install-uninstall.md](docs/05-install-uninstall.md)。
 
-## 9. 许可证与署名
+## 9. 自动启动（Windows，可选）
+
+HALOFLUX 使用 **当前用户登录触发** 的 Task Scheduler 任务，不需要管理员、不写 SYSTEM：
+
+```powershell
+node scripts\haloflux.mjs autostart install    # 注册 HALOFLUX-Supervisor
+node scripts\haloflux.mjs autostart status     # 查看状态
+node scripts\haloflux.mjs autostart disable    # 暂停自启
+node scripts\haloflux.mjs autostart enable     # 恢复自启
+node scripts\haloflux.mjs autostart uninstall  # 移除任务（不动 DSH 配置）
+node scripts\haloflux.mjs doctor --startup     # 自启动/宿主/进程诊断
+```
+
+登录后 supervisor 会拉起 bridge 与只读 collectors；**先等 bridge 就绪，再打开 DeepSeek Harness**，DSH 插件才会连接。手动开关窗口仍用：
+
+```powershell
+node scripts\haloflux.mjs companion --mode window
+```
+
+完整说明与限制见 [docs/09-autostart.md](docs/09-autostart.md)。
+
+## 10. 许可证与署名
 
 本项目是 **HALOFLUX** 的非商业衍生作品，整体按 **[PolyForm Noncommercial License 1.0.0](LICENSE)** 发布：
 个人学习、研究、教学、私人娱乐可免费使用；**严禁任何商业用途**。
@@ -178,7 +199,7 @@ node scripts\haloflux.mjs restore <时间戳>             # 恢复配置备份
 `Source: HALOFLUX by Ryder191 — https://github.com/Ryder191/haloflux`（平台不允许链接时写 `GitHub: Ryder191/haloflux`），不得冒充原创，且商业用途仍被禁止。
 完整合规说明见 [docs/03-security-and-license.md](docs/03-security-and-license.md)。
 
-## 10. 隐私
+## 11. 隐私
 
 - 不读取 prompt、对话正文、文件内容、tool 参数/结果、API Key。
 - 事件元数据走白名单；未知字段在 schema 边界被拒绝。

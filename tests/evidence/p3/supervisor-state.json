@@ -1,0 +1,10 @@
+{
+  "pid": 38100,
+  "state": "HEALTHY",
+  "since": "2026-11-09T15:01:03.781Z",
+  "failures": {
+    "count": 0,
+    "nextAttemptAt": 0
+  },
+  "taskName": "HALOFLUX-Supervisor"
+}
