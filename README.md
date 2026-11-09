@@ -79,6 +79,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts\install-adapters.ps1
 
 | 预览 | 说明 |
 |---|---|
+| ![GitHub Pages 在线演示](screenshots/pages-landing.png) | **GitHub Pages 在线演示**：`https://lyl-z.github.io/haloflux-universal/`（iframe 内为模拟数据） |
 | ![伴随窗口](screenshots/bridge-window.png) | 伴随窗口模式（window），真实 bridge 17817 的 DSH 会话数据（31 fps） |
 | ![紧凑模式](screenshots/visual-compact.png) | 紧凑模式（320×320） |
 | ![Agent 监控](screenshots/preset-agent-monitor.png) | `agent-monitor` 预设（模拟数据，UI 明确标注 SIMULATED） |

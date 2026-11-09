@@ -79,6 +79,7 @@ Full install / diagnostics / uninstall / rollback: [docs/05-install-uninstall.md
 
 | Preview | Description |
 |---|---|
+| ![GitHub Pages demo](screenshots/pages-landing.png) | **Live GitHub Pages demo**: `https://lyl-z.github.io/haloflux-universal/` (simulated data inside the iframe) |
 | ![Companion window](screenshots/bridge-window.png) | Companion window mode with live DSH session data from bridge 17817 (31 fps) |
 | ![Compact mode](screenshots/visual-compact.png) | Compact mode (320×320) |
 | ![Agent monitor preset](screenshots/preset-agent-monitor.png) | `agent-monitor` preset (simulated data, clearly labelled) |
