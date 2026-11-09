@@ -79,7 +79,7 @@ server.listen(0, '127.0.0.1', () => {
   env.HALOFLUX_RENDER_WIDTH = String(width);
   env.HALOFLUX_RENDER_HEIGHT = String(height);
   env.HALOFLUX_RENDER_DPR = String(dpr);
-  console.error(`[p2-capture] ${width}x${height} ${url} -> ${out}`);
+  console.error(`[p2-capture] ${width}x${height} ${url.replace(/([?&](token|api[_-]?key)=)[^&]+/gi, '$1***')} -> ${out}`);
   const child = spawn(process.env.HALOFLUX_ELECTRON || path.join(os.homedir(), '.dsh', 'electron', 'electron.exe'), [RENDER_APP], {
     stdio: ['ignore', 'inherit', 'inherit'],
     windowsHide: true,

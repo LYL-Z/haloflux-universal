@@ -30,6 +30,7 @@ test('event store persists across reopen and deduplicates eventId', () => {
   assert.equal(store.append(a).inserted, false);
   assert.deepEqual(store.appendMany([a, b]), { inserted: 1, duplicates: 1, total: 2 });
   assert.equal(store.stats().events, 2);
+  const before = JSON.stringify(store.query({ sessionId: 'session-store-1' }).events);
   store.close();
 
   store = new EventStore({ home });
@@ -40,11 +41,31 @@ test('event store persists across reopen and deduplicates eventId', () => {
   assert.equal(q.events[0].source, 'host-native');
   assert.equal(q.events[0].confidence, 'confirmed');
   assert.equal(q.events[0].metadata.runId, 'run-1');
+  assert.equal(JSON.stringify(q.events), before, 'same event ids and payloads after restart');
   assert.equal(store.integrityCheck(), 'ok');
   assert.ok(store.stats().sizeBytes > 0);
   store.close();
   rmSync(home, { recursive: true, force: true });
   assert.equal(file.endsWith('haloflux-events.sqlite'), true);
+});
+
+test('event store paginates beyond one page with stable order', () => {
+  const home = mkdtempSync(path.join(tmpdir(), 'haloflux-store-'));
+  const store = new EventStore({ home });
+  const batch = Array.from({ length: 1205 }, (_, i) => evt({
+    eventId: `evt-page-${String(i).padStart(5, '0')}`,
+    timestamp: 1000 + i,
+  }));
+  store.appendMany(batch);
+  const first = store.query({ limit: 1000 });
+  const second = store.query({ limit: 1000, offset: 1000 });
+  assert.equal(first.returned, 1000);
+  assert.equal(second.returned, 205);
+  assert.equal(first.total, 1205);
+  assert.ok(first.events[0].timestamp < first.events.at(-1).timestamp);
+  assert.ok(second.events[0].timestamp > first.events.at(-1).timestamp);
+  store.close();
+  rmSync(home, { recursive: true, force: true });
 });
 
 test('event store supports time windows, deletion and retention pruning', () => {

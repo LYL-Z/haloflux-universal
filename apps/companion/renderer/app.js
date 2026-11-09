@@ -37,6 +37,7 @@ import { projectMonitor } from './monitor-projection.mjs';
 import { parseObsidianMetadata } from './obsidian-metadata.mjs';
 import { eventRate, METRIC_REGISTRY, toolWaterfall, criticalPath } from '../../../packages/analytics/src/index.mjs';
 import { sortEvents, sessionAt, frameIndexAt, replayDurationMs } from './replay-engine.mjs';
+import { parseReplayAt, collectReplayPages } from './replay-history.mjs';
 
 /* ------------------------------------------------------------------ *
  * environment / query
@@ -128,7 +129,7 @@ const initialReducedMotion = query.get('motion') === 'reduce'
 const BRIDGE_URL = normalizeBridgeUrl(query.get('bridge') || config.bridgeUrl || 'http://127.0.0.1:17817');
 const TOKEN = String(query.get('token') || config.token || '').trim();
 const REPLAY_SESSION = String(query.get('replay') || '').trim();
-const REPLAY_AT = Number(query.get('at'));
+const REPLAY_AT_INFO = parseReplayAt(query.get('at'));
 const TRACE_OPEN = query.get('trace') === '1';
 const QUERY_STATE = query.get('state');
 const PINNED_STATE = (QUERY_STATE && STATE_META[QUERY_STATE]) ? QUERY_STATE : null;
@@ -188,6 +189,7 @@ const els = {
   labKpiErrors: $('lab-kpi-errors'),
   labRateCanvas: $('lab-rate-canvas'),
   labRateWindow: $('lab-rate-window'),
+  labTimeCanvas: $('lab-time-canvas'),
   labFailCanvas: $('lab-fail-canvas'),
   labMatrixCanvas: $('lab-matrix-canvas'),
   labFeedFilter: $('lab-feed-filter'),
@@ -938,6 +940,37 @@ function drawMatrixCanvas() {
   ctx.strokeRect(0.5, labelHeight + 0.5, width - 1, height - labelHeight - 1);
 }
 
+/** P4.0 history time band: real event timestamps as ticks; replay cursor. */
+function drawTimeBand() {
+  const surface = canvasContext(els.labTimeCanvas);
+  if (!surface) return;
+  const { ctx, width, height } = surface;
+  const replay = state.replay;
+  const list = replay ? replay.events : state.events;
+  const now = Date.now();
+  const start = replay && list.length ? list[0].timestamp : now - 120_000;
+  const end = replay && list.length ? list[list.length - 1].timestamp : now;
+  const span = Math.max(1, end - start);
+  ctx.strokeStyle = '#3a3a44';
+  ctx.beginPath();
+  ctx.moveTo(0, height - 4);
+  ctx.lineTo(width, height - 4);
+  ctx.stroke();
+  for (const event of list) {
+    if (typeof event.timestamp !== 'number' || event.timestamp < start || event.timestamp > end) continue;
+    const x = ((event.timestamp - start) / span) * width;
+    const tone = event.source === 'simulated' ? '#8f8f66' : event.source === 'derived' ? '#7f8f9f' : '#e4e4ec';
+    ctx.fillStyle = tone;
+    ctx.fillRect(Math.max(0, Math.min(width - 1, x)), 5, 1, height - 10);
+  }
+  if (replay && list.length) {
+    const cursorTime = list[replay.index]?.timestamp ?? start;
+    const x = ((cursorTime - start) / span) * width;
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(Math.max(0, Math.min(width - 1, x)), 2, 2, height - 5);
+  }
+}
+
 /** Evidence Inspector: formula, inputs, sample size and limitation for a panel. */
 function showEvidence(kind) {
   if (!els.labEvidence || !els.labEvidenceBody) return;
@@ -1123,6 +1156,7 @@ function renderLabMonitor() {
   drawRateCanvas(selectedEvents);
   drawFailureCanvas(selectedEvents);
   drawMatrixCanvas();
+  drawTimeBand();
   els.labToolSummary.textContent = `TOOL ${projection.selectedToolEventCount} / CACHED ${projection.eventCount}`;
 
   const detail = (target, entries) => {
@@ -1623,6 +1657,24 @@ function bindEvents() {
     if (!state.feedPaused) renderLabMonitor();
   });
   els.labRateCanvas?.addEventListener('click', () => showEvidence('rate'));
+  els.labTimeCanvas?.addEventListener('click', (event) => {
+    const replay = state.replay;
+    if (!replay || replay.events.length === 0) return;
+    const rect = els.labTimeCanvas.getBoundingClientRect();
+    const ratio = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+    const start = replay.events[0].timestamp;
+    const end = replay.events[replay.events.length - 1].timestamp;
+    const target = start + (end - start) * ratio;
+    let nearest = 0;
+    for (let i = 0; i < replay.events.length; i += 1) {
+      if (Math.abs(replay.events[i].timestamp - target) < Math.abs(replay.events[nearest].timestamp - target)) nearest = i;
+    }
+    replay.playing = false;
+    replay.elapsedMs = replay.events[nearest].timestamp - start;
+    replay.index = nearest;
+    if (els.replayPlay) els.replayPlay.textContent = 'RESUME';
+    applyReplayFrame(nearest);
+  });
   els.labFailCanvas?.addEventListener('click', () => showEvidence('failure'));
   els.labMatrixCanvas?.addEventListener('click', () => showEvidence('matrix'));
   els.labEvidenceClose?.addEventListener('click', () => { if (els.labEvidence) els.labEvidence.hidden = true; });
@@ -1872,12 +1924,20 @@ function replayTick() {
 async function startReplay(sessionId) {
   if (!sessionId || !TOKEN) return false;
   try {
-    const res = await fetch(`${BRIDGE_URL}/v1/history?sessionId=${encodeURIComponent(sessionId)}&limit=1000`, {
-      headers: { authorization: `Bearer ${TOKEN}` },
+    const snapshotTo = Date.now();
+    const history = await collectReplayPages({
+      pageSize: 1000,
+      maxEvents: 20000,
+      snapshotTo,
+      fetchPage: async ({ offset, limit, to }) => {
+        const res = await fetch(`${BRIDGE_URL}/v1/history?sessionId=${encodeURIComponent(sessionId)}&limit=${limit}&offset=${offset}&to=${to}`, {
+          headers: { authorization: `Bearer ${TOKEN}` },
+        });
+        if (!res.ok) throw new Error(`history HTTP ${res.status}`);
+        return res.json();
+      },
     });
-    if (!res.ok) throw new Error(`history HTTP ${res.status}`);
-    const data = await res.json();
-    const events = sortEvents(data.events || []);
+    const events = sortEvents(history.events || []);
     if (events.length === 0) {
       toast('该会话没有可回放的历史事件');
       return false;
@@ -1885,13 +1945,19 @@ async function startReplay(sessionId) {
     if (state.replay?.timer) clearInterval(state.replay.timer);
     state.replay = {
       sessionId, events, index: 0, elapsedMs: 0, speed: 1, playing: true,
+      total: history.total, partial: history.partial, loaded: history.loaded,
       timer: setInterval(replayTick, 200),
     };
     if (els.replayBar) els.replayBar.hidden = false;
-    if (els.replaySession) els.replaySession.textContent = `${sessionId.slice(0, 18)} · ${events.length} EVENTS · ${data.total || events.length} STORED`;
+    if (els.replaySession) {
+      els.replaySession.textContent = `${sessionId.slice(0, 18)} · ${history.loaded}/${history.total} EVENTS${history.partial ? ' · PARTIAL REPLAY' : ''}`;
+    }
     if (els.replayPlay) els.replayPlay.textContent = 'PAUSE';
-    if (Number.isFinite(REPLAY_AT)) {
-      const index = Math.max(0, Math.min(events.length - 1, Math.floor(REPLAY_AT)));
+    if (REPLAY_AT_INFO.present && !REPLAY_AT_INFO.valid) {
+      toast('at 参数无效，已改为正常自动播放');
+    }
+    if (REPLAY_AT_INFO.present && REPLAY_AT_INFO.valid) {
+      const index = Math.max(0, Math.min(events.length - 1, Math.floor(REPLAY_AT_INFO.value)));
       state.replay.elapsedMs = Math.max(0, events[index].timestamp - events[0].timestamp);
       state.replay.playing = false;
       state.replay.index = index;
@@ -1961,6 +2027,17 @@ function init() {
     replay.playing = false;
     if (els.replayPlay) els.replayPlay.textContent = 'RESUME';
     applyReplayFrame(frameIndexAt(replay.events, replay.elapsedMs, 1));
+    return true;
+  };
+  window.__halofluxEnterReplay = (sessionId) => startReplay(sessionId);
+  window.__halofluxExitReplay = () => {
+    if (state.replay?.timer) clearInterval(state.replay.timer);
+    state.replay = null;
+    state.events = [];
+    state.sessions = [];
+    if (els.replayBar) els.replayBar.hidden = true;
+    if (els.replaySession) els.replaySession.textContent = '—';
+    connectLive();
     return true;
   };
 

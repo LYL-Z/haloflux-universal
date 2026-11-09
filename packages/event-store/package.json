@@ -4,5 +4,6 @@
   "private": true,
   "type": "module",
   "main": "src/index.mjs",
+  "engines": { "node": ">=22.13.0" },
   "description": "HALOFLUX local event store: SQLite (node:sqlite), dedupe, indexed history queries, retention and deletion"
 }

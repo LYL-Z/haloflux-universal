@@ -1,0 +1,26 @@
+{
+  "events": 3000,
+  "totalMs": 393.4784,
+  "eventsPerSecond": 7624.306696377743,
+  "appendMs": {
+    "p50": 0.05320000000000391,
+    "p95": 0.10410000000001673,
+    "p99": 1.7760000000000105,
+    "max": 11.521299999999997
+  },
+  "eventLoopDelayMs": {
+    "mean": 19.245465600000003,
+    "p95": 23.871487,
+    "max": 25.116671
+  },
+  "store": {
+    "events": 3000,
+    "firstTimestamp": 1000,
+    "lastTimestamp": 3999,
+    "file": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\haloflux-bench-GYGr0L\\events\\haloflux-events.sqlite",
+    "sizeBytes": 5881480
+  },
+  "integrity": "ok",
+  "generatedAt": "2026-11-09T15:42:01.513Z",
+  "home": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\haloflux-bench-GYGr0L"
+}

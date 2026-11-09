@@ -74,6 +74,7 @@ server.listen(0, '127.0.0.1', async () => {
     const elapsed = (last - start) / 1000;
     const sorted = [...frames].sort((a, b) => a - b);
     const p95 = sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * 0.95))] || 0;
+    const p50 = sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * 0.5))] || 0;
     const sum = frames.reduce((acc, value) => acc + value, 0);
     const mean = frames.length ? sum / frames.length : 0;
     const memory = performance.memory ? performance.memory.usedJSHeapSize : null;
@@ -85,6 +86,7 @@ server.listen(0, '127.0.0.1', async () => {
       frames: frames.length,
       fps: frames.length / elapsed,
       frameMsMean: mean,
+      frameMsP50: p50,
       frameMsP95: p95,
       frameMsMax: sorted[sorted.length - 1] || 0,
       frameMsMin: sorted[0] || 0,
@@ -92,6 +94,14 @@ server.listen(0, '127.0.0.1', async () => {
     };
   })()`, true);
   mkdirSync(path.dirname(OUT), { recursive: true });
+  try {
+    sample.appMetrics = app.getAppMetrics().map((metric) => ({
+      type: metric.type,
+      pid: metric.pid,
+      cpuPercent: metric.cpu?.percentCPUUsage ?? null,
+      workingSetMb: metric.memory?.workingSetSize ? Math.round(metric.memory.workingSetSize / 1024) : null,
+    }));
+  } catch { /* metrics are optional */ }
   writeFileSync(OUT, JSON.stringify(sample, null, 2));
   console.log(JSON.stringify(sample));
   win.destroy();
