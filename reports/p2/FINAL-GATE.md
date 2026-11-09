@@ -15,7 +15,7 @@
 | P3 可观测事件链路 | **PARTIAL** | `reports/p2/OBSERVABLE-EVENT-TRACE.md`、`P2.2-PROVENANCE-AND-GATE.md` | 事件级 source/confidence 四层贯通；toolCallId 关联/耗时；筛选/暂停/详情/缓存窗口；实时 DSH 新 toolCallId 需重启宿主 |
 | P4 六宿主真实矩阵 | **PARTIAL** | `reports/p2/HOST-MATRIX.md`、`tests/evidence/p2-hosts/` | DSH PASS；Claude 工具 BLOCKED（未登录）；Codex/Cursor/WorkBuddy PARTIAL；TRAE UNSUPPORTED |
 | P5 Obsidian | **PARTIAL** | `reports/p2/OBSIDIAN-STATUS.md` | 静态快照导入 PASS（E2E 16/16）；实时插件 NOT IMPLEMENTED；3 项 LOW 建议 |
-| P6 安全/性能/无障碍 | **PASS（带 PARTIAL 项）** | `reports/p2/SECURITY-PERFORMANCE.md`、`P2.2-PROVENANCE-AND-GATE.md` | 安全 13/13 + 定向探针 21/21 PASS；XSS 端到端 PASS；P2.2 后窗口 **38.6 fps / mean 25.9 ms / p95 45.8 ms**、overlay **28.5 fps**；30 min soak 见 P2.2；对比度/200% 缩放/Windows token ACL 为 PARTIAL |
+| P6 安全/性能/无障碍 | **PASS（带 PARTIAL 项）** | `reports/p2/SECURITY-PERFORMANCE.md`、`P2.2-PROVENANCE-AND-GATE.md` | 安全 13/13 + 定向探针 21/21 PASS；XSS 端到端 PASS；P2.2 后窗口 **38.6 fps / mean 25.9 ms / p95 45.8 ms**、overlay **28.5 fps**；30 min soak **11631/11631 accepted**（RSS +12.65 MB，CPU 0.02%）；对比度/200% 缩放/Windows token ACL 为 PARTIAL |
 | P7 交付文档/受控 PR 候选 | **PARTIAL** | 本目录 + `screenshots/p2/` | 分支已推送 `feat/paper-lab-p2`；**Draft PR #1 已创建**（未转 Ready、未合并、未部署 Pages/Release）；证据与报告已同步 |
 
 ## 2. 本轮实际代码修改
