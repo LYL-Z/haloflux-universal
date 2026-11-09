@@ -26,11 +26,17 @@ export function projectMonitor({ hosts = [], sessions = [], events = [], selecte
   }
 
   const timeline = safeEvents.slice(-RECENT_LIMIT).reverse().map((event) => ({
+    key: `${clean(event?.sessionId, 64)}|${event?.timestamp ?? ''}|${clean(event?.eventType, 40)}|${clean(event?.toolCallId, 64)}`,
     timestamp: numeric(event?.timestamp),
     kind: clean(event?.eventType, 40) || 'unknown',
     tool: clean(event?.toolName, 48),
     host: clean(event?.host, 40),
+    sessionId: clean(event?.sessionId, 64),
+    toolCallId: clean(event?.toolCallId, 64),
+    durationMs: numeric(event?.durationMs),
+    errorCode: clean(event?.errorCode, 64),
     source: clean(event?.source, 20) || 'unknown',
+    confidence: clean(event?.confidence, 32) || 'unknown',
   }));
   const toolEvents = safeEvents.filter((event) => typeof event?.eventType === 'string' && event.eventType.startsWith('tool.'));
   const errorEvents = safeEvents.filter((event) => typeof event?.eventType === 'string' && /error|fail/i.test(event.eventType));
@@ -40,10 +46,34 @@ export function projectMonitor({ hosts = [], sessions = [], events = [], selecte
     if (kind) eventTypes.set(kind, (eventTypes.get(kind) || 0) + 1);
   }
 
-  const lastTool = [...safeEvents].reverse().find((event) => event && (event.eventType === 'tool.end' || event.eventType === 'tool.fail'));
-  const toolDurationMs = lastTool ? numeric(lastTool.durationMs) : null;
-  const toolCorrelated = lastTool ? Boolean(clean(lastTool.toolCallId, 64)) : false;
+  // Correlation is per selected session only. A tool.end from another session
+  // must never populate this session's duration or call id.
+  const selectedEvents = session
+    ? safeEvents.filter((event) => event && event.sessionId === session.sessionId)
+    : [];
+  const selectedToolEvents = selectedEvents.filter((event) => typeof event?.eventType === 'string' && event.eventType.startsWith('tool.'));
+  const lastTool = [...selectedEvents].reverse().find((event) => event && (event.eventType === 'tool.end' || event.eventType === 'tool.fail'));
   const metrics = session?.metrics || {};
+  let toolCallId = clean(metrics.lastToolCallId, 64) || (lastTool ? clean(lastTool.toolCallId, 64) : '');
+  let toolCorrelated = metrics.lastToolCorrelated === true;
+  let toolDurationMs = numeric(metrics.lastToolDurationMs);
+
+  // SessionManager is authoritative when it has a verdict. Only reconstruct a
+  // match from cached events when the manager gave no verdict at all.
+  if (metrics.lastToolCorrelated === undefined && lastTool && lastTool.toolCallId) {
+    const start = [...selectedEvents].reverse().find(
+      (event) => event && event.eventType === 'tool.start' && event.toolCallId === lastTool.toolCallId,
+    );
+    if (start) {
+      toolCorrelated = true;
+      toolDurationMs = numeric(lastTool.durationMs) ?? Math.max(0, (lastTool.timestamp || 0) - (start.timestamp || 0));
+    }
+  }
+  if (toolCorrelated && toolDurationMs === null && lastTool && lastTool.toolCallId === toolCallId) {
+    toolDurationMs = numeric(lastTool.durationMs);
+  }
+  if (!toolCorrelated) toolDurationMs = null;
+
   return {
     mode: clean(mode, 20),
     sessionCount: safeSessions.length,
@@ -61,14 +91,19 @@ export function projectMonitor({ hosts = [], sessions = [], events = [], selecte
       tokensPerSecond: numeric(metrics.tokensPerSecond),
       contextUsed: numeric(metrics.contextUsed),
       contextLimit: numeric(metrics.contextLimit),
-      lastToolDurationMs: numeric(metrics.lastToolDurationMs) ?? toolDurationMs,
-      lastToolCallId: clean(metrics.lastToolCallId, 64) || (lastTool ? clean(lastTool.toolCallId, 64) : ''),
+      lastToolDurationMs: toolDurationMs,
+      lastToolCallId: toolCallId,
+      lastToolCorrelated: toolCorrelated,
+      selectedToolEventCount: selectedToolEvents.length,
+      selectedEventCount: selectedEvents.length,
       warnings: (Array.isArray(session.warnings) ? session.warnings : []).slice(0, 3).map((x) => clean(x, 64)),
     } : null,
     recent: timeline,
     eventCount: safeEvents.length,
     toolEventCount: toolEvents.length,
     errorEventCount: errorEvents.length,
+    selectedEventCount: selectedEvents.length,
+    selectedToolEventCount: selectedToolEvents.length,
     toolDurationMs,
     toolCorrelated,
     types: [...eventTypes].sort((a, b) => b[1] - a[1]).slice(0, 5),

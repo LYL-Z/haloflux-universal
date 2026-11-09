@@ -68,8 +68,8 @@ test('projection surfaces real duration and correlation, never invents them', ()
     selectedSessionId: 's1',
     sessions: [{ sessionId: 's1', host: 'deepseek-harness', metrics: {}, warnings: [] }],
     events: [
-      { eventType: 'tool.start', timestamp: 1000, toolName: 'Bash', toolCallId: 'call-1' },
-      { eventType: 'tool.end', timestamp: 1450, toolName: 'Bash', toolCallId: 'call-1', durationMs: 450 },
+      { sessionId: 's1', eventType: 'tool.start', timestamp: 1000, toolName: 'Bash', toolCallId: 'call-1' },
+      { sessionId: 's1', eventType: 'tool.end', timestamp: 1450, toolName: 'Bash', toolCallId: 'call-1', durationMs: 450 },
     ],
   });
   assert.equal(projection.toolDurationMs, 450);
@@ -79,8 +79,61 @@ test('projection surfaces real duration and correlation, never invents them', ()
     hosts: [{ id: 'codex', short: 'CX' }],
     selectedSessionId: 's2',
     sessions: [{ sessionId: 's2', host: 'codex', metrics: {}, warnings: [] }],
-    events: [{ eventType: 'tool.end', timestamp: 1450, toolName: 'Read' }],
+    events: [{ sessionId: 's2', eventType: 'tool.end', timestamp: 1450, toolName: 'Read' }],
   });
   assert.equal(uncorrelated.toolDurationMs, null);
   assert.equal(uncorrelated.toolCorrelated, false);
+});
+
+test('P0 regression A: a tool.end from another session never contaminates the selected session', () => {
+  const projection = projectMonitor({
+    hosts: [{ id: 'codex', short: 'CX' }, { id: 'claude-code', short: 'CC' }],
+    selectedSessionId: 'session-a-codex',
+    sessions: [
+      { sessionId: 'session-a-codex', host: 'codex', metrics: {}, warnings: [] },
+      { sessionId: 'session-b-claude', host: 'claude-code', metrics: { lastToolDurationMs: 800, lastToolCallId: 'call-B', lastToolCorrelated: true }, warnings: [] },
+    ],
+    events: [
+      { sessionId: 'session-b-claude', eventType: 'tool.start', timestamp: 1000, toolName: 'Bash', toolCallId: 'call-B' },
+      { sessionId: 'session-b-claude', eventType: 'tool.end', timestamp: 1800, toolName: 'Bash', toolCallId: 'call-B', durationMs: 800 },
+    ],
+  });
+  assert.equal(projection.selected.sessionId, undefined); // SessionView does not carry it; selected is the codex view
+  assert.equal(projection.selected.lastToolDurationMs, null);
+  assert.equal(projection.selected.lastToolCallId, '');
+  assert.equal(projection.selected.lastToolCorrelated, false);
+  assert.equal(projection.toolDurationMs, null);
+  assert.equal(projection.toolCorrelated, false);
+});
+
+test('P0 regression B: a non-empty toolCallId alone is not CORRELATED', () => {
+  const projection = projectMonitor({
+    hosts: [{ id: 'codex', short: 'CX' }],
+    selectedSessionId: 'session-c',
+    sessions: [{ sessionId: 'session-c', host: 'codex', metrics: {}, warnings: [] }],
+    events: [
+      { sessionId: 'session-c', eventType: 'tool.end', timestamp: 1450, toolName: 'Read', toolCallId: 'call-alone', durationMs: 900 },
+    ],
+  });
+  assert.equal(projection.selected.lastToolCallId, 'call-alone');
+  assert.equal(projection.selected.lastToolCorrelated, false);
+  assert.equal(projection.selected.lastToolDurationMs, null);
+  assert.equal(projection.toolCorrelated, false);
+});
+
+test('P0 regression C: SessionManager verdict wins over a cached lookalike start', () => {
+  const projection = projectMonitor({
+    hosts: [{ id: 'codex', short: 'CX' }],
+    selectedSessionId: 'session-d',
+    sessions: [{
+      sessionId: 'session-d', host: 'codex', warnings: [],
+      metrics: { lastToolCallId: 'call-D', lastToolCorrelated: false },
+    }],
+    events: [
+      { sessionId: 'session-d', eventType: 'tool.start', timestamp: 1000, toolName: 'Bash', toolCallId: 'call-D' },
+      { sessionId: 'session-d', eventType: 'tool.end', timestamp: 1800, toolName: 'Bash', toolCallId: 'call-D', durationMs: 800 },
+    ],
+  });
+  assert.equal(projection.selected.lastToolCorrelated, false);
+  assert.equal(projection.selected.lastToolDurationMs, null);
 });

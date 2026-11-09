@@ -181,6 +181,13 @@ const els = {
   labKpiEvents: $('lab-kpi-events'),
   labKpiTools: $('lab-kpi-tools'),
   labKpiErrors: $('lab-kpi-errors'),
+  labRateCanvas: $('lab-rate-canvas'),
+  labRateWindow: $('lab-rate-window'),
+  labFailCanvas: $('lab-fail-canvas'),
+  labMatrixCanvas: $('lab-matrix-canvas'),
+  labFeedFilter: $('lab-feed-filter'),
+  labFeedPause: $('lab-feed-pause'),
+  labFeedDetail: $('lab-feed-detail'),
   feedMode: $('feed-mode'),
   linkStatus: $('link-status'),
   linkText: $('link-text'),
@@ -254,6 +261,9 @@ const state = {
   connectTimer: null,
   qaSessions: false,
   obsidianMetadata: null, // user-selected in-memory aggregate, never persisted or uploaded
+  feedPaused: false,
+  feedFilter: 'all',
+  feedSelectedKey: null,
 };
 
 let saveTimer = null;
@@ -770,6 +780,144 @@ function renderEvents() {
   if (els.eventCount) els.eventCount.textContent = String(events.length);
 }
 
+/** Event detail: allowlisted fields only, rendered as text (never innerHTML). */
+function renderFeedDetail(event) {
+  if (!els.labFeedDetail) return;
+  if (!event) {
+    els.labFeedDetail.textContent = 'SELECT AN EVENT FOR ALLOWLISTED FIELDS';
+    return;
+  }
+  const parts = [
+    event.kind,
+    `HOST ${event.host || '—'}`,
+    `SRC ${event.source}`,
+    `CONF ${event.confidence}`,
+    `SESSION ${(event.sessionId || '—').slice(0, 10)}`,
+    `TOOL ${event.tool || '—'}`,
+    `CALL ${event.toolCallId || '—'}`,
+    `DUR ${event.durationMs == null ? '—' : `${event.durationMs} ms`}`,
+    `ERR ${event.errorCode || '—'}`,
+  ];
+  els.labFeedDetail.textContent = parts.join(' · ');
+}
+
+function canvasContext(canvas) {
+  if (!canvas) return null;
+  const width = Math.max(40, Math.round(canvas.clientWidth || 240));
+  const height = Math.max(16, Math.round(canvas.clientHeight || 44));
+  const dpr = Math.max(1, Math.min(3, window.devicePixelRatio || 1));
+  canvas.width = Math.round(width * dpr);
+  canvas.height = Math.round(height * dpr);
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return null;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, width, height);
+  ctx.font = '8px "Cascadia Code", Consolas, monospace';
+  ctx.textBaseline = 'top';
+  return { ctx, width, height };
+}
+
+/** Tool event arrival rate over the last 120 s, bucketed at 10 s. */
+function drawRateCanvas(events) {
+  const surface = canvasContext(els.labRateCanvas);
+  if (!surface) return;
+  const { ctx, width, height } = surface;
+  const bucketMs = 10_000;
+  const buckets = 12;
+  const now = Date.now();
+  const windowStart = now - bucketMs * buckets;
+  const counts = new Array(buckets).fill(0);
+  let toolEvents = 0;
+  for (const event of events) {
+    if (typeof event.eventType !== 'string' || !event.eventType.startsWith('tool.')) continue;
+    if (typeof event.timestamp !== 'number' || event.timestamp < windowStart) continue;
+    toolEvents += 1;
+    const index = Math.min(buckets - 1, Math.floor((event.timestamp - windowStart) / bucketMs));
+    counts[index] += 1;
+  }
+  ctx.strokeStyle = '#3f3f49';
+  ctx.beginPath();
+  ctx.moveTo(0, height - 1);
+  ctx.lineTo(width, height - 1);
+  ctx.stroke();
+  if (toolEvents === 0) {
+    ctx.fillStyle = '#7d7d8a';
+    ctx.fillText('NO TOOL EVENTS IN 120 S WINDOW', 2, Math.max(2, height / 2 - 4));
+    els.labRateWindow.textContent = 'RATE 120s · 10s BUCKET · 0 CACHED';
+    return;
+  }
+  const max = Math.max(1, ...counts);
+  const stepX = width / buckets;
+  ctx.strokeStyle = '#d7d7df';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  counts.forEach((count, index) => {
+    const x = stepX * index + stepX / 2;
+    const y = height - 3 - (count / max) * (height - 8);
+    if (index === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+  ctx.fillStyle = '#8f8f9d';
+  ctx.fillText(`${toolEvents} CACHED`, width - 48, 1);
+  els.labRateWindow.textContent = `RATE 120s · 10s BUCKET · ${toolEvents} CACHED`;
+}
+
+/** Real failures/errors only; absence is explicitly not a pass. */
+function drawFailureCanvas(events) {
+  const surface = canvasContext(els.labFailCanvas);
+  if (!surface) return;
+  const { ctx, width, height } = surface;
+  const now = Date.now();
+  const windowMs = 120_000;
+  const failures = events.filter((event) => typeof event.eventType === 'string'
+    && (event.eventType === 'error' || event.eventType === 'tool.fail')
+    && typeof event.timestamp === 'number');
+  ctx.strokeStyle = '#3f3f49';
+  ctx.beginPath();
+  ctx.moveTo(0, height - 1);
+  ctx.lineTo(width, height - 1);
+  ctx.stroke();
+  if (failures.length === 0) {
+    ctx.fillStyle = '#7d7d8a';
+    ctx.fillText('NO FAILURE EVENTS (NOT A PASS)', 2, Math.max(2, height / 2 - 4));
+    return;
+  }
+  for (const event of failures) {
+    const ratio = Math.max(0, Math.min(1, (now - event.timestamp) / windowMs));
+    const x = width - ratio * width;
+    ctx.fillStyle = '#c98383';
+    ctx.fillRect(Math.max(0, Math.min(width - 1, x)), 2, 1, height - 4);
+  }
+  ctx.fillStyle = '#9b9ba8';
+  ctx.fillText(`${failures.length} CACHED`, width - 48, 1);
+}
+
+/** Host x state matrix from real sessions (no synthetic population). */
+function drawMatrixCanvas() {
+  const surface = canvasContext(els.labMatrixCanvas);
+  if (!surface) return;
+  const { ctx, width, height } = surface;
+  const states = ['running', 'tool', 'waiting_approval', 'done', 'error', 'disconnected'];
+  const labelHeight = 9;
+  const cellW = width / HOSTS.length;
+  const cellH = (height - labelHeight) / states.length;
+  ctx.fillStyle = '#9a9aa6';
+  HOSTS.forEach((host, index) => {
+    ctx.fillText(host.short, index * cellW + 2, 0);
+  });
+  for (let row = 0; row < states.length; row += 1) {
+    for (let col = 0; col < HOSTS.length; col += 1) {
+      const count = state.sessions.filter((session) => session.host === HOSTS[col].id && session.state === states[row]).length;
+      const intensity = count === 0 ? 0 : Math.min(1, 0.3 + count * 0.3);
+      ctx.fillStyle = count === 0 ? '#0c0c10' : `rgba(214,214,222,${intensity})`;
+      ctx.fillRect(col * cellW + 1, labelHeight + row * cellH + 1, Math.max(1, cellW - 2), Math.max(1, cellH - 1));
+    }
+  }
+  ctx.strokeStyle = '#2c2c35';
+  ctx.strokeRect(0.5, labelHeight + 0.5, width - 1, height - labelHeight - 1);
+}
+
 /** Exactly the bridge's observed events; no invented reasoning or validation. */
 function renderLabMonitor() {
   if (!els.labFeedRows) return;
@@ -791,34 +939,53 @@ function renderLabMonitor() {
     els.labKpiErrors.textContent = String(projection.errorEventCount);
   }
 
-  clearNode(els.labFeedRows);
-  if (projection.recent.length === 0) {
-    els.labFeedRows.appendChild(make('li', 'lab-empty', '— 等待事件桥提供可观测事件'));
-  }
-  for (const event of projection.recent) {
-    const row = make('li', 'lab-feed-row');
-    row.title = `${event.host || 'unknown host'} · ${event.source}`;
-    row.append(make('time', '', event.timestamp === null ? '—' : formatClock(event.timestamp)));
-    row.append(make('b', '', event.kind));
-    row.append(make('span', '', event.tool || '—'));
-    row.append(make('i', '', event.source === 'simulated' ? 'SIM' : event.source === 'host-native' ? 'NAT' : event.source === 'derived' ? 'DRV' : '?'));
-    els.labFeedRows.appendChild(row);
+  const feedEvents = projection.recent.filter((event) => {
+    if (state.feedFilter === 'tool') return typeof event.kind === 'string' && event.kind.startsWith('tool.');
+    if (state.feedFilter === 'error') return typeof event.kind === 'string' && /error|fail/i.test(event.kind);
+    if (state.feedFilter === 'output') return typeof event.kind === 'string' && event.kind.startsWith('output.');
+    return true;
+  });
+  if (!state.feedPaused) {
+    clearNode(els.labFeedRows);
+    if (feedEvents.length === 0) {
+      els.labFeedRows.appendChild(make('li', 'lab-empty', '— 等待事件桥提供可观测事件'));
+    }
+    for (const event of feedEvents) {
+      const row = make('li', 'lab-feed-row');
+      row.tabIndex = 0;
+      row.setAttribute('role', 'button');
+      row.dataset.key = event.key;
+      row.setAttribute('aria-selected', String(state.feedSelectedKey === event.key));
+      row.title = `${event.host || 'unknown host'} · ${event.source}`;
+      row.append(make('time', '', event.timestamp === null ? '—' : formatClock(event.timestamp)));
+      row.append(make('b', '', event.kind));
+      row.append(make('span', '', event.tool || '—'));
+      row.append(make('i', '', event.source === 'simulated' ? 'SIM' : event.source === 'host-native' ? 'NAT' : event.source === 'derived' ? 'DRV' : '?'));
+      const select = () => {
+        state.feedSelectedKey = event.key;
+        renderFeedDetail(event);
+        for (const other of els.labFeedRows.querySelectorAll('.lab-feed-row')) {
+          other.setAttribute('aria-selected', String(other.dataset.key === event.key));
+        }
+      };
+      row.addEventListener('click', select);
+      row.addEventListener('keydown', (domEvent) => {
+        if (domEvent.key === 'Enter' || domEvent.key === ' ') { domEvent.preventDefault(); select(); }
+      });
+      els.labFeedRows.appendChild(row);
+    }
+    if (state.feedSelectedKey && !projection.recent.some((event) => event.key === state.feedSelectedKey)) {
+      state.feedSelectedKey = null;
+      renderFeedDetail(null);
+    }
   }
 
-  // Bars show actual counts by event type, not a fabricated cognitive waveform.
-  clearNode(els.labTracePlot);
-  const maxCount = Math.max(1, ...projection.types.map((item) => item[1]));
-  for (const [type, countValue] of projection.types) {
-    const column = make('div', 'lab-trace-column');
-    const bar = make('span', 'lab-trace-bar');
-    bar.style.height = `${Math.max(4, (countValue / maxCount) * 100)}%`;
-    const caption = make('small', '', String(countValue));
-    column.title = `${type}: ${countValue} 个已观测事件`;
-    column.append(bar, caption);
-    els.labTracePlot.appendChild(column);
-  }
-  if (projection.types.length === 0) els.labTracePlot.appendChild(make('span', 'lab-empty', 'NO EVENT SAMPLES'));
-  els.labToolSummary.textContent = `TOOL EVENTS ${projection.toolEventCount} / CACHED ${projection.eventCount}`;
+  // Micro canvases: every pixel is derived from cached observed events.
+  const selectedEvents = state.events.filter((event) => event.sessionId === state.selectedSessionId);
+  drawRateCanvas(selectedEvents);
+  drawFailureCanvas(selectedEvents);
+  drawMatrixCanvas();
+  els.labToolSummary.textContent = `TOOL ${projection.selectedToolEventCount} / CACHED ${projection.eventCount}`;
 
   const detail = (target, entries) => {
     clearNode(target);
@@ -831,7 +998,7 @@ function renderLabMonitor() {
   const unknown = (value) => value == null || value === '' ? '—' : value;
   const metric = (value) => value == null ? '—' : String(value);
   const toolLine = active?.toolName
-    ? `${active.toolName} · ${active.lastToolDurationMs == null ? '—' : `${active.lastToolDurationMs} ms`} · ${active.lastToolCallId ? 'CORRELATED' : 'UNCORRELATED'}`
+    ? `${active.toolName} · ${active.lastToolDurationMs == null ? '—' : `${active.lastToolDurationMs} ms`} · ${active.lastToolCorrelated ? 'CORRELATED' : (active.selectedToolEventCount ? 'UNCORRELATED' : '—')}`
     : '—';
   detail(els.labWorkspaceDetails, [
     ['HOST / STATE', active ? `${active.host} / ${active.state}` : '— / disconnected'],
@@ -1079,7 +1246,7 @@ function ingestEvents(sessions) {
   const existing = new Set(state.events.map((event) => event.key));
   for (const session of sessions) {
     for (const event of session.recentEvents || []) {
-      const key = `${session.sessionId}|${event.timestamp}|${event.eventType}|${event.toolName || ''}`;
+      const key = `${session.sessionId}|${event.timestamp}|${event.eventType}|${event.toolCallId || event.toolName || ''}`;
       if (existing.has(key)) continue;
       existing.add(key);
       state.events.push({
@@ -1090,6 +1257,10 @@ function ingestEvents(sessions) {
         eventType: event.eventType,
         timestamp: event.timestamp,
         toolName: event.toolName || '',
+        toolCallId: event.toolCallId || '',
+        durationMs: typeof event.durationMs === 'number' ? event.durationMs : undefined,
+        errorCode: event.errorCode || '',
+        label: event.label || '',
       });
     }
   }
@@ -1298,6 +1469,16 @@ function bindEvents() {
     } catch {
       toast('元数据 JSON 无法解析');
     }
+  });
+  els.labFeedFilter?.addEventListener('change', () => {
+    state.feedFilter = els.labFeedFilter.value;
+    renderLabMonitor();
+  });
+  els.labFeedPause?.addEventListener('click', () => {
+    state.feedPaused = !state.feedPaused;
+    els.labFeedPause.setAttribute('aria-pressed', String(state.feedPaused));
+    els.labFeedPause.textContent = state.feedPaused ? 'RESUME' : 'PAUSE';
+    if (!state.feedPaused) renderLabMonitor();
   });
   els.btnParams?.addEventListener('click', () => openDrawer(els.paramsDrawer));
   els.btnSettings?.addEventListener('click', () => openDrawer(els.settingsDrawer));

@@ -60,8 +60,9 @@ const server = createServer((req, res) => {
 });
 
 function recordScript(secs) {
+  const selector = process.env.HALOFLUX_REC_SELECTOR || '#haloflux-canvas';
   return `(async () => {
-    const canvas = document.getElementById('haloflux-canvas');
+    const canvas = document.querySelector(${JSON.stringify(selector)});
     if (!canvas) return { error: 'canvas missing' };
     const stream = canvas.captureStream(30);
     const mime = MediaRecorder.isTypeSupported('video/webm;codecs=vp9')

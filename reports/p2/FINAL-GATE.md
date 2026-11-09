@@ -9,14 +9,14 @@
 
 | 阶段 | 状态 | 证据 | 说明 |
 |---|---|---|---|
-| P0 基线/保全/补丁核验 | **PASS** | `reports/p2/P0-BASELINE.md`、`P0-FILE-STATUS.json` | 工作区干净；远端 main `5fc9338` 已复核；补丁未重复应用；上游 `lab.html` 文本一致、LICENSE 已变更 |
+| P0 基线/保全/补丁核验 | **PASS** | `reports/p2/P0-BASELINE.md`、`P0-FILE-STATUS.json`、`P0.1-CORRELATION-FIX.md` | 工作区干净；远端 main `5fc9338` 已复核；补丁未重复应用；上游 `lab.html` 文本一致、LICENSE 已变更；P0.1 跨会话关联错误已修复并有回归测试 |
 | P1 补丁导入与验收 | **PASS** | `reports/p2/P1-TESTS.md` | `git am --3way` 无冲突；build/typecheck 通过；82/82 测试；17+1 截图 PASS |
-| P2 视觉 A/B | **PARTIAL** | `reports/p2/VISUAL-DELTA-MATRIX.md`；`screenshots/p2/*`；30 s WebM | 构图/密度大幅接近原版；顶部 masthead、束流亮度、单元小画布仍有差距；需用户看片判定 |
-| P3 可观测事件链路 | **PARTIAL** | `reports/p2/OBSERVABLE-EVENT-TRACE.md` | toolCallId 关联与真实耗时已在真实 bridge/adapter 验证；实时 DSH 需重启宿主才带入新字段；runId/筛选/暂停/详情未完成 |
+| P2 视觉 A/B | **PARTIAL** | `reports/p2/VISUAL-DELTA-MATRIX.md`；`screenshots/p2/*`；30 s WebM 两份 | 构图/密度/masthead/扫描线/1280 比例已修正；底部加入真实数据微型画布（tool rate、host×state matrix、failure trace）；剩余：束流连续感、无原版专用小画布 |
+| P3 可观测事件链路 | **PARTIAL** | `reports/p2/OBSERVABLE-EVENT-TRACE.md` | toolCallId 关联与真实耗时（含 P0.1 修复）；事件筛选/暂停/详情/缓存窗口已实现；实时 DSH 新字段需重启宿主 |
 | P4 六宿主真实矩阵 | **PARTIAL** | `reports/p2/HOST-MATRIX.md`、`tests/evidence/p2-hosts/` | DSH PASS；Claude 工具 BLOCKED（未登录）；Codex/Cursor/WorkBuddy PARTIAL；TRAE UNSUPPORTED |
 | P5 Obsidian | **PARTIAL** | `reports/p2/OBSIDIAN-STATUS.md` | 静态快照导入 PASS（E2E 16/16）；实时插件 NOT IMPLEMENTED；3 项 LOW 建议 |
 | P6 安全/性能/无障碍 | **PASS（带 PARTIAL 项）** | `reports/p2/SECURITY-PERFORMANCE.md` | 安全 13/13 + 定向探针 21/21 PASS；XSS 端到端 PASS；30 min soak **11311/11311 accepted**（实测 6.30/s）、RSS 59.9→74.7 MB、CPU 0.016%；可见窗口 ~30 fps（software 合成口径）。对比度 4 处 1.30:1、200% 缩放 Paper Lab 隐藏、Windows token ACL 0666 为 PARTIAL。 |
-| P7 交付文档/受控 PR 候选 | **PARTIAL** | 本目录 + `screenshots/p2/` | 文档与证据已就绪；未推送分支、未建 Draft PR（等待用户授权） |
+| P7 交付文档/受控 PR 候选 | **PARTIAL** | 本目录 + `screenshots/p2/` | 分支已推送 `feat/paper-lab-p2`；**Draft PR #1 已创建**（未转 Ready、未合并、未部署 Pages/Release）；证据与报告已同步 |
 
 ## 2. 本轮实际代码修改
 
@@ -51,8 +51,10 @@ node scripts/p2-record-app 环境变量见 VISUAL-DELTA-MATRIX.md
 | Cursor 真实事件 | NOT_TESTED | 在 Cursor GUI 内执行一次真实 agent 任务并采集 |
 | TRAE | UNSUPPORTED | 无可信公开接口前不开发 |
 | DSH 实时 toolCallId/run.end | BLOCKED | 需重新安装 bundle 并重启 DSH |
-| 视觉最终 PASS | 等待用户 | 看 `after-1600x900.png` + 30 s 录屏后决定 |
-| 远端 PR | 未创建 | 用户批准后再 push 分支并开 Draft PR |
+| 视觉最终 PASS | 等待用户 | 看 `after-1600x900.png` + 两份 30 s 录屏后决定 |
+| 远端 PR | Draft #1 | 保持 Draft；未转 Ready、未合并 |
+
+> 截图口径：`screenshots/p2/after-*` 使用 `?qa=1&mock=1` 模拟事件，只证明投影/渲染；真实宿主证据以 `tests/evidence/p2-hosts/` 与 `/v1/state` 快照为准，不得把模拟截图当作真实接入 PASS。
 
 ## 5. 安全与许可摘要
 

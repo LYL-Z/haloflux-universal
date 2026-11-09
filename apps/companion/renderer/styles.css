@@ -1122,6 +1122,57 @@ body.is-simulated .topbar::after {
     font-weight: 500;
   }
 
+  .lab-mini-canvas {
+    display: block;
+    width: 100%;
+    height: 44px;
+    margin: 2px 0 3px;
+  }
+
+  .lab-fail-canvas { height: 22px; }
+  .lab-matrix-canvas { height: 34px; }
+
+  .lab-feed-controls {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    min-width: 0;
+  }
+
+  .lab-feed-controls select,
+  .lab-feed-controls button {
+    padding: 1px 4px;
+    border: 1px solid #4a4a55;
+    border-radius: 0;
+    background: #08080c;
+    color: #b9b9c5;
+    font: 8px var(--font-mono);
+    letter-spacing: .04em;
+  }
+
+  .lab-feed-controls button[aria-pressed="true"] {
+    border-color: #c7c7d1;
+    color: #fff;
+  }
+
+  .lab-feed-detail {
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    bottom: 4px;
+    color: #8f8f9d;
+    font: 8px var(--font-mono);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border-top: 1px solid rgba(255,255,255,.08);
+    padding-top: 3px;
+  }
+
+  .lab-feed-row { cursor: pointer; }
+  .lab-feed-row[aria-selected="true"] { background: #1b1b23; color: #f2f2f7; }
+  .lab-feed .lab-rows { max-height: calc(100% - 34px); }
+
   .lab-rows {
     list-style: none;
     margin: 0;
@@ -1192,14 +1243,14 @@ body.is-simulated .topbar::after {
   .lab-cell-foot { margin-top: 4px; color: #9f9fac; font-size: 9px; white-space: nowrap; }
   .lab-empty { color: #81818e; font-size: 9.5px; }
 
-  .lab-hosts { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 8px; }
+  .lab-hosts { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 6px; }
 
   .lab-host {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 3px;
-    padding: 3px 5px;
+    padding: 2px 5px;
     border: 1px solid #444450;
     border-radius: 0;
     background: #08080c;
@@ -1248,6 +1299,37 @@ body.is-simulated .topbar::after {
     background: #08080c;
     color: #f0d5af;
     font-size: 8px;
+  }
+}
+
+/* 1280-class screens: keep the console at ~36% of the frame, not 40%. */
+@media (min-width: 1080px) and (max-width: 1399px) and (min-height: 690px) {
+  body[data-preset="agent-monitor"] {
+    --lab-h: 256px;
+  }
+
+  body[data-preset="agent-monitor"] .lab-cell {
+    padding: 6px 9px;
+  }
+
+  body[data-preset="agent-monitor"] .lab-cell h2 {
+    font-size: 10px;
+    margin-bottom: 6px;
+  }
+
+  body[data-preset="agent-monitor"] .lab-detail,
+  body[data-preset="agent-monitor"] .lab-detail strong {
+    font-size: 9.5px;
+    line-height: 1.5;
+  }
+
+  body[data-preset="agent-monitor"] .lab-feed-row {
+    font-size: 9px;
+    line-height: 1.45;
+  }
+
+  body[data-preset="agent-monitor"] .lab-kpi {
+    min-width: 50px;
   }
 }
 
