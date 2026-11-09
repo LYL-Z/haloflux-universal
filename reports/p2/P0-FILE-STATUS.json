@@ -1,0 +1,76 @@
+{
+  "schema": "haloflux.p2.p0-file-status.v1",
+  "generatedAt": "2026-11-09T12:18:00Z",
+  "repo": {
+    "relativePath": ".",
+    "branch": "feat/paper-lab-p2",
+    "basedOn": "origin/main",
+    "head": "5fc9338918bcf97df70672f57283e07f46a9d6b8",
+    "remoteMain": "5fc9338918bcf97df70672f57283e07f46a9d6b8",
+    "headEqualsRemoteMain": true,
+    "dirtyFiles": [],
+    "openPullRequests": [],
+    "branchProtectionEnabled": false,
+    "ciStatus": "success",
+    "pages": { "source": "main:/", "buildType": "legacy", "status": "built" }
+  },
+  "toolchain": {
+    "node": "v24.16.0",
+    "npm": "11.13.0",
+    "git": "2.56.0.windows.4",
+    "electron": "43.3.0 (bundled with DeepSeek Harness)"
+  },
+  "patch": {
+    "file": "0001-feat-add-observed-event-Paper-Lab-monitor-and-opt-in.patch",
+    "sha256": "71e499eb531cf4ffd30e5d788039f1db9c153cc5f4d358c278feabda0702f48e",
+    "sourceCommit": "61ac82308accc7abbdea50cbf5411df0d76f4a58",
+    "presentLocally": false,
+    "alreadyApplied": false,
+    "gitApplyCheck": "pass",
+    "targetFilesAbsent": [
+      "apps/companion/renderer/monitor-projection.mjs",
+      "apps/companion/renderer/obsidian-metadata.mjs",
+      "docs/PAPER-LAB-AUDIT-2026-11-09.md",
+      "docs/obsidian-readonly.md",
+      "tests/unit/monitor-projection.test.mjs",
+      "tests/unit/obsidian-metadata.test.mjs"
+    ]
+  },
+  "upstream": {
+    "repository": "Ryder191/haloflux",
+    "head": "02174503d0f391b1bb2537b8cad75e8e5f9997f2",
+    "labHtml": {
+      "localRawSha256": "a8c4f08d8af2f6a70259361eb005c85a1d78e7b00233044775ff8bd0f05b1f36",
+      "remoteRawSha256": "e7dc413fa636df6582ac21f5b96e152360031b95cc9e3197bfaf2e547a4f4d86",
+      "lfNormalizedSha256": "e7dc413fa636df6582ac21f5b96e152360031b95cc9e3197bfaf2e547a4f4d86",
+      "textIdentical": true,
+      "difference": "CRLF vs LF checkout only"
+    },
+    "license": {
+      "localRawSha256Prefix": "11166047145b2ccc",
+      "remoteRawSha256Prefix": "b0cfd4081cb8979a",
+      "changed": true,
+      "change": "added sharing-attribution clause for videos/screenshots on social platforms",
+      "actionRequired": "update repository LICENSE + README sharing attribution note"
+    }
+  },
+  "keyFileSha256Prefix": {
+    "README.md": "cf59d2c9c10bf27a",
+    "index.html": "84f9563851e1ef69",
+    "apps/companion/renderer/app.js": "9523420a1dec09e3",
+    "apps/companion/renderer/index.html": "e429926bd53710d3",
+    "apps/companion/renderer/styles.css": "e157030b6492b65c",
+    "packages/visual-core/src/index.js": "3cc25bf268fa2fee",
+    "packages/visual-core/src/presets.js": "0ce8af86f282ed4c",
+    "packages/visual-core/src/engine.js": "28f9c6d3765323be",
+    "packages/event-schema/src/index.ts": "8f01229a7743ff0b",
+    "packages/event-bridge/src/server.mjs": "c53b7c33cecccd5e",
+    "packages/session-manager/src/index.mjs": "4fea0d5994905396",
+    ".github/workflows/ci.yml": "cfa6b2c9e98b2ebb"
+  },
+  "sensitiveData": {
+    "absolutePathsIncluded": false,
+    "credentialsIncluded": false,
+    "note": "only repo-relative paths and public commit identifiers"
+  }
+}
