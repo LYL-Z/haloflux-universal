@@ -12,6 +12,7 @@
 | 用途 | 路径 |
 |---|---|
 | 原版 1600×900 | `screenshots/p2/upstream-1600x900.png` |
+| 左原版 / 右新版对照 | `screenshots/p2/ab-1600x900.png` |
 | P1 前（main）1600×900 | `screenshots/p2/before-1600x900.png` |
 | P2 后 1600×900 | `screenshots/p2/after-1600x900.png` |
 | P2 后 1280×720 / 1920×1080 | `screenshots/p2/after-1280x720.png` / `after-1920x1080.png` |
