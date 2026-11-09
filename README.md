@@ -1,7 +1,12 @@
 # HALOFLUX Universal Agent Visualizer
 
+[![CI](https://github.com/LYL-Z/haloflux-universal/actions/workflows/ci.yml/badge.svg)](https://github.com/LYL-Z/haloflux-universal/actions/workflows/ci.yml)
+[![在线演示](https://img.shields.io/badge/demo-GitHub%20Pages-7fd8ff)](https://lyl-z.github.io/haloflux-universal/)
+
 > 一个视觉引擎，六种 Agent 宿主：DeepSeek Harness、Claude Code、Codex、Cursor、WorkBuddy、TRAE。
 > **仅限个人非商业使用（PolyForm Noncommercial 1.0.0）。**
+
+**在线演示（模拟数据）**：https://lyl-z.github.io/haloflux-universal/
 
 [English](README.en.md) · [架构契约](docs/architecture.md) · [宿主矩阵](docs/01-host-capability-matrix.md) · [安全与许可证](docs/03-security-and-license.md) · [已知限制](docs/07-known-limitations.md)
 

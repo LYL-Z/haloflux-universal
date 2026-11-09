@@ -1,7 +1,12 @@
 # HALOFLUX Universal Agent Visualizer
 
+[![CI](https://github.com/LYL-Z/haloflux-universal/actions/workflows/ci.yml/badge.svg)](https://github.com/LYL-Z/haloflux-universal/actions/workflows/ci.yml)
+[![Live demo](https://img.shields.io/badge/demo-GitHub%20Pages-7fd8ff)](https://lyl-z.github.io/haloflux-universal/)
+
 > One visual engine for six agent hosts: DeepSeek Harness, Claude Code, Codex, Cursor, WorkBuddy and TRAE.
 > **Personal, noncommercial use only (PolyForm Noncommercial 1.0.0).**
+
+**Live demo (simulated data)**: https://lyl-z.github.io/haloflux-universal/
 
 [中文](README.md) · [Architecture contract](docs/architecture.md) · [Host matrix](docs/01-host-capability-matrix.md) · [Security & license](docs/03-security-and-license.md) · [Known limitations](docs/07-known-limitations.md)
 

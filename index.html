@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HALOFLUX Universal Agent Visualizer — 在线演示</title>
+<meta name="description" content="HALOFLUX Universal Agent Visualizer — one Canvas light-ring engine for DeepSeek Harness, Claude Code, Codex, Cursor, WorkBuddy and TRAE.">
+<style>
+  :root {
+    --bg: #07080b;
+    --panel: #0d0f14;
+    --line: #1d212b;
+    --ink: #e8ecf4;
+    --muted: #8b93a7;
+    --accent: #7fd8ff;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink);
+    font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 40px 24px 56px; }
+  header { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .mark { width: 34px; height: 34px; border: 1px solid #2a3040; border-radius: 50%;
+    display: grid; place-items: center; color: var(--accent); }
+  .brand h1 { margin: 0; font-size: 20px; letter-spacing: .14em; font-weight: 600; }
+  .brand p { margin: 3px 0 0; color: var(--muted); font-size: 11px; letter-spacing: .18em; text-transform: uppercase; }
+  .actions { margin-left: auto; display: flex; gap: 10px; flex-wrap: wrap; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px; border-radius: 8px;
+    border: 1px solid #2a3040; color: var(--ink); font-size: 13px; background: #11141b; }
+  .btn.primary { background: #e9f7ff; color: #061018; border-color: #e9f7ff; font-weight: 600; }
+  .btn:hover { text-decoration: none; border-color: #3a4357; }
+  .hero { margin: 34px 0 22px; display: flex; gap: 28px; align-items: flex-end; flex-wrap: wrap; }
+  .hero p { margin: 0; color: var(--muted); line-height: 1.7; max-width: 720px; font-size: 14px; }
+  .note { font-size: 12px; color: #b8c0cf; border-left: 2px solid #2a3040; padding-left: 12px; margin-top: 14px; }
+  .frame { position: relative; border: 1px solid var(--line); border-radius: 14px; overflow: hidden;
+    background: var(--panel); box-shadow: 0 30px 80px rgba(0,0,0,.45); }
+  .frame::before { content: ""; display: block; padding-top: 62.5%; }
+  .frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .caption { display: flex; gap: 12px; align-items: center; justify-content: space-between;
+    color: var(--muted); font-size: 12px; padding: 12px 4px 0; flex-wrap: wrap; }
+  .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #eeba18; margin-right: 6px; }
+  footer { margin-top: 26px; color: #6a7285; font-size: 12px; line-height: 1.8; border-top: 1px solid var(--line); padding-top: 18px; }
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+  .chip { font-size: 11px; color: #9fa8ba; border: 1px solid #222735; border-radius: 999px; padding: 4px 10px; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="mark" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 32 32" fill="none">
+          <circle cx="16" cy="16" r="12.5" stroke="currentColor" stroke-opacity=".25"/>
+          <path d="M16 3.5a12.5 12.5 0 0 1 11.6 8" stroke="currentColor" stroke-width="1.4"/>
+          <path d="M28 20a12.5 12.5 0 0 1-17 7.7" stroke="currentColor" stroke-opacity=".6"/>
+          <circle cx="16" cy="16" r="4.3" stroke="currentColor" stroke-opacity=".45"/>
+          <circle cx="16" cy="16" r="1.3" fill="currentColor"/>
+        </svg>
+      </div>
+      <div class="brand">
+        <h1>HALOFLUX</h1>
+        <p>Universal Agent Visualizer</p>
+      </div>
+      <nav class="actions">
+        <a class="btn primary" href="apps/companion/renderer/index.html?demo=1">全屏打开演示 ↗</a>
+        <a class="btn" href="https://github.com/LYL-Z/haloflux-universal">GitHub</a>
+        <a class="btn" href="README.md">README</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <p>
+        一套视觉引擎，六种 Agent 宿主：DeepSeek Harness、Claude Code、Codex、Cursor、WorkBuddy、TRAE。
+        同一个事件协议驱动同一条 Canvas 光环；宿主原生、推断与模拟三种数据来源始终分开标注。
+      </p>
+      <div class="chips" aria-hidden="true">
+        <span class="chip">Canvas light ring</span>
+        <span class="chip">6 presets</span>
+        <span class="chip">loopback bridge</span>
+        <span class="chip">PolyForm NC 1.0.0</span>
+      </div>
+    </section>
+
+    <div class="frame">
+      <iframe src="apps/companion/renderer/index.html?demo=1"
+              title="HALOFLUX 在线演示（模拟数据）"
+              loading="lazy"
+              referrerpolicy="no-referrer"></iframe>
+    </div>
+    <div class="caption">
+      <span><span class="dot"></span>页面内为 <strong>模拟演示数据（SIMULATED）</strong>；真实事件需要在本机运行 bridge + 宿主适配器。</span>
+      <span>静态页面托管于 GitHub Pages，无后端、无遥测。</span>
+    </div>
+
+    <footer>
+      非商业衍生作品，基于 <a href="https://github.com/Ryder191/haloflux">HALOFLUX</a>（© 2026 Ryder191，PolyForm Noncommercial 1.0.0）
+      与 <a href="https://github.com/Ke-wood/dsh-haloflux">dsh-haloflux</a>（by Ke-wood）。详见仓库内 LICENSE 与 NOTICE。
+      完整安装、宿主矩阵、性能与安全报告见 <a href="docs/01-host-capability-matrix.md">docs/</a> 与 <a href="README.md">README</a>。
+    </footer>
+  </div>
+</body>
+</html>
