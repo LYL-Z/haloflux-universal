@@ -33,6 +33,8 @@ import {
   formatMetric,
 } from '../../../packages/visual-core/src/index.js';
 import { createMockStream } from './mock-session.js';
+import { projectMonitor } from './monitor-projection.mjs';
+import { parseObsidianMetadata } from './obsidian-metadata.mjs';
 
 /* ------------------------------------------------------------------ *
  * environment / query
@@ -161,6 +163,18 @@ const els = {
   eventList: $('event-list'),
   eventEmpty: $('event-empty'),
   eventCount: $('event-count'),
+  labHeadCount: $('lab-head-count'),
+  labFeedStatus: $('lab-feed-status'),
+  labFeedRows: $('lab-feed-rows'),
+  labTracePlot: $('lab-trace-plot'),
+  labToolSummary: $('lab-tool-summary'),
+  labWorkspaceDetails: $('lab-workspace-details'),
+  labSourceDetails: $('lab-source-details'),
+  labValidationDetails: $('lab-validation-details'),
+  labTypeDetails: $('lab-type-details'),
+  labHosts: $('lab-hosts'),
+  labKnowledgeDetails: $('lab-knowledge-details'),
+  labObsidianFile: $('lab-obsidian-file'),
   feedMode: $('feed-mode'),
   linkStatus: $('link-status'),
   linkText: $('link-text'),
@@ -233,6 +247,7 @@ const state = {
   eventSource: null,
   connectTimer: null,
   qaSessions: false,
+  obsidianMetadata: null, // user-selected in-memory aggregate, never persisted or uploaded
 };
 
 let saveTimer = null;
@@ -366,8 +381,10 @@ function applyPreset(name, options = {}) {
   state.overrides = {};
   state.uiValues = { ...PRESETS[name] };
   viz.setPreset(name);
+  document.body.dataset.preset = name;
   syncPresetButtons();
   syncParamControls();
+  renderLabMonitor();
   if (persist) persistPreferences();
   if (!silent) toast(`预设 · ${PRESET_META[name].nameZh} / ${PRESET_META[name].nameEn}`);
   return true;
@@ -747,6 +764,110 @@ function renderEvents() {
   if (els.eventCount) els.eventCount.textContent = String(events.length);
 }
 
+/** Exactly the bridge's observed events; no invented reasoning or validation. */
+function renderLabMonitor() {
+  if (!els.labFeedRows) return;
+  const projection = projectMonitor({
+    hosts: HOSTS,
+    sessions: state.sessions,
+    events: state.events,
+    selectedSessionId: state.selectedSessionId,
+    mode: state.mode,
+  });
+  const active = projection.selected;
+  els.labHeadCount.textContent = `${projection.observedHostCount}/${projection.hostCount} HOSTS · ${projection.sessionCount} SESSIONS · ${projection.eventCount} EVENTS`;
+  els.labFeedStatus.textContent = projection.mode === 'simulated' ? 'SIMULATED' : projection.mode.toUpperCase();
+
+  clearNode(els.labFeedRows);
+  if (projection.recent.length === 0) {
+    els.labFeedRows.appendChild(make('li', 'lab-empty', '— 等待事件桥提供可观测事件'));
+  }
+  for (const event of projection.recent) {
+    const row = make('li', 'lab-feed-row');
+    row.title = `${event.host || 'unknown host'} · ${event.source}`;
+    row.append(make('time', '', event.timestamp === null ? '—' : formatClock(event.timestamp)));
+    row.append(make('b', '', event.kind));
+    row.append(make('span', '', event.tool || '—'));
+    row.append(make('i', '', event.source === 'simulated' ? 'SIM' : event.source === 'host-native' ? 'NAT' : event.source === 'derived' ? 'DRV' : '?'));
+    els.labFeedRows.appendChild(row);
+  }
+
+  // Bars show actual counts by event type, not a fabricated cognitive waveform.
+  clearNode(els.labTracePlot);
+  const maxCount = Math.max(1, ...projection.types.map((item) => item[1]));
+  for (const [type, countValue] of projection.types) {
+    const column = make('div', 'lab-trace-column');
+    const bar = make('span', 'lab-trace-bar');
+    bar.style.height = `${Math.max(4, (countValue / maxCount) * 100)}%`;
+    const caption = make('small', '', String(countValue));
+    column.title = `${type}: ${countValue} 个已观测事件`;
+    column.append(bar, caption);
+    els.labTracePlot.appendChild(column);
+  }
+  if (projection.types.length === 0) els.labTracePlot.appendChild(make('span', 'lab-empty', 'NO EVENT SAMPLES'));
+  els.labToolSummary.textContent = `TOOL EVENTS ${projection.toolEventCount} / CACHED ${projection.eventCount}`;
+
+  const detail = (target, entries) => {
+    clearNode(target);
+    for (const [label, value] of entries) {
+      const row = make('div', 'lab-detail');
+      row.append(make('span', '', label), make('strong', '', String(value)));
+      target.appendChild(row);
+    }
+  };
+  const unknown = (value) => value == null || value === '' ? '—' : value;
+  const metric = (value) => value == null ? '—' : String(value);
+  detail(els.labWorkspaceDetails, [
+    ['HOST / STATE', active ? `${active.host} / ${active.state}` : '— / disconnected'],
+    ['MODEL', unknown(active?.model)],
+    ['STEP / TURN', active ? `${metric(active.step)} / ${metric(active.turn)}` : '— / —'],
+    ['TOOL', unknown(active?.toolName)],
+    ['TOKENS / S', metric(active?.tokensPerSecond)],
+  ]);
+  detail(els.labSourceDetails, [
+    ['TRANSPORT', projection.mode.toUpperCase()],
+    ['SOURCE', unknown(active?.source)],
+    ['CONFIDENCE', unknown(active?.confidence)],
+    ['CONTEXT USED', metric(active?.contextUsed)],
+    ['CONTEXT LIMIT', metric(active?.contextLimit)],
+  ]);
+  detail(els.labValidationDetails, [
+    ['ERROR EVENTS / CACHE', String(projection.errorEventCount)],
+    ['WARNING FLAGS', active ? String(active.warnings.length) : '—'],
+    ['HOST VERIFICATION', 'SEE HOST MATRIX'],
+    ['PASS / FAIL', '— / —'],
+    ['OBSERVATION', `${projection.eventCount} CACHED EVENTS`],
+  ]);
+  detail(els.labTypeDetails, projection.types.length ? projection.types.map(([key, countValue]) => [key, countValue]) : [['EVENT TYPES', '—']]);
+
+  const graph = state.obsidianMetadata;
+  detail(els.labKnowledgeDetails, graph ? [
+    ['NOTES', graph.notes.toLocaleString()],
+    ['RESOLVED LINKS', graph.links.toLocaleString()],
+    ['FOLDERS', graph.folders.toLocaleString()],
+    ['SOURCE', 'LOCAL JSON SNAPSHOT'],
+    ['SYNC', 'STATIC / NO LIVE ACCESS'],
+  ] : [
+    ['VAULT', 'NOT CONNECTED'],
+    ['LINK GRAPH', '—'],
+    ['ACCESS', '未授权 · 不读取笔记'],
+  ]);
+
+  clearNode(els.labHosts);
+  for (const host of projection.hosts) {
+    const row = make('button', 'lab-host');
+    row.type = 'button';
+    row.dataset.host = host.id;
+    row.dataset.state = host.state;
+    row.setAttribute('aria-pressed', String(host.selected));
+    row.append(make('span', 'lab-host-short', host.short));
+    row.append(make('span', 'lab-host-state', `${host.state}${host.count ? ` · ${host.count}` : ''}`));
+    row.title = `${host.id} — ${host.source || 'no session'}`;
+    row.addEventListener('click', () => selectHost(host.id));
+    els.labHosts.appendChild(row);
+  }
+}
+
 function renderMode() {
   const session = selectedSession();
   const simulated = state.mode === 'simulated' || !!(session && session.source === 'simulated');
@@ -823,6 +944,7 @@ function setAppMode(mode) {
 
 function applyResponsiveMode() {
   document.body.dataset.mode = appMode;
+  document.body.dataset.preset = state.preset;
   renderCompact();
 }
 
@@ -855,6 +977,7 @@ function renderAll() {
   renderMode();
   renderSettings();
   renderCompact();
+  renderLabMonitor();
 }
 
 /* ------------------------------------------------------------------ *
@@ -1133,6 +1256,27 @@ function updateStats(stats) {
  * ------------------------------------------------------------------ */
 
 function bindEvents() {
+  els.labObsidianFile?.addEventListener('change', async () => {
+    const file = els.labObsidianFile.files?.[0];
+    els.labObsidianFile.value = '';
+    if (!file) return;
+    if (file.size > 65536) {
+      toast('元数据文件超过 64 KiB，已拒绝');
+      return;
+    }
+    try {
+      const parsed = parseObsidianMetadata(JSON.parse(await file.text()));
+      if (!parsed) {
+        toast('Obsidian 元数据格式不正确');
+        return;
+      }
+      state.obsidianMetadata = parsed;
+      renderLabMonitor();
+      toast('仅已加载本地汇总数值 · 不读取笔记正文');
+    } catch {
+      toast('元数据 JSON 无法解析');
+    }
+  });
   els.btnParams?.addEventListener('click', () => openDrawer(els.paramsDrawer));
   els.btnSettings?.addEventListener('click', () => openDrawer(els.settingsDrawer));
   els.btnAbout?.addEventListener('click', openAbout);

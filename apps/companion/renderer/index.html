@@ -145,6 +145,25 @@
     </footer>
   </aside>
 
+  <!-- Paper Lab monitor: observable events only, never hidden chain of thought. -->
+  <section class="lab-console" id="lab-console" aria-label="Paper Lab Agent 运行监控台">
+    <div class="lab-ledger">
+      <span>RYDER CODE / Ms MAIKEBAIs CAT <em>· 原作视觉致意</em></span>
+      <span>UNIVERSAL / OBSERVED EXECUTION</span>
+      <span id="lab-head-count">— AGENTS · — SESSIONS · — EVENTS</span>
+    </div>
+    <div class="lab-board">
+      <section class="lab-cell lab-feed"><h2>INVESTIGATION FEED <span id="lab-feed-status">—</span></h2><ol id="lab-feed-rows" class="lab-rows"></ol></section>
+      <section class="lab-cell lab-trace"><h2>TOOL / EXECUTION FIELD</h2><div class="lab-plot" id="lab-trace-plot" aria-label="已观测工具事件分布"></div><div class="lab-cell-foot" id="lab-tool-summary">—</div></section>
+      <section class="lab-cell lab-workspace"><h2>RUN / PHASE WORKSPACE</h2><div class="lab-details" id="lab-workspace-details"></div></section>
+      <section class="lab-cell lab-sources"><h2>SOURCE / PROVENANCE</h2><div class="lab-details" id="lab-source-details"></div></section>
+      <section class="lab-cell lab-validation"><h2>VALIDATION / FAILURE BUFFER</h2><div class="lab-details" id="lab-validation-details"></div></section>
+      <section class="lab-cell lab-dispatch"><h2>AGENTS / DISPATCH <span>SELECT HOST</span></h2><div class="lab-hosts" id="lab-hosts"></div></section>
+      <section class="lab-cell lab-methods"><h2>EVENT / METHOD INDEX</h2><div class="lab-details" id="lab-type-details"></div></section>
+      <section class="lab-cell lab-knowledge"><h2>OBSIDIAN / KNOWLEDGE FIELD <span>OPT-IN</span></h2><div class="lab-details" id="lab-knowledge-details"><div class="lab-detail"><span>VAULT</span><strong>NOT CONNECTED</strong></div><div class="lab-detail"><span>LINK GRAPH</span><strong>—</strong></div><div class="lab-detail"><span>ACCESS</span><strong>未授权 · 不读取笔记</strong></div></div><label class="lab-import">IMPORT LOCAL METADATA JSON<input id="lab-obsidian-file" type="file" accept=".json,application/json" aria-label="导入 Obsidian 本地元数据快照 JSON"></label></section>
+    </div>
+  </section>
+
   <footer class="statusbar">
     <div class="status-group">
       <span class="status-item"><span class="status-dot" aria-hidden="true"></span><span id="perf-fps">— fps</span></span>

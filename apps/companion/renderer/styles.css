@@ -924,6 +924,301 @@ body.is-simulated .topbar::after {
    Status bar
    ------------------------------------------------------------------------- */
 
+/* -------------------------------------------------------------------------
+   Paper Lab: source-faithful telemetry surface for the Agent Monitor preset.
+   Monochrome, squared dense panels; only observed bridge data enters cells.
+   Other presets / narrow windows retain the companion HUD unchanged.
+   ------------------------------------------------------------------------- */
+
+.lab-console { display: none; }
+
+@media (min-width: 1080px) and (min-height: 690px) {
+  body[data-preset="agent-monitor"] {
+    background: #020204;
+  }
+
+  body[data-preset="agent-monitor"] #haloflux-canvas {
+    opacity: 1;
+  }
+
+  body[data-preset="agent-monitor"] .ambient {
+    display: none;
+  }
+
+  body[data-preset="agent-monitor"] .grain {
+    opacity: .13;
+  }
+
+  body[data-preset="agent-monitor"] .hud-layer,
+  body[data-preset="agent-monitor"] .event-panel {
+    display: none;
+  }
+
+  body[data-preset="agent-monitor"] .topbar {
+    height: 41px;
+    padding: 0 15px;
+    gap: 10px;
+    background: rgba(0, 0, 2, .93);
+    border-bottom: 1px solid rgba(244, 244, 248, .28);
+    font-family: var(--font-mono);
+  }
+
+  body[data-preset="agent-monitor"] .topbar::after,
+  body[data-preset="agent-monitor"] .brand-mark,
+  body[data-preset="agent-monitor"] .brand-sub { display: none; }
+
+  body[data-preset="agent-monitor"] .brand { min-width: 138px; }
+
+  body[data-preset="agent-monitor"] .brand-name {
+    font: 700 13px var(--font-mono);
+    letter-spacing: .15em;
+    color: #f8f8fb;
+  }
+
+  body[data-preset="agent-monitor"] .preset-switch {
+    border: 0;
+    background: transparent;
+    backdrop-filter: none;
+    box-shadow: none;
+    padding: 0;
+    gap: 3px;
+    max-width: min(620px, 48vw);
+  }
+
+  body[data-preset="agent-monitor"] .preset-btn {
+    padding: 5px 7px;
+    border: 1px solid transparent;
+    border-radius: 0;
+    font: 9px var(--font-mono);
+    letter-spacing: .02em;
+    color: #999ba3;
+  }
+
+  body[data-preset="agent-monitor"] .preset-btn[aria-pressed="true"] {
+    color: #fff;
+    border-color: #565861;
+    background: #1c1c22;
+  }
+
+  body[data-preset="agent-monitor"] .link-pill,
+  body[data-preset="agent-monitor"] .icon-btn {
+    border-radius: 0;
+    background: #07070a;
+    border-color: #454550;
+    backdrop-filter: none;
+  }
+
+  body[data-preset="agent-monitor"] .link-pill {
+    max-width: 194px;
+    font-size: 9px;
+  }
+
+  body[data-preset="agent-monitor"] .lab-console {
+    display: grid;
+    grid-template-rows: 26px minmax(0, 1fr);
+    position: fixed;
+    z-index: 24;
+    left: 0;
+    right: 0;
+    bottom: 34px;
+    height: clamp(218px, 35vh, 294px);
+    background: rgba(2, 2, 5, .97);
+    border-top: 1px solid #5e5e66;
+    color: #eaeaf0;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: .005em;
+  }
+
+  .lab-ledger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 9px;
+    padding: 0 11px;
+    border-bottom: 1px solid #4a4a53;
+    color: #ededf3;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: .065em;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .lab-ledger em {
+    font-style: normal;
+    font-size: 8px;
+    color: #9d9da9;
+    font-weight: 400;
+  }
+
+  .lab-board {
+    display: grid;
+    grid-template-columns: 1.16fr 1.06fr .98fr 1.06fr;
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    min-height: 0;
+  }
+
+  .lab-cell {
+    position: relative;
+    min-width: 0;
+    min-height: 0;
+    padding: 6px 9px;
+    overflow: hidden;
+    border-right: 1px solid #454550;
+    border-bottom: 1px solid #454550;
+    background: #040408;
+  }
+
+  .lab-cell:nth-child(4n) { border-right: 0; }
+  .lab-cell:nth-child(n+5) { border-bottom: 0; }
+
+  .lab-cell h2 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 0 7px;
+    color: #f5f5fa;
+    font: 700 9px var(--font-mono);
+    letter-spacing: .065em;
+    white-space: nowrap;
+  }
+
+  .lab-cell h2 span {
+    color: #9db6be;
+    font-size: 8px;
+    font-weight: 500;
+  }
+
+  .lab-rows {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-height: calc(100% - 20px);
+    overflow: hidden;
+  }
+
+  .lab-feed-row {
+    display: grid;
+    grid-template-columns: 58px minmax(55px, .8fr) minmax(28px, 1fr) 24px;
+    gap: 5px;
+    color: #91919e;
+    font-size: 9px;
+    line-height: 1.5;
+    white-space: nowrap;
+  }
+
+  .lab-feed-row time { color: #8f8f9d; }
+  .lab-feed-row b { color: #bde0de; font-weight: 700; overflow: hidden; text-overflow: ellipsis; }
+  .lab-feed-row span { overflow: hidden; text-overflow: ellipsis; }
+  .lab-feed-row i { color: #afafc2; font-style: normal; font-size: 8px; }
+
+  .lab-details {
+    display: grid;
+    gap: 2px;
+  }
+
+  .lab-detail {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 4px;
+    padding: 0 1px;
+    border-bottom: 1px solid rgba(255,255,255,.055);
+    font-size: 9px;
+    line-height: 1.65;
+  }
+
+  .lab-detail span {
+    color: #8c8c9a;
+    white-space: nowrap;
+  }
+
+  .lab-detail strong {
+    color: #e8e8ee;
+    font-size: 9px;
+    font-weight: 500;
+    text-align: right;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .lab-plot {
+    display: flex;
+    align-items: end;
+    justify-content: space-around;
+    height: calc(100% - 40px);
+    min-height: 16px;
+    border-bottom: 1px solid #64646e;
+    background: repeating-linear-gradient(to bottom, transparent, transparent 14px, rgba(255,255,255,.075) 15px);
+  }
+
+  .lab-trace-column { display: flex; flex-direction: column; align-items: center; justify-content: end; height: 100%; width: 14%; }
+  .lab-trace-bar { display: block; width: 75%; min-height: 2px; background: repeating-linear-gradient(to top,#c9c9cf 0 2px,#777781 3px 4px); }
+  .lab-trace-column small { color: #d0d0d8; font-size: 8px; }
+  .lab-cell-foot { margin-top: 4px; color: #9f9fac; font-size: 8px; white-space: nowrap; }
+  .lab-empty { color: #81818e; font-size: 9px; }
+
+  .lab-hosts { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 8px; }
+
+  .lab-host {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 3px;
+    padding: 2px 4px;
+    border: 1px solid #444450;
+    border-radius: 0;
+    background: #08080c;
+    color: #aaaab4;
+    font: 9px var(--font-mono);
+    text-align: left;
+    min-width: 0;
+  }
+
+  .lab-host[aria-pressed="true"] { color: #fafaff; border-color: #bbbbc5; background: #24242a; }
+  .lab-host:focus-visible { outline: 2px solid #e7e7ed; outline-offset: 1px; }
+  .lab-host-short { font-weight: 700; }
+  .lab-host-state { font-size: 8px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+
+  .lab-import {
+    display: block;
+    margin-top: 4px;
+    padding: 2px 4px;
+    border: 1px solid #555560;
+    color: #c7c7d1;
+    font-size: 8px;
+    text-align: center;
+    cursor: pointer;
+  }
+
+  .lab-import:focus-within { outline: 2px solid #e7e7ed; outline-offset: 1px; }
+  .lab-import input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+
+  body[data-preset="agent-monitor"] .statusbar {
+    height: 34px;
+    padding: 0 11px;
+    border-color: #50505a;
+    background: #050509;
+    color: #adadb9;
+    border-radius: 0;
+    backdrop-filter: none;
+  }
+
+  body[data-preset="agent-monitor"] .sim-watermark:not([hidden]) {
+    left: auto;
+    right: 8px;
+    bottom: calc(clamp(218px, 35vh, 294px) + 48px);
+    transform: none;
+    padding: 5px 8px;
+    border-radius: 0;
+    background: #08080c;
+    color: #f0d5af;
+    font-size: 8px;
+  }
+}
+
 .statusbar {
   position: fixed;
   inset: auto 0 0 0;

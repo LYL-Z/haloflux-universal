@@ -10,6 +10,10 @@
 
 [English](README.en.md) · [架构契约](docs/architecture.md) · [宿主矩阵](docs/01-host-capability-matrix.md) · [安全与许可证](docs/03-security-and-license.md) · [已知限制](docs/07-known-limitations.md)
 
+**Paper Lab 监控屏（开发中）**：宽屏 `agent-monitor` 预设新增原作风格的黑白光场与 8 个底部仪表，展示真实可观测的事件类型、工具、宿主状态及来源证据（演示数据必须标为 `SIMULATED`）。这是执行事件监控，**不是 AI 隐藏思维链的读取或复现**。还增加了需用户手动选择文件的 [Obsidian 本地元数据快照导入](docs/obsidian-readonly.md)；实时 Vault 插件尚未实现。
+
+本轮改动的 [原版对比、真实性与后续验收清单](docs/PAPER-LAB-AUDIT-2026-11-09.md)；发布新版本之前应进行同分辨率截图对比和真机长时性能验收。当前线上演示在新代码部署前仍显示旧版。
+
 HALOFLUX 把原作那条"会呼吸、会旋转、会向外发射光束"的 Canvas 光环，变成**真实 Agent 会话的实时可视化**：
 会话开始、任务提交、工具调用、输出流、等待审批、结束/出错，都有对应的环形态；并且明确区分
 **宿主原生（confirmed）**、**推断（inferred）** 与 **模拟（simulated）** 三种数据来源，绝不把猜测画成事实。
@@ -82,7 +86,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts\install-adapters.ps1
 | ![GitHub Pages 在线演示](screenshots/pages-landing.png) | **GitHub Pages 在线演示**：`https://lyl-z.github.io/haloflux-universal/`（iframe 内为模拟数据） |
 | ![伴随窗口](screenshots/bridge-window.png) | 伴随窗口模式（window），真实 bridge 17817 的 DSH 会话数据（31 fps） |
 | ![紧凑模式](screenshots/visual-compact.png) | 紧凑模式（320×320） |
-| ![Agent 监控](screenshots/preset-agent-monitor.png) | `agent-monitor` 预设（模拟数据，UI 明确标注 SIMULATED） |
+| ![Agent 监控旧截图](screenshots/preset-agent-monitor.png) | `agent-monitor` **旧版截图基线**（模拟数据）；Paper Lab 新监控屏尚待真实浏览器截图验收与替换 |
 | ![UI 总览](screenshots/ui-overview.png) | 完整 HUD：agent 列表、当前会话指标、事件流、来源/置信度徽章 |
 | ![等待审批](screenshots/state-waiting_approval.png) | `waiting_approval` 状态（强脉冲 + 独立颜色） |
 | ![错误态](screenshots/state-error.png) | `error` 状态（红蓝故障感 + 持续标记） |
