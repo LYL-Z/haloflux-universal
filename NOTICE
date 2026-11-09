@@ -27,3 +27,10 @@ What is new in this project:
     rollback tooling, and the tests. Those files were written for this project.
 
 Redistribution requires keeping LICENSE, NOTICE and the attribution above.
+
+2026-11-09 upstream license update (now included in LICENSE): posting videos,
+screen recordings, screenshots or GIFs that show HALOFLUX or this derivative on
+any social/video platform requires stating the source in the post itself:
+    Source: HALOFLUX by Ryder191 - https://github.com/Ryder191/haloflux
+Where links are not allowed, write "GitHub: Ryder191/haloflux". Commercial use
+remains prohibited.

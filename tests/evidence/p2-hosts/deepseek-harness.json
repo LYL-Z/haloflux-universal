@@ -1,0 +1,317 @@
+{
+  "kind": "haloflux.p2.host-evidence.deepseek-harness",
+  "capturedAt": "2026-11-09T12:31:53.299Z",
+  "host": "deepseek-harness",
+  "hostVersion": "0.2.1-rc.5 (app asar package @deepseek-ai/dsh-desktop-runtime; live event hostVersion)",
+  "install": {
+    "status": "INSTALLED",
+    "profile": "desktop",
+    "dependencies": [
+      "dsh-haloflux=link:<repo>/upstream/dsh-haloflux",
+      "dsh-haloflux-bridge=link:<repo>/adapters/deepseek-harness/haloflux-bridge"
+    ],
+    "activeBundles": [
+      "dsh-haloflux",
+      "dsh-haloflux-bridge"
+    ],
+    "doctorCoverage": "doctor.ps1 does not enumerate deepseek-harness; install verified from profile package.json and live host events"
+  },
+  "bridge": {
+    "url": "http://127.0.0.1:17817",
+    "pid": 25008,
+    "startedAtLocal": "2026-11-09T04:24:14-08:00",
+    "startCommand": "node scripts/haloflux.mjs bridge",
+    "stopCommand": "node scripts/haloflux.mjs stop (or taskkill /PID 25008 /T /F)",
+    "eventCountAtFinalSnapshot": 676,
+    "dropped": 0,
+    "duplicates": 0
+  },
+  "hostStatus": {
+    "host": "deepseek-harness",
+    "hostVersion": "0.2.1-rc.5",
+    "connected": true,
+    "lastSeen": 1794227390225,
+    "capabilitiesSource": "adapter",
+    "warnings": []
+  },
+  "sessionCount": 6,
+  "sessionsWithFullNativeChain": [
+    "session-7fb30fa0",
+    "206d499b",
+    "dcfd3edd",
+    "ab363f82"
+  ],
+  "sessions": [
+    {
+      "sessionPrefix": "session-7fb30fa0",
+      "events": 636,
+      "sources": {
+        "host-native/confirmed": 491,
+        "derived/inferred": 145
+      },
+      "types": {
+        "tool.end": 177,
+        "tool.start": 182,
+        "output.end": 117,
+        "session.heartbeat": 145,
+        "run.end": 3,
+        "session.start": 1,
+        "run.start": 3,
+        "task.received": 3,
+        "tool.fail": 5
+      },
+      "sampleChain": [
+        "tool.end",
+        "tool.start",
+        "tool.end",
+        "tool.start",
+        "tool.end",
+        "output.end",
+        "tool.start",
+        "tool.end",
+        "tool.start",
+        "tool.end",
+        "output.end",
+        "tool.start",
+        "tool.end",
+        "tool.start",
+        "tool.end",
+        "output.end",
+        "tool.start",
+        "tool.end",
+        "tool.start",
+        "tool.end",
+        "output.end",
+        "tool.start",
+        "tool.end",
+        "output.end"
+      ]
+    },
+    {
+      "sessionPrefix": "206d499b",
+      "events": 240,
+      "sources": {
+        "host-native/confirmed": 228,
+        "derived/inferred": 12
+      },
+      "types": {
+        "session.start": 1,
+        "run.start": 1,
+        "task.received": 1,
+        "output.end": 55,
+        "tool.start": 85,
+        "tool.end": 84,
+        "session.heartbeat": 12,
+        "tool.fail": 1
+      },
+      "sampleChain": [
+        "session.start",
+        "run.start",
+        "task.received",
+        "output.end",
+        "tool.start",
+        "tool.end",
+        "tool.start",
+        "tool.end",
+        "output.end",
+        "tool.start",
+        "tool.start",
+        "tool.start",
+        "tool.end",
+        "tool.end",
+        "tool.end",
+        "output.end",
+        "tool.start",
+        "tool.end",
+        "tool.start",
+        "tool.end",
+        "output.end",
+        "tool.start",
+        "tool.start",
+        "tool.start"
+      ]
+    },
+    {
+      "sessionPrefix": "dcfd3edd",
+      "events": 223,
+      "sources": {
+        "host-native/confirmed": 210,
+        "derived/inferred": 13
+      },
+      "types": {
+        "session.start": 1,
+        "run.start": 1,
+        "task.received": 1,
+        "output.end": 52,
+        "tool.start": 78,
+        "tool.end": 77,
+        "session.heartbeat": 13
+      },
+      "sampleChain": [
+        "session.start",
+        "run.start",
+        "task.received",
+        "output.end",
+        "tool.start",
+        "tool.end",
+        "tool.start",
+        "tool.end",
+        "output.end",
+        "tool.start",
+        "tool.end",
+        "tool.start",
+        "tool.end",
+        "output.end",
+        "tool.start",
+        "tool.start",
+        "tool.end",
+        "tool.end",
+        "output.end",
+        "tool.start",
+        "tool.end",
+        "tool.start",
+        "tool.end",
+        "output.end"
+      ]
+    },
+    {
+      "sessionPrefix": "ab363f82",
+      "events": 211,
+      "sources": {
+        "host-native/confirmed": 199,
+        "derived/inferred": 12
+      },
+      "types": {
+        "session.start": 1,
+        "run.start": 1,
+        "task.received": 1,
+        "output.end": 54,
+        "tool.start": 71,
+        "tool.end": 71,
+        "session.heartbeat": 12
+      },
+      "sampleChain": [
+        "session.start",
+        "run.start",
+        "task.received",
+        "output.end",
+        "tool.start",
+        "tool.end",
+        "tool.start",
+        "tool.end",
+        "output.end",
+        "tool.start",
+        "tool.end",
+        "tool.start",
+        "tool.end",
+        "output.end",
+        "tool.start",
+        "tool.start",
+        "tool.end",
+        "tool.end",
+        "output.end",
+        "tool.start",
+        "tool.start",
+        "tool.end",
+        "tool.end",
+        "output.end"
+      ]
+    },
+    {
+      "sessionPrefix": "session-330b3931",
+      "events": 139,
+      "sources": {
+        "host-native/confirmed": 1,
+        "derived/inferred": 138
+      },
+      "types": {
+        "session.start": 1,
+        "session.heartbeat": 138
+      },
+      "sampleChain": [
+        "session.start"
+      ]
+    },
+    {
+      "sessionPrefix": "71cdff68",
+      "events": 89,
+      "sources": {
+        "derived/inferred": 6,
+        "host-native/confirmed": 83
+      },
+      "types": {
+        "session.heartbeat": 6,
+        "output.end": 23,
+        "tool.start": 29,
+        "tool.fail": 2,
+        "tool.end": 27,
+        "run.end": 1,
+        "session.end": 1
+      },
+      "sampleChain": [
+        "output.end",
+        "tool.start",
+        "tool.fail",
+        "output.end",
+        "tool.start",
+        "tool.end",
+        "output.end",
+        "tool.start",
+        "tool.end",
+        "output.end",
+        "tool.start",
+        "tool.end",
+        "output.end",
+        "tool.start",
+        "tool.fail",
+        "tool.start",
+        "tool.end",
+        "output.end",
+        "tool.start",
+        "tool.end",
+        "output.end",
+        "tool.start",
+        "tool.end",
+        "output.end"
+      ]
+    }
+  ],
+  "evidenceChain": "session.start > run.start > task.received > output.end > tool.start/tool.end (pwsh/read/grep/edit) > ... > output.end; run.end/session.end observed in 71cdff68 and in the long-lived session",
+  "probeLog": {
+    "files": [
+      "%TEMP%/haloflux-dsh-bridge-events.jsonl",
+      "%TEMP%/haloflux-dsh-bridge-events.jsonl.1"
+    ],
+    "rotationObserved": true,
+    "combinedEvents": 1538,
+    "note": "DSH bridge diagnostic log rotates at 512 KB; both files combined and de-duplicated by eventId."
+  },
+  "privacy": "allowlisted metadata only; no prompts, tool arguments, tool output, credentials or absolute user paths",
+  "findings": [
+    {
+      "id": "DSH-F1",
+      "severity": "medium",
+      "summary": "/v1/state session-level source/confidence is last-event-wins: a derived session.heartbeat arriving after native events downgrades the session badge to derived/inferred (session-manager sets session.source/confidence on every event). Observed for 206d499b and ab363f82 at final snapshot despite 228/12 and 199/12 native/derived event counts.",
+      "evidence": "dsh-bridge-state-final.json + dsh-probe-summary.json; packages/session-manager/src/index.mjs:260-261"
+    },
+    {
+      "id": "DSH-F2",
+      "severity": "info",
+      "summary": "approval.request/resolve not triggered in this window (no approval prompt); capability implemented but NOT_TESTED live."
+    },
+    {
+      "id": "DSH-F3",
+      "severity": "info",
+      "summary": "session.switch not observed; restart/uninstall not tested (would restart user app / alter config)."
+    }
+  ],
+  "status": "PASS",
+  "confidence": "confirmed",
+  "gap": "approval/switch/restart/uninstall NOT_TESTED; aggregate session source can be masked by derived heartbeat",
+  "retest": [
+    "trigger an approval prompt",
+    "observe session.switch (if host supports it)",
+    "re-check /v1/state right after a native event",
+    "restart/uninstall only in an isolated profile"
+  ]
+}

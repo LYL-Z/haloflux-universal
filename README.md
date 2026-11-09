@@ -173,6 +173,9 @@ node scripts\haloflux.mjs restore <时间戳>             # 恢复配置备份
 - 音乐 "Synthwave 421k"（The Cynic Project，CC0）**不随本项目加载**
 
 再分发时必须保留 [`LICENSE`](LICENSE)、[`NOTICE`](NOTICE) 与上述署名；修改版本需标注 "modified from HALOFLUX"。
+
+**2026-11-09 上游许可更新（已同步）**：在任何社交/视频平台发布展示 HALOFLUX 或本衍生作品的视频、录屏、截图、GIF 时，必须在作品本身的文案/标题/简介中注明
+`Source: HALOFLUX by Ryder191 — https://github.com/Ryder191/haloflux`（平台不允许链接时写 `GitHub: Ryder191/haloflux`），不得冒充原创，且商业用途仍被禁止。
 完整合规说明见 [docs/03-security-and-license.md](docs/03-security-and-license.md)。
 
 ## 10. 隐私

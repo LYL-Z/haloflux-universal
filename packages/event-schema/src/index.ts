@@ -108,6 +108,8 @@ export const METADATA_KEYS = [
   'toolName',
   'toolCategory',
   'toolStatus',
+  'toolCallId',
+  'runId',
   'step',
   'turn',
   'label',
@@ -138,6 +140,10 @@ export type EventMetadata = {
   toolName?: string;
   toolCategory?: string;
   toolStatus?: 'running' | 'ok' | 'failed' | 'cancelled';
+  /** Host-issued tool invocation id, when the host exposes one. Optional. */
+  toolCallId?: string;
+  /** Host-issued run/turn correlation id, when exposed. Optional. */
+  runId?: string;
   step?: number;
   turn?: number;
   label?: string;
@@ -188,6 +194,8 @@ const FORBIDDEN_KEYS = new Set(['__proto__', 'constructor', 'prototype', 'then']
 const STRING_FIELDS: Partial<Record<MetadataKey, number>> = {
   toolName: 80,
   toolCategory: 40,
+  toolCallId: 64,
+  runId: 64,
   label: 120,
   errorCode: 64,
   model: 80,

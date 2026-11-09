@@ -41,6 +41,8 @@
         "toolName": { "type": "string", "maxLength": 80 },
         "toolCategory": { "type": "string", "maxLength": 40 },
         "toolStatus": { "type": "string", "enum": ["running", "ok", "failed", "cancelled"] },
+        "toolCallId": { "type": "string", "maxLength": 64 },
+        "runId": { "type": "string", "maxLength": 64 },
         "step": { "type": "number", "minimum": 0 },
         "turn": { "type": "number", "minimum": 0 },
         "label": { "type": "string", "maxLength": 120 },

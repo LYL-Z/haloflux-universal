@@ -934,6 +934,7 @@ body.is-simulated .topbar::after {
 
 @media (min-width: 1080px) and (min-height: 690px) {
   body[data-preset="agent-monitor"] {
+    --lab-h: 288px;
     background: #020204;
   }
 
@@ -1021,7 +1022,7 @@ body.is-simulated .topbar::after {
     left: 0;
     right: 0;
     bottom: 34px;
-    height: clamp(218px, 35vh, 294px);
+    height: var(--lab-h, 288px);
     background: rgba(2, 2, 5, .97);
     border-top: 1px solid #5e5e66;
     color: #eaeaf0;
@@ -1038,7 +1039,7 @@ body.is-simulated .topbar::after {
     padding: 0 11px;
     border-bottom: 1px solid #4a4a53;
     color: #ededf3;
-    font-size: 9px;
+    font-size: 10px;
     font-weight: 700;
     letter-spacing: .065em;
     white-space: nowrap;
@@ -1047,7 +1048,7 @@ body.is-simulated .topbar::after {
 
   .lab-ledger em {
     font-style: normal;
-    font-size: 8px;
+    font-size: 9px;
     color: #9d9da9;
     font-weight: 400;
   }
@@ -1063,7 +1064,7 @@ body.is-simulated .topbar::after {
     position: relative;
     min-width: 0;
     min-height: 0;
-    padding: 6px 9px;
+    padding: 8px 12px;
     overflow: hidden;
     border-right: 1px solid #454550;
     border-bottom: 1px solid #454550;
@@ -1077,16 +1078,16 @@ body.is-simulated .topbar::after {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 0 0 7px;
+    margin: 0 0 8px;
     color: #f5f5fa;
-    font: 700 9px var(--font-mono);
+    font: 700 11px var(--font-mono);
     letter-spacing: .065em;
     white-space: nowrap;
   }
 
   .lab-cell h2 span {
     color: #9db6be;
-    font-size: 8px;
+    font-size: 9px;
     font-weight: 500;
   }
 
@@ -1100,18 +1101,18 @@ body.is-simulated .topbar::after {
 
   .lab-feed-row {
     display: grid;
-    grid-template-columns: 58px minmax(55px, .8fr) minmax(28px, 1fr) 24px;
+    grid-template-columns: 62px minmax(68px, .8fr) minmax(32px, 1fr) 26px;
     gap: 5px;
     color: #91919e;
-    font-size: 9px;
-    line-height: 1.5;
+    font-size: 10px;
+    line-height: 1.6;
     white-space: nowrap;
   }
 
   .lab-feed-row time { color: #8f8f9d; }
   .lab-feed-row b { color: #bde0de; font-weight: 700; overflow: hidden; text-overflow: ellipsis; }
   .lab-feed-row span { overflow: hidden; text-overflow: ellipsis; }
-  .lab-feed-row i { color: #afafc2; font-style: normal; font-size: 8px; }
+  .lab-feed-row i { color: #afafc2; font-style: normal; font-size: 9px; }
 
   .lab-details {
     display: grid;
@@ -1125,8 +1126,8 @@ body.is-simulated .topbar::after {
     gap: 4px;
     padding: 0 1px;
     border-bottom: 1px solid rgba(255,255,255,.055);
-    font-size: 9px;
-    line-height: 1.65;
+    font-size: 10px;
+    line-height: 1.7;
   }
 
   .lab-detail span {
@@ -1136,7 +1137,7 @@ body.is-simulated .topbar::after {
 
   .lab-detail strong {
     color: #e8e8ee;
-    font-size: 9px;
+    font-size: 10px;
     font-weight: 500;
     text-align: right;
     overflow: hidden;
@@ -1156,9 +1157,9 @@ body.is-simulated .topbar::after {
 
   .lab-trace-column { display: flex; flex-direction: column; align-items: center; justify-content: end; height: 100%; width: 14%; }
   .lab-trace-bar { display: block; width: 75%; min-height: 2px; background: repeating-linear-gradient(to top,#c9c9cf 0 2px,#777781 3px 4px); }
-  .lab-trace-column small { color: #d0d0d8; font-size: 8px; }
-  .lab-cell-foot { margin-top: 4px; color: #9f9fac; font-size: 8px; white-space: nowrap; }
-  .lab-empty { color: #81818e; font-size: 9px; }
+  .lab-trace-column small { color: #d0d0d8; font-size: 9px; }
+  .lab-cell-foot { margin-top: 4px; color: #9f9fac; font-size: 9px; white-space: nowrap; }
+  .lab-empty { color: #81818e; font-size: 9.5px; }
 
   .lab-hosts { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 8px; }
 
@@ -1167,12 +1168,12 @@ body.is-simulated .topbar::after {
     align-items: center;
     justify-content: space-between;
     gap: 3px;
-    padding: 2px 4px;
+    padding: 3px 5px;
     border: 1px solid #444450;
     border-radius: 0;
     background: #08080c;
     color: #aaaab4;
-    font: 9px var(--font-mono);
+    font: 10px var(--font-mono);
     text-align: left;
     min-width: 0;
   }
@@ -1180,7 +1181,7 @@ body.is-simulated .topbar::after {
   .lab-host[aria-pressed="true"] { color: #fafaff; border-color: #bbbbc5; background: #24242a; }
   .lab-host:focus-visible { outline: 2px solid #e7e7ed; outline-offset: 1px; }
   .lab-host-short { font-weight: 700; }
-  .lab-host-state { font-size: 8px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .lab-host-state { font-size: 9px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 
   .lab-import {
     display: block;
@@ -1188,7 +1189,7 @@ body.is-simulated .topbar::after {
     padding: 2px 4px;
     border: 1px solid #555560;
     color: #c7c7d1;
-    font-size: 8px;
+    font-size: 9px;
     text-align: center;
     cursor: pointer;
   }
@@ -1209,7 +1210,7 @@ body.is-simulated .topbar::after {
   body[data-preset="agent-monitor"] .sim-watermark:not([hidden]) {
     left: auto;
     right: 8px;
-    bottom: calc(clamp(218px, 35vh, 294px) + 48px);
+    bottom: calc(var(--lab-h, 288px) + 48px);
     transform: none;
     padding: 5px 8px;
     border-radius: 0;
@@ -1217,6 +1218,22 @@ body.is-simulated .topbar::after {
     color: #f0d5af;
     font-size: 8px;
   }
+}
+
+/* Large screens: original lab uses proportionally larger cell typography. */
+@media (min-width: 1600px) and (min-height: 900px) {
+  body[data-preset="agent-monitor"] {
+    --lab-h: 300px;
+  }
+
+  .lab-cell h2 { font-size: 12px; }
+  .lab-detail,
+  .lab-detail strong,
+  .lab-feed-row { font-size: 11px; }
+  .lab-cell-foot,
+  .lab-trace-column small,
+  .lab-host-state { font-size: 10px; }
+  .lab-host { font-size: 11px; }
 }
 
 .statusbar {

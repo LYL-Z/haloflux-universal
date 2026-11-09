@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-08T16:17:56.657Z",
+  "generatedAt": "2026-11-09T12:20:19.218Z",
   "machine": {
     "platform": "win32",
     "release": "v24.16.0"
@@ -35,8 +35,8 @@
       "optional": false,
       "ok": true,
       "code": 0,
-      "bytes": 6494269,
-      "elapsedMs": 8854,
+      "bytes": 6302963,
+      "elapsedMs": 7885,
       "stdout": "D:\\HALOFLUX\\screenshots\\ui-overview.png",
       "stderr": ""
     },
@@ -48,8 +48,8 @@
       "optional": false,
       "ok": true,
       "code": 0,
-      "bytes": 7185323,
-      "elapsedMs": 8914,
+      "bytes": 7392309,
+      "elapsedMs": 7299,
       "stdout": "D:\\HALOFLUX\\screenshots\\preset-original.png",
       "stderr": ""
     },
@@ -61,8 +61,8 @@
       "optional": false,
       "ok": true,
       "code": 0,
-      "bytes": 5250458,
-      "elapsedMs": 9188,
+      "bytes": 5181444,
+      "elapsedMs": 7331,
       "stdout": "D:\\HALOFLUX\\screenshots\\preset-minimal.png",
       "stderr": ""
     },
@@ -74,8 +74,8 @@
       "optional": false,
       "ok": true,
       "code": 0,
-      "bytes": 7312939,
-      "elapsedMs": 9659,
+      "bytes": 7457565,
+      "elapsedMs": 7482,
       "stdout": "D:\\HALOFLUX\\screenshots\\preset-sci-fi.png",
       "stderr": ""
     },
@@ -87,8 +87,8 @@
       "optional": false,
       "ok": true,
       "code": 0,
-      "bytes": 5011312,
-      "elapsedMs": 9168,
+      "bytes": 4910596,
+      "elapsedMs": 7090,
       "stdout": "D:\\HALOFLUX\\screenshots\\preset-focus.png",
       "stderr": ""
     },
@@ -100,8 +100,8 @@
       "optional": false,
       "ok": true,
       "code": 0,
-      "bytes": 4361228,
-      "elapsedMs": 10730,
+      "bytes": 4435933,
+      "elapsedMs": 7200,
       "stdout": "D:\\HALOFLUX\\screenshots\\preset-ambient.png",
       "stderr": ""
     },
@@ -113,8 +113,8 @@
       "optional": false,
       "ok": true,
       "code": 0,
-      "bytes": 6363163,
-      "elapsedMs": 8321,
+      "bytes": 6258211,
+      "elapsedMs": 7786,
       "stdout": "D:\\HALOFLUX\\screenshots\\preset-agent-monitor.png",
       "stderr": ""
     },
@@ -126,8 +126,8 @@
       "optional": false,
       "ok": true,
       "code": 0,
-      "bytes": 1006893,
-      "elapsedMs": 8113,
+      "bytes": 557723,
+      "elapsedMs": 7101,
       "stdout": "D:\\HALOFLUX\\screenshots\\state-disconnected.png",
       "stderr": ""
     },
@@ -139,8 +139,8 @@
       "optional": false,
       "ok": true,
       "code": 0,
-      "bytes": 2158260,
-      "elapsedMs": 8033,
+      "bytes": 3389454,
+      "elapsedMs": 7729,
       "stdout": "D:\\HALOFLUX\\screenshots\\state-connected.png",
       "stderr": ""
     },
@@ -152,8 +152,8 @@
       "optional": false,
       "ok": true,
       "code": 0,
-      "bytes": 2295709,
-      "elapsedMs": 9086,
+      "bytes": 4041888,
+      "elapsedMs": 7657,
       "stdout": "D:\\HALOFLUX\\screenshots\\state-idle.png",
       "stderr": ""
     },
@@ -165,8 +165,8 @@
       "optional": false,
       "ok": true,
       "code": 0,
-      "bytes": 6290746,
-      "elapsedMs": 8799,
+      "bytes": 6629480,
+      "elapsedMs": 7905,
       "stdout": "D:\\HALOFLUX\\screenshots\\state-running.png",
       "stderr": ""
     },
@@ -178,8 +178,8 @@
       "optional": false,
       "ok": true,
       "code": 0,
-      "bytes": 6422518,
-      "elapsedMs": 8752,
+      "bytes": 6409157,
+      "elapsedMs": 7800,
       "stdout": "D:\\HALOFLUX\\screenshots\\state-tool.png",
       "stderr": ""
     },
@@ -191,8 +191,8 @@
       "optional": false,
       "ok": true,
       "code": 0,
-      "bytes": 5934519,
-      "elapsedMs": 8732,
+      "bytes": 6483940,
+      "elapsedMs": 7861,
       "stdout": "D:\\HALOFLUX\\screenshots\\state-output.png",
       "stderr": ""
     },
@@ -204,8 +204,8 @@
       "optional": false,
       "ok": true,
       "code": 0,
-      "bytes": 5118539,
-      "elapsedMs": 8494,
+      "bytes": 5337676,
+      "elapsedMs": 7842,
       "stdout": "D:\\HALOFLUX\\screenshots\\state-waiting_approval.png",
       "stderr": ""
     },
@@ -217,8 +217,8 @@
       "optional": false,
       "ok": true,
       "code": 0,
-      "bytes": 2871085,
-      "elapsedMs": 7874,
+      "bytes": 3748094,
+      "elapsedMs": 7713,
       "stdout": "D:\\HALOFLUX\\screenshots\\state-done.png",
       "stderr": ""
     },
@@ -230,8 +230,8 @@
       "optional": false,
       "ok": true,
       "code": 0,
-      "bytes": 5514723,
-      "elapsedMs": 8827,
+      "bytes": 6141393,
+      "elapsedMs": 8034,
       "stdout": "D:\\HALOFLUX\\screenshots\\state-error.png",
       "stderr": ""
     },
@@ -243,8 +243,8 @@
       "optional": false,
       "ok": true,
       "code": 0,
-      "bytes": 2876581,
-      "elapsedMs": 9054,
+      "bytes": 3365653,
+      "elapsedMs": 7674,
       "stdout": "D:\\HALOFLUX\\screenshots\\state-unknown.png",
       "stderr": ""
     },
@@ -256,8 +256,8 @@
       "optional": true,
       "ok": true,
       "code": 0,
-      "bytes": 6006529,
-      "elapsedMs": 9789,
+      "bytes": 6437921,
+      "elapsedMs": 7901,
       "stdout": "D:\\HALOFLUX\\screenshots\\multi-agent.png",
       "stderr": ""
     }

@@ -40,6 +40,9 @@ export function projectMonitor({ hosts = [], sessions = [], events = [], selecte
     if (kind) eventTypes.set(kind, (eventTypes.get(kind) || 0) + 1);
   }
 
+  const lastTool = [...safeEvents].reverse().find((event) => event && (event.eventType === 'tool.end' || event.eventType === 'tool.fail'));
+  const toolDurationMs = lastTool ? numeric(lastTool.durationMs) : null;
+  const toolCorrelated = lastTool ? Boolean(clean(lastTool.toolCallId, 64)) : false;
   const metrics = session?.metrics || {};
   return {
     mode: clean(mode, 20),
@@ -58,12 +61,16 @@ export function projectMonitor({ hosts = [], sessions = [], events = [], selecte
       tokensPerSecond: numeric(metrics.tokensPerSecond),
       contextUsed: numeric(metrics.contextUsed),
       contextLimit: numeric(metrics.contextLimit),
+      lastToolDurationMs: numeric(metrics.lastToolDurationMs) ?? toolDurationMs,
+      lastToolCallId: clean(metrics.lastToolCallId, 64) || (lastTool ? clean(lastTool.toolCallId, 64) : ''),
       warnings: (Array.isArray(session.warnings) ? session.warnings : []).slice(0, 3).map((x) => clean(x, 64)),
     } : null,
     recent: timeline,
     eventCount: safeEvents.length,
     toolEventCount: toolEvents.length,
     errorEventCount: errorEvents.length,
+    toolDurationMs,
+    toolCorrelated,
     types: [...eventTypes].sort((a, b) => b[1] - a[1]).slice(0, 5),
     hosts: safeHosts.map((host) => {
       const current = byHost.get(host.id);

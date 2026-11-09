@@ -27,6 +27,14 @@ import { SCHEMA_VERSION } from '../../event-schema/dist/index.js';
 
 export const SESSION_MANAGER_VERSION = '0.1.0';
 
+/**
+ * Session provenance never degrades: a derived heartbeat must not turn a
+ * host-native/confirmed session into "inferred". Rank by confidence; equal
+ * ranks keep the newest event's source.
+ */
+const CONFIDENCE_RANK = Object.freeze({ confirmed: 3, inferred: 2, unverified: 1 });
+const confidenceRank = (value) => CONFIDENCE_RANK[value] || 0;
+
 /** Capability keys exposed to the renderer (contract §5 example). */
 export const CAPABILITY_KEYS = Object.freeze([
   'sessionStart',
@@ -237,6 +245,7 @@ export class SessionManager {
     this.activeSessionId = event.sessionId;
 
     this.#touchHost(event.host, event.hostVersion, event.timestamp, now);
+    this.#correlateTool(session, event);
     this.#pushRecent(session, event);
     this.#mergeMetrics(session, event.metadata);
 
@@ -257,8 +266,10 @@ export class SessionManager {
     clearTimeoutWarnings(session);
     session.state = event.state;
     session.reportedState = event.state;
-    session.source = event.source;
-    session.confidence = event.confidence;
+    if (confidenceRank(event.confidence) >= confidenceRank(session.confidence)) {
+      session.source = event.source;
+      session.confidence = event.confidence;
+    }
     session.connected = event.state !== 'disconnected';
     session.startedAt = Math.min(session.startedAt, event.timestamp);
     session.lastEventAt = Math.max(session.lastEventAt, event.timestamp);
@@ -396,6 +407,8 @@ export class SessionManager {
       lastArrival: now,
       metrics: {},
       recentEvents: [],
+      // toolCallId -> { at, name } for duration correlation; never persisted.
+      openTools: new Map(),
       warnings: new Set(),
       eventCount: 0,
       duplicateCount: 0,
@@ -493,10 +506,41 @@ export class SessionManager {
     const entry = { eventType: event.eventType, timestamp: event.timestamp };
     if (event.metadata && typeof event.metadata.label === 'string') entry.label = event.metadata.label;
     if (event.metadata && typeof event.metadata.toolName === 'string') entry.toolName = event.metadata.toolName;
+    if (event.metadata && typeof event.metadata.toolCallId === 'string') entry.toolCallId = event.metadata.toolCallId;
+    if (event.metadata && typeof event.metadata.durationMs === 'number') entry.durationMs = event.metadata.durationMs;
+    if (event.metadata && typeof event.metadata.errorCode === 'string') entry.errorCode = event.metadata.errorCode;
     session.recentEvents.push(entry);
     if (session.recentEvents.length > this.config.recentEventsLimit) {
       session.recentEvents.splice(0, session.recentEvents.length - this.config.recentEventsLimit);
       this.dropped += 1;
+    }
+  }
+
+  /**
+   * Correlate tool.start -> tool.end/fail by the host-issued toolCallId.
+   * Duration is only filled when the host supplied ids and timestamps; an
+   * unmatched end stays uncorrelated and no duration is invented.
+   */
+  #correlateTool(session, event) {
+    const meta = event.metadata;
+    if (!isPlainObject(meta)) return;
+    const callId = typeof meta.toolCallId === 'string' ? meta.toolCallId : '';
+    if (!callId) return;
+    session.metrics.lastToolCallId = callId;
+    if (event.eventType === 'tool.start') {
+      session.openTools.set(callId, { at: event.timestamp, name: meta.toolName });
+      session.metrics.lastToolCorrelated = false;
+      return;
+    }
+    if (event.eventType !== 'tool.end' && event.eventType !== 'tool.fail') return;
+    const open = session.openTools.get(callId);
+    if (open) session.openTools.delete(callId);
+    session.metrics.lastToolCorrelated = Boolean(open);
+    if (open && typeof meta.durationMs !== 'number') {
+      event.metadata = { ...meta, durationMs: Math.max(0, event.timestamp - open.at) };
+    }
+    if (typeof event.metadata?.durationMs === 'number') {
+      session.metrics.lastToolDurationMs = event.metadata.durationMs;
     }
   }
 
@@ -511,6 +555,9 @@ export class SessionManager {
   #sessionView(session) {
     const metrics = {};
     for (const key of METRIC_METADATA_KEYS) {
+      if (session.metrics[key] !== undefined) metrics[key] = session.metrics[key];
+    }
+    for (const key of ['lastToolCallId', 'lastToolDurationMs', 'lastToolCorrelated']) {
       if (session.metrics[key] !== undefined) metrics[key] = session.metrics[key];
     }
     return {

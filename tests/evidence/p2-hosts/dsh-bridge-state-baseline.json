@@ -1,0 +1,1400 @@
+{
+  "kind": "haloflux.p2.host-evidence.dsh-bridge-state",
+  "capturedAt": "2026-11-09T12:26:14.546Z",
+  "bridge": {
+    "url": "http://127.0.0.1:17817",
+    "version": "0.1.0",
+    "uptimeMs": 120481,
+    "eventCount": 267,
+    "dropped": 0,
+    "duplicates": 0
+  },
+  "hostSummary": [
+    {
+      "host": "deepseek-harness",
+      "hostVersion": "0.2.1-rc.5",
+      "connected": true,
+      "lastSeen": 1794227174300,
+      "capabilitiesSource": "adapter",
+      "warnings": []
+    }
+  ],
+  "sessionCount": 5,
+  "sessions": [
+    {
+      "session": {
+        "prefix": "206d499b",
+        "masked": true
+      },
+      "host": "deepseek-harness",
+      "hostVersion": "0.2.1-rc.5",
+      "state": "unknown",
+      "reportedState": "unknown",
+      "source": "derived",
+      "confidence": "inferred",
+      "connected": true,
+      "startedAt": 1794227054286,
+      "lastEventAt": 1794227174300,
+      "metrics": {
+        "toolName": "grep",
+        "step": 24,
+        "turn": 1,
+        "tokenCount": 1130,
+        "contextUsed": 93591,
+        "contextLimit": 1048576,
+        "model": "deepseek-account/deepseek-flash"
+      },
+      "recentEvents": [
+        {
+          "eventType": "session.heartbeat",
+          "timestamp": 1794227054286
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227054308
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227054309,
+          "toolName": "grep"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227054520,
+          "toolName": "grep"
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227054520,
+          "toolName": "read"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227054525,
+          "toolName": "read"
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227056562
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227056563,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227057235,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227057235,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227057973,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227070114
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227070115,
+          "toolName": "read"
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227070116,
+          "toolName": "read"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227070123,
+          "toolName": "read"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227070125,
+          "toolName": "read"
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227070126,
+          "toolName": "grep"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227070311,
+          "toolName": "grep"
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227072829
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227072830,
+          "toolName": "read"
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227072831,
+          "toolName": "read"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227072846,
+          "toolName": "read"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227072847,
+          "toolName": "read"
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227076663
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227076664,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227077276,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "session.heartbeat",
+          "timestamp": 1794227084286
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227097027
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227097029,
+          "toolName": "read"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227097035,
+          "toolName": "read"
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227097036,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227097621,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227101287
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227101288,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227101887,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227103602
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227103603,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227104176,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227105172
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227105173,
+          "toolName": "read"
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227105173,
+          "toolName": "read"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227105180,
+          "toolName": "read"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227105182,
+          "toolName": "read"
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227106740
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227106741,
+          "toolName": "read"
+        },
+        {
+          "eventType": "tool.fail",
+          "timestamp": 1794227106745,
+          "toolName": "read"
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227107456
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227107457,
+          "toolName": "read"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227107461,
+          "toolName": "read"
+        },
+        {
+          "eventType": "session.heartbeat",
+          "timestamp": 1794227114287
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227116470
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227116471,
+          "toolName": "read"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227116478,
+          "toolName": "read"
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227119004
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227119005,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227119598,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227119599,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227120247,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227125666
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227125668,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227126265,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "session.heartbeat",
+          "timestamp": 1794227144287
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227150372
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227150374,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227150909,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227158615
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227158616,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227159200,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227159201,
+          "toolName": "grep"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227159369,
+          "toolName": "grep"
+        },
+        {
+          "eventType": "session.heartbeat",
+          "timestamp": 1794227174300
+        }
+      ]
+    },
+    {
+      "session": {
+        "prefix": "ab363f82",
+        "masked": true
+      },
+      "host": "deepseek-harness",
+      "hostVersion": "0.2.1-rc.5",
+      "state": "unknown",
+      "reportedState": "unknown",
+      "source": "derived",
+      "confidence": "inferred",
+      "connected": true,
+      "startedAt": 1794227055027,
+      "lastEventAt": 1794227174020,
+      "metrics": {
+        "toolName": "read",
+        "step": 31,
+        "turn": 1,
+        "tokenCount": 159,
+        "contextUsed": 112160,
+        "contextLimit": 1048576,
+        "model": "deepseek-account/deepseek-flash"
+      },
+      "recentEvents": [
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227055027
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227055027,
+          "toolName": "grep"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227055197,
+          "toolName": "grep"
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227056962
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227056962,
+          "toolName": "grep"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227057142,
+          "toolName": "grep"
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227057143,
+          "toolName": "read"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227057148,
+          "toolName": "read"
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227059599
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227059600,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227060219,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227063759
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227063760,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227064427,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227068098
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227068099,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227068717,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227071332
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227071334,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227071922,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227076143
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227076145,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227076801,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "session.heartbeat",
+          "timestamp": 1794227084016
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227088152
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227088153,
+          "toolName": "read"
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227088154,
+          "toolName": "read"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227088163,
+          "toolName": "read"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227088167,
+          "toolName": "read"
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227089980
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227089981,
+          "toolName": "read"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227089987,
+          "toolName": "read"
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227091900
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227091901,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227092512,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227097523
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227097524,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227098127,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227102209
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227102209,
+          "toolName": "read"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227102221,
+          "toolName": "read"
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227103641
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227103642,
+          "toolName": "read"
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227103642,
+          "toolName": "read"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227103649,
+          "toolName": "read"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227103652,
+          "toolName": "read"
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227111136
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227111137,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227111738,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227111739,
+          "toolName": "job_output"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227111742,
+          "toolName": "job_output"
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227113684
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227113685,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "session.heartbeat",
+          "timestamp": 1794227114018
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227125556,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227128136
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227128137,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227140000,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "session.heartbeat",
+          "timestamp": 1794227144020
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227150621
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227150622,
+          "toolName": "read"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227150629,
+          "toolName": "read"
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227157652
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227157653,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227158248,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227159580
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227159580,
+          "toolName": "read"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227159586,
+          "toolName": "read"
+        },
+        {
+          "eventType": "session.heartbeat",
+          "timestamp": 1794227174020
+        }
+      ]
+    },
+    {
+      "session": {
+        "prefix": "session-330b3931",
+        "masked": true
+      },
+      "host": "deepseek-harness",
+      "hostVersion": "0.2.1-rc.5",
+      "state": "unknown",
+      "reportedState": "unknown",
+      "source": "derived",
+      "confidence": "inferred",
+      "connected": true,
+      "startedAt": 1794227055212,
+      "lastEventAt": 1794227145215,
+      "metrics": {},
+      "recentEvents": [
+        {
+          "eventType": "session.heartbeat",
+          "timestamp": 1794227055212
+        },
+        {
+          "eventType": "session.heartbeat",
+          "timestamp": 1794227085215
+        },
+        {
+          "eventType": "session.heartbeat",
+          "timestamp": 1794227115217
+        },
+        {
+          "eventType": "session.heartbeat",
+          "timestamp": 1794227145215
+        }
+      ]
+    },
+    {
+      "session": {
+        "prefix": "dcfd3edd",
+        "masked": true
+      },
+      "host": "deepseek-harness",
+      "hostVersion": "0.2.1-rc.5",
+      "state": "tool",
+      "reportedState": "tool",
+      "source": "host-native",
+      "confidence": "confirmed",
+      "connected": true,
+      "startedAt": 1794227058498,
+      "lastEventAt": 1794227174019,
+      "metrics": {
+        "toolName": "pwsh",
+        "step": 24,
+        "turn": 1,
+        "tokenCount": 2000,
+        "contextUsed": 113068,
+        "contextLimit": 1048576,
+        "model": "deepseek-account/deepseek-flash"
+      },
+      "recentEvents": [
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227058498,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227060242
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227060243,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227060901,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227063591
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227063592,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227064318,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227068101
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227068101,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227068794,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227068794,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227069424,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227073537
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227073538,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227074635,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "session.heartbeat",
+          "timestamp": 1794227081718
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227083848
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227083849,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227084587,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227084587,
+          "toolName": "read"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227084594,
+          "toolName": "read"
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227089069
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227089070,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227089671,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227089672,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227090354,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227106805
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227106806,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227107472,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "session.heartbeat",
+          "timestamp": 1794227111722
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227112098
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227112099,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227113135,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227113136,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227114055,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227123575
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227123577,
+          "toolName": "read"
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227123577,
+          "toolName": "read"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227123584,
+          "toolName": "read"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227123587,
+          "toolName": "read"
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227128163
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227128164,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227128825,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227128826,
+          "toolName": "read"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227128831,
+          "toolName": "read"
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227138148
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227138150,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227139092,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227139092,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227139706,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "session.heartbeat",
+          "timestamp": 1794227141725
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227152320
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227152321,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227152959,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227152959,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227153603,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227160186
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227160187,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227164058,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227164059,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227164674,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "session.heartbeat",
+          "timestamp": 1794227171733
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227174017
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227174019,
+          "toolName": "pwsh"
+        }
+      ]
+    },
+    {
+      "session": {
+        "prefix": "session-7fb30fa0",
+        "masked": true
+      },
+      "host": "deepseek-harness",
+      "hostVersion": "0.2.1-rc.5",
+      "state": "unknown",
+      "reportedState": "unknown",
+      "source": "derived",
+      "confidence": "inferred",
+      "connected": true,
+      "startedAt": 1794227065229,
+      "lastEventAt": 1794227162226,
+      "metrics": {
+        "toolName": "pwsh",
+        "step": 34,
+        "turn": 7,
+        "tokenCount": 1377,
+        "contextUsed": 563617
+      },
+      "recentEvents": [
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227065229
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227065231,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227065866,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227068732
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227068733,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227069392,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "session.heartbeat",
+          "timestamp": 1794227071267
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227084632
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227084633,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227093465,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227095125
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227095126,
+          "toolName": "read_image"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227095154,
+          "toolName": "read_image"
+        },
+        {
+          "eventType": "session.heartbeat",
+          "timestamp": 1794227101271
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227102199
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227102200,
+          "toolName": "read"
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227102201,
+          "toolName": "read"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227102207,
+          "toolName": "read"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227102214,
+          "toolName": "read"
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227104604
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227104604,
+          "toolName": "read"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227104610,
+          "toolName": "read"
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227109055
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227109056,
+          "toolName": "read"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227109062,
+          "toolName": "read"
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227119901
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227119902,
+          "toolName": "edit"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227119925,
+          "toolName": "edit"
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227119925,
+          "toolName": "edit"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227119942,
+          "toolName": "edit"
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227119943,
+          "toolName": "edit"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227119956,
+          "toolName": "edit"
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227119957,
+          "toolName": "edit"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227119972,
+          "toolName": "edit"
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227119973,
+          "toolName": "edit"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227119989,
+          "toolName": "edit"
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227119989,
+          "toolName": "edit"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227120005,
+          "toolName": "edit"
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227120006,
+          "toolName": "edit"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227120021,
+          "toolName": "edit"
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227120022,
+          "toolName": "edit"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227120037,
+          "toolName": "edit"
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227120037,
+          "toolName": "edit"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227120053,
+          "toolName": "edit"
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227120054,
+          "toolName": "edit"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227120071,
+          "toolName": "edit"
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227120071,
+          "toolName": "edit"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227120087,
+          "toolName": "edit"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227120104,
+          "toolName": "edit"
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227122979
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227122980,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "session.heartbeat",
+          "timestamp": 1794227131270
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227131326,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227133439
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227133440,
+          "toolName": "read_image"
+        },
+        {
+          "eventType": "tool.end",
+          "timestamp": 1794227133471,
+          "toolName": "read_image"
+        },
+        {
+          "eventType": "output.end",
+          "timestamp": 1794227143735
+        },
+        {
+          "eventType": "tool.start",
+          "timestamp": 1794227143736,
+          "toolName": "pwsh"
+        },
+        {
+          "eventType": "session.heartbeat",
+          "timestamp": 1794227162226
+        }
+      ]
+    }
+  ],
+  "note": "Session identifiers are truncated to an 8-char prefix; no prompt text, tool arguments, credentials or absolute user paths are stored."
+}

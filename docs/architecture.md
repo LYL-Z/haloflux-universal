@@ -130,10 +130,11 @@ interface HalofluxEvent {
 ```
 
 Metadata allowlist (unknown keys are rejected, so prompts or message content cannot leak):
-`toolName toolCategory toolStatus step turn label errorCode durationMs tokenCount
-tokensPerSecond contextUsed contextLimit model projectName sessionTitle agentName
+`toolName toolCategory toolStatus toolCallId runId step turn label errorCode durationMs
+tokenCount tokensPerSecond contextUsed contextLimit model projectName sessionTitle agentName
 permissionMode approvalKind queueDepth latencyMs cwdHint custom`.
-`custom` is a flat object of ≤16 scalar entries, ≤1 KB.
+`toolCallId`/`runId` are optional correlation IDs (≤64 chars) added by P3; older
+events without them remain valid. `custom` is a flat object of ≤16 scalar entries, ≤1 KB.
 
 ### 4.1 Host event → normalized mapping (adapters keep this table in their README)
 

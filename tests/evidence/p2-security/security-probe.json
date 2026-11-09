@@ -1,0 +1,539 @@
+{
+  "schema": "haloflux.p2.security.probe.v1",
+  "generatedAt": "2026-11-09T12:33:36.267Z",
+  "machine": {
+    "platform": "win32",
+    "release": "10.0.26300",
+    "arch": "x64",
+    "cpu": "Intel(R) Core(TM) Ultra 9 290HX Plus",
+    "cores": 24,
+    "node": "v24.16.0"
+  },
+  "bridge": {
+    "entry": "packages\\event-bridge\\src\\server.mjs",
+    "port": 18083,
+    "portRange": "18010-18099 (isolated; production 17817 untouched)",
+    "home": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\haloflux-p2sec-jJh22C",
+    "logLevel": "debug",
+    "tokenMask": "sha256:1c341f379a37… (64 chars). Raw token is never written to evidence.",
+    "pid": 56404
+  },
+  "checks": [
+    {
+      "id": "S1-loopback-bind",
+      "category": "network",
+      "description": "Bridge listens on 127.0.0.1 only (Windows listener table + non-loopback IPv4/IPv6 unreachable)",
+      "status": "PASS",
+      "ms": 4776,
+      "observed": {
+        "listenerSource": "netstat",
+        "listeners": [],
+        "listenerError": "Command failed: powershell.exe -NoProfile -Command Get-NetTCPConnection -LocalPort 18083 -State Listen -ErrorAction Stop | Select-Object LocalAddress,LocalPort,OwningProcess | ConvertTo-Json -Compress",
+        "loopbackBind": {
+          "host": "127.0.0.1",
+          "ok": false,
+          "code": "EADDRINUSE"
+        },
+        "hostBind": {
+          "host": "10.99.0.1",
+          "ok": true
+        },
+        "nonLoopbackIPv4": [
+          "10.99.0.1",
+          "10.133.166.169",
+          "172.26.192.1"
+        ],
+        "reachableIPv4": [],
+        "ipv6Reachable": false,
+        "note": "CIM/netstat are virtualized in this sandbox; reachability + bind-probe are authoritative."
+      }
+    },
+    {
+      "id": "S2-auth-required",
+      "category": "auth",
+      "description": "Every /v1 endpoint except /v1/health returns 401 without a token",
+      "status": "PASS",
+      "ms": 8,
+      "observed": {
+        "results": [
+          {
+            "method": "GET",
+            "pathname": "/v1/state",
+            "status": 401,
+            "body": "{\"error\":\"unauthorized\"}"
+          },
+          {
+            "method": "GET",
+            "pathname": "/v1/stack",
+            "status": 401,
+            "body": "{\"error\":\"unauthorized\"}"
+          },
+          {
+            "method": "GET",
+            "pathname": "/v1/settings",
+            "status": 401,
+            "body": "{\"error\":\"unauthorized\"}"
+          },
+          {
+            "method": "GET",
+            "pathname": "/v1/stream",
+            "status": 401,
+            "body": "{\"error\":\"unauthorized\"}"
+          },
+          {
+            "method": "POST",
+            "pathname": "/v1/events",
+            "status": 401,
+            "body": "{\"error\":\"unauthorized\"}"
+          },
+          {
+            "method": "POST",
+            "pathname": "/v1/simulate",
+            "status": 401,
+            "body": "{\"error\":\"unauthorized\"}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "S3-wrong-token",
+      "category": "auth",
+      "description": "Wrong / malformed token → 401 and the presented token is never echoed",
+      "status": "PASS",
+      "ms": 5,
+      "observed": {
+        "results": [
+          {
+            "pathname": "/v1/state",
+            "status": 401
+          },
+          {
+            "pathname": "/v1/settings",
+            "status": 401
+          },
+          {
+            "pathname": "/v1/stack",
+            "status": 401
+          },
+          {
+            "pathname": "/v1/state",
+            "variant": "malformed",
+            "status": 401
+          },
+          {
+            "pathname": "/v1/state",
+            "variant": "empty",
+            "status": 401
+          },
+          {
+            "pathname": "/v1/state",
+            "variant": "x-haloflux-token",
+            "status": 401
+          }
+        ]
+      }
+    },
+    {
+      "id": "S4-query-token-scope",
+      "category": "auth",
+      "description": "?token= authenticates /v1/stream only, not other endpoints",
+      "status": "PASS",
+      "ms": 4,
+      "observed": {
+        "stateViaQuery": 401,
+        "settingsViaQuery": 401,
+        "sseQueryToken": 200,
+        "sseFirstFrame": "snapshot",
+        "sseWrongQueryToken": 401
+      }
+    },
+    {
+      "id": "S5-origin-host",
+      "category": "network",
+      "description": "Non-loopback Origin and Host are rejected; loopback/file/null Origin allowed",
+      "status": "PASS",
+      "ms": 11,
+      "observed": {
+        "results": [
+          {
+            "kind": "origin",
+            "value": "https://evil.example.com",
+            "status": 403
+          },
+          {
+            "kind": "origin",
+            "value": "http://127.0.0.1.evil.example",
+            "status": 403
+          },
+          {
+            "kind": "origin",
+            "value": "http://10.0.0.1:8080",
+            "status": 403
+          },
+          {
+            "kind": "origin",
+            "value": "http://localhost.evil.example:3000",
+            "status": 403
+          },
+          {
+            "kind": "origin-allowed",
+            "value": "null",
+            "status": 202
+          },
+          {
+            "kind": "origin-allowed",
+            "value": "file://",
+            "status": 202
+          },
+          {
+            "kind": "origin-allowed",
+            "value": "http://127.0.0.1:18083",
+            "status": 202
+          },
+          {
+            "kind": "origin-allowed",
+            "value": "http://localhost:3000",
+            "status": 202
+          },
+          {
+            "kind": "host",
+            "value": "evil.example.com",
+            "status": 403
+          },
+          {
+            "kind": "host",
+            "value": "127.0.0.1.evil.example",
+            "status": 403
+          },
+          {
+            "kind": "host",
+            "value": "localhost.evil.example",
+            "status": 403
+          },
+          {
+            "kind": "host",
+            "value": "0.0.0.0",
+            "status": 403
+          }
+        ],
+        "loopbackHost": 200,
+        "localhostHost": 200
+      }
+    },
+    {
+      "id": "S6-oversized-413",
+      "category": "limits",
+      "description": ">256 KB body → 413 (declared content-length and chunked/streamed)",
+      "status": "PASS",
+      "ms": 3,
+      "observed": {
+        "declaredStatus": 413,
+        "declaredBody": "{\"error\":\"payload_too_large\",\"limitBytes\":262144}",
+        "chunkedStatus": 413,
+        "healthAfter": 200
+      }
+    },
+    {
+      "id": "S7-batch-event-limits",
+      "category": "limits",
+      "description": ">100 events/batch and >8 KB serialized events are rejected (400), bridge stays alive",
+      "status": "PASS",
+      "ms": 4,
+      "observed": {
+        "batchStatus": 400,
+        "batchIssues": "{\"issues\":[{\"path\":\"$\",\"code\":\"invalid_batch\",\"message\":\"batch exceeds 100 events\"}]}",
+        "bigEventBytes": 9300,
+        "bigEventStatus": 400,
+        "bigEventIssues": "{\"issues\":[{\"path\":\"[0].metadata.sessionTitle\",\"code\":\"bad_string\",\"message\":\"must be a string <= 160 chars\"},{\"path\":\"[0].metadata\",\"code\":\"metadata_too_large\",\"message\":\"metadata must be <= 4096 byt",
+        "protoStatus": 400,
+        "healthAfter": 200
+      }
+    },
+    {
+      "id": "S8-rate-limit-429",
+      "category": "limits",
+      "description": "Frequent requests on one socket → 429 with Retry-After",
+      "status": "PASS",
+      "ms": 19,
+      "observed": {
+        "attempted": 400,
+        "responses": 400,
+        "ok200": 240,
+        "rateLimited429": 160,
+        "elapsedMs": 19,
+        "retryAfterSeen": true
+      }
+    },
+    {
+      "id": "S9-rate-limit-recovery",
+      "category": "limits",
+      "description": "A fresh socket is not locked out after the 429 burst (limit is per socket)",
+      "status": "PASS",
+      "ms": 3,
+      "observed": {
+        "healthStatus": 200,
+        "stateStatus": 200
+      }
+    },
+    {
+      "id": "S10-path-traversal",
+      "category": "injection",
+      "description": "Path traversal in URL/query cannot read files in HALOFLUX_HOME and leaks nothing",
+      "status": "PASS",
+      "ms": 9,
+      "observed": {
+        "cases": [
+          {
+            "pathname": "/v1/stream?token=../../token",
+            "status": 401
+          },
+          {
+            "pathname": "/v1/stream?token=..%2F..%2Ftoken",
+            "status": 401
+          },
+          {
+            "pathname": "/v1/stream?token=%2e%2e%2f%2e%2e%2ftoken",
+            "status": 401
+          },
+          {
+            "pathname": "/v1/stream?token=..%5c..%5ctoken",
+            "status": 401
+          },
+          {
+            "pathname": "/v1/stream?token=../../canary-secret-store.json",
+            "status": 401
+          },
+          {
+            "pathname": "/v1/stream?token=../../../../../../Windows/win.ini",
+            "status": 401
+          },
+          {
+            "pathname": "/../token",
+            "status": 401
+          },
+          {
+            "pathname": "/..%2Ftoken",
+            "status": 401
+          },
+          {
+            "pathname": "/v1/../token",
+            "status": 401
+          },
+          {
+            "pathname": "/v1/state/../../token",
+            "status": 404
+          },
+          {
+            "pathname": "/v1/stream?token=../canary-secret-store.json",
+            "status": 401
+          },
+          {
+            "pathname": "/v1/stream?token=",
+            "status": 401
+          }
+        ],
+        "authenticatedTraversal": 404,
+        "homeFiles": [
+          "canary-secret-store.json"
+        ],
+        "canaryFileName": "canary-secret-store.json",
+        "canaryLeaked": false
+      }
+    },
+    {
+      "id": "S11-duplicate-idempotence",
+      "category": "integrity",
+      "description": "Replaying the same eventId is counted as duplicate and does not change state",
+      "status": "PASS",
+      "ms": 4,
+      "observed": {
+        "first": {
+          "accepted": 1,
+          "duplicates": 0,
+          "sessions": 1,
+          "totalSessions": 2,
+          "events": 1
+        },
+        "replay": {
+          "accepted": 0,
+          "duplicates": 1,
+          "sessions": 0,
+          "totalSessions": 2,
+          "events": 1
+        },
+        "sessionEventCountStable": true,
+        "globalEventCountStable": true,
+        "bridgeDuplicates": 1,
+        "stateBeforeSessions": 1
+      }
+    },
+    {
+      "id": "S12-sse-reconnect",
+      "category": "resilience",
+      "description": "SSE reconnect (3 cycles, abrupt close) always yields a snapshot and leaves state intact",
+      "status": "PASS",
+      "ms": 4,
+      "observed": {
+        "cycles": [
+          {
+            "cycle": 1,
+            "status": 200,
+            "frames": 1,
+            "sessions": 2
+          },
+          {
+            "cycle": 2,
+            "status": 200,
+            "frames": 1,
+            "sessions": 2
+          },
+          {
+            "cycle": 3,
+            "status": 200,
+            "frames": 1,
+            "sessions": 2
+          }
+        ],
+        "sessionsBefore": 2,
+        "sessionsAfter": 2,
+        "healthAfter": 200
+      }
+    },
+    {
+      "id": "S13-xss-ingress",
+      "category": "injection",
+      "description": "Bridge schema accepts untrusted label/toolName text (no charset filter) — payload reaches /v1/state verbatim",
+      "status": "PASS",
+      "ms": 1,
+      "observed": {
+        "schemaAccepted": true,
+        "payloadLength": 36,
+        "echoedVerbatimInState": true,
+        "note": "Renderer must therefore render event metadata as text only; proven by electron-probe XSS task."
+      }
+    },
+    {
+      "id": "S14-renderer-static-scan",
+      "category": "injection",
+      "description": "Renderer source contains no innerHTML/insertAdjacentHTML/document.write/eval sinks",
+      "status": "PASS",
+      "ms": 2,
+      "observed": {
+        "filesScanned": 5,
+        "sinksChecked": 6,
+        "findings": [],
+        "cspPresent": true
+      }
+    },
+    {
+      "id": "S15-security-headers",
+      "category": "hardening",
+      "description": "Responses set nosniff / no-store / no-referrer and no ACAO for rejected origins",
+      "status": "PASS",
+      "ms": 2,
+      "observed": {
+        "health": {
+          "x-content-type-options": "nosniff",
+          "cache-control": "no-store",
+          "referrer-policy": "no-referrer"
+        },
+        "evilOriginAcao": null,
+        "nullOriginAcao": "null"
+      }
+    },
+    {
+      "id": "S16-no-token-echo",
+      "category": "auth",
+      "description": "No response body collected during the probe contains the real or presented token",
+      "status": "PASS",
+      "ms": 0,
+      "observed": {
+        "bodiesScanned": 56,
+        "leaks": 0
+      }
+    },
+    {
+      "id": "S17-log-redaction-live",
+      "category": "logging",
+      "description": "Bridge debug log contains no token / 64-hex secret after 401/403/404/traversal traffic",
+      "status": "PASS",
+      "ms": 403,
+      "observed": {
+        "logPath": "tests\\evidence\\p2-security\\bridge-debug.log",
+        "logBytes": 503,
+        "lines": 10,
+        "redactedMarkers": 0,
+        "hasRejectedOriginLine": true,
+        "tokenOccurrences": 0,
+        "hex64Occurrences": 0
+      }
+    },
+    {
+      "id": "S18-log-redaction-unit",
+      "category": "logging",
+      "description": "createLogger redacts explicit secrets and every 64-hex token in all levels",
+      "status": "PASS",
+      "ms": 1,
+      "observed": {
+        "lines": [
+          "real token [redacted]",
+          "{\"authorization\":\"Bearer [redacted]\"}",
+          "Error: failed with [redacted]\n    at file:///D:/HALOFLUX/tests/evidence/p2-security/probe.mjs:927:20\n    at check (file:///D:/HALOFLUX/tests/evidence/p2-security/probe.mjs:56:29)\n    at main (file:///D:/HALOFLUX/tests/evidence/p2-security/probe.mjs:917:9)",
+          "64hex [redacted]"
+        ],
+        "redacted": 4
+      }
+    },
+    {
+      "id": "S19-token-file",
+      "category": "hardening",
+      "description": "Env token is never written to disk; a generated token is written 0600 best-effort inside HALOFLUX_HOME",
+      "status": "PASS",
+      "ms": 151,
+      "observed": {
+        "envTokenWrittenToDisk": false,
+        "envTokenNote": "HALOFLUX_TOKEN is used as-is and never persisted (docs/03 §3).",
+        "generatedTokenPath": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\haloflux-p2sec-file-IlZyHh\\token",
+        "generatedTokenBytes": 65,
+        "generatedTokenMode": "0666",
+        "generatedTokenAuthenticates": true,
+        "windowsNote": "Windows maps chmod to the read-only bit; POSIX 0600 is best-effort (docs/03 §6 PARTIAL).",
+        "insideRepo": false
+      }
+    },
+    {
+      "id": "S20-production-port",
+      "category": "network",
+      "description": "Probe never used the production port 17817",
+      "status": "PASS",
+      "ms": 19,
+      "observed": {
+        "probePort": 18083,
+        "productionListenersDuringProbe": 0,
+        "productionPortLine": null
+      }
+    },
+    {
+      "id": "S21-bridge-alive",
+      "category": "resilience",
+      "description": "Bridge still serves authenticated state after the full abuse sequence",
+      "status": "PASS",
+      "ms": 1,
+      "observed": {
+        "status": 200,
+        "sessions": 3,
+        "eventCount": 6,
+        "duplicates": 1,
+        "dropped": 0,
+        "uptimeMs": 5512
+      }
+    }
+  ],
+  "summary": {
+    "total": 21,
+    "pass": 21,
+    "fail": 0,
+    "skip": 0
+  },
+  "finishedAt": "2026-11-09T12:33:41.700Z"
+}

@@ -1,0 +1,40 @@
+{
+  "kind": "haloflux.p2.host-evidence.cursor",
+  "capturedAt": "2026-11-09T12:31:53.299Z",
+  "host": "cursor",
+  "hostVersion": "3.29.9",
+  "install": {
+    "status": "INSTALLED",
+    "installedEntries": 11,
+    "events": [
+      "sessionStart",
+      "sessionEnd",
+      "beforeSubmitPrompt",
+      "preToolUse",
+      "postToolUse",
+      "postToolUseFailure",
+      "stop",
+      "beforeShellExecution",
+      "afterShellExecution",
+      "beforeMCPExecution",
+      "afterMCPExecution"
+    ],
+    "configPath": "%USERPROFILE%\\.cursor\\hooks.json",
+    "sha256": "ce4622fc8ba6f4abf38ece201deb420641dab62c6a363a1d7b16f0194dfe4ed9",
+    "matchesManifest": true,
+    "backupManifest": "<repo>\\config\\backups\\20261108T161903843Z"
+  },
+  "processRunning": false,
+  "realTrigger": {
+    "status": "NOT_TESTED",
+    "detail": "Cursor is a GUI host; no headless session driver was available and the app was not running. No synthetic payload is counted as host evidence."
+  },
+  "status": "PARTIAL",
+  "confidence": "config-only / real event NOT_TESTED",
+  "gap": "no real host-native event observed in this round; capability mapping not re-proven live",
+  "retest": [
+    "open Cursor, start a chat, run one shell tool, end session",
+    "check /v1/state for host=cursor source=host-native events",
+    "confirm 11 hooks still match manifest"
+  ]
+}

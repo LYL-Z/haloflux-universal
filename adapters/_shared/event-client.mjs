@@ -117,7 +117,7 @@ export function safeEnum(value, allowed, fallback = undefined) {
  * keys below can ever leave the adapter.
  */
 const STRING_KEYS = {
-  toolName: 80, toolCategory: 40, toolStatus: 16, label: 120, errorCode: 64,
+  toolName: 80, toolCategory: 40, toolStatus: 16, toolCallId: 64, runId: 64, label: 120, errorCode: 64,
   model: 80, projectName: 120, sessionTitle: 160, agentName: 80,
   permissionMode: 40, approvalKind: 40, cwdHint: 80,
 };
@@ -308,26 +308,42 @@ export async function postEvents(events, {
   }
   if (valid.length === 0) return { ok: false, reason: 'schema' };
 
-  const body = JSON.stringify(valid.length === 1 ? valid[0] : { events: valid });
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), Math.max(100, timeoutMs));
+  // The bridge accepts at most 100 events per request. A long trace can easily
+  // exceed that, so every adapter chunks instead of letting the whole batch 400.
+  const MAX_BATCH = 100;
+  let accepted = 0;
+  let batches = 0;
   try {
-    const response = await fetch(`${bridgeUrl}/v1/events`, {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        authorization: `Bearer ${token}`,
-      },
-      body,
-      signal: controller.signal,
-    });
-    debug('bridge responded', response.status);
-    return { ok: response.ok, status: response.status };
+    for (let offset = 0; offset < valid.length; offset += MAX_BATCH) {
+      const chunk = valid.slice(offset, offset + MAX_BATCH);
+      const body = JSON.stringify(chunk.length === 1 ? chunk[0] : { events: chunk });
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), Math.max(100, timeoutMs));
+      try {
+        const response = await fetch(`${bridgeUrl}/v1/events`, {
+          method: 'POST',
+          headers: {
+            'content-type': 'application/json',
+            authorization: `Bearer ${token}`,
+          },
+          body,
+          signal: controller.signal,
+        });
+        debug('bridge responded', response.status);
+        if (!response.ok) {
+          return { ok: false, status: response.status, accepted, batches };
+        }
+        const payload = await response.json().catch(() => null);
+        accepted += Number(payload && payload.accepted) || chunk.length;
+        batches += 1;
+      } finally {
+        clearTimeout(timer);
+      }
+    }
+    return { ok: true, status: 202, accepted, batches };
   } catch (error) {
     debug('bridge post failed', error && (error.code || error.name || error.message));
-    return { ok: false, reason: 'unreachable' };
-  } finally {
-    clearTimeout(timer);
+    return { ok: false, reason: 'unreachable', accepted, batches };
   }
 }
 

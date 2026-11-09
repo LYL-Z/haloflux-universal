@@ -817,11 +817,14 @@ function renderLabMonitor() {
   };
   const unknown = (value) => value == null || value === '' ? '—' : value;
   const metric = (value) => value == null ? '—' : String(value);
+  const toolLine = active?.toolName
+    ? `${active.toolName} · ${active.lastToolDurationMs == null ? '—' : `${active.lastToolDurationMs} ms`} · ${active.lastToolCallId ? 'CORRELATED' : 'UNCORRELATED'}`
+    : '—';
   detail(els.labWorkspaceDetails, [
     ['HOST / STATE', active ? `${active.host} / ${active.state}` : '— / disconnected'],
     ['MODEL', unknown(active?.model)],
     ['STEP / TURN', active ? `${metric(active.step)} / ${metric(active.turn)}` : '— / —'],
-    ['TOOL', unknown(active?.toolName)],
+    ['TOOL / DURATION', toolLine],
     ['TOKENS / S', metric(active?.tokensPerSecond)],
   ]);
   detail(els.labSourceDetails, [
