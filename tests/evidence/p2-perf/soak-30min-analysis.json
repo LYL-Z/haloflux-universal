@@ -1,0 +1,77 @@
+{
+  "source": "soak-30min.json",
+  "status": "PASS",
+  "startedAt": "2026-11-09T12:24:05.519Z",
+  "finishedAt": null,
+  "requestedMinutes": 30,
+  "actualDurationMinutes": 29.93,
+  "actualDurationSeconds": 1795.7,
+  "eventsPerSecondRequested": 8,
+  "observedEventsPerSecond": 6.3,
+  "samples": 359,
+  "sampleEveryMs": 5016,
+  "sent": 11311,
+  "accepted": 11311,
+  "postErrors": 0,
+  "dropped": null,
+  "duplicates": null,
+  "finalEventCount": 11311,
+  "finalSessions": 12,
+  "rss": {
+    "firstMB": 59.89,
+    "lastMB": 74.67,
+    "minMB": 59.89,
+    "maxMB": 75.25,
+    "meanMB": 71.57,
+    "medianMB": 72.38,
+    "growthMB": 14.78,
+    "growthMBPerMin": 0.494,
+    "gcDips": 1,
+    "largestDipMB": 1.35,
+    "slopeLast15MBPerMin": 0.186
+  },
+  "cpu": {
+    "samples": 358,
+    "meanPercent": 0.016,
+    "maxPercent": 0.07,
+    "nonzeroSamples": 242
+  },
+  "marks": [
+    {
+      "minute": 5,
+      "eventCount": 1812,
+      "sessions": 12,
+      "rssMB": 68.22,
+      "cpuPercent": 0
+    },
+    {
+      "minute": 10,
+      "eventCount": 3649,
+      "sessions": 12,
+      "rssMB": 72.38,
+      "cpuPercent": 0
+    },
+    {
+      "minute": 15,
+      "eventCount": 5530,
+      "sessions": 12,
+      "rssMB": 72,
+      "cpuPercent": 0.03
+    },
+    {
+      "minute": 20,
+      "eventCount": 7431,
+      "sessions": 12,
+      "rssMB": 73.9,
+      "cpuPercent": 0
+    },
+    {
+      "minute": 25,
+      "eventCount": 9391,
+      "sessions": 12,
+      "rssMB": 74.28,
+      "cpuPercent": 0.01
+    }
+  ],
+  "leakSignal": "GROWING (needs longer soak before calling it a leak)"
+}

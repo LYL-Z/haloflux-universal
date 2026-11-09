@@ -1,9 +1,9 @@
 {
   "task": "xss",
-  "startedAt": "2026-11-09T12:33:56.023Z",
-  "url": "file:///D:/HALOFLUX/apps/companion/renderer/index.html?bridge=http%3A%2F%2F127.0.0.1%3A18017&token=<redacted>&mode=window",
+  "startedAt": "2026-11-09T12:54:51.482Z",
+  "url": "file:///D:/HALOFLUX/apps/companion/renderer/index.html?bridge=http%3A%2F%2F127.0.0.1%3A18088&token=<redacted>&mode=window",
   "ready": {
-    "href": "file:///D:/HALOFLUX/apps/companion/renderer/index.html?bridge=http%3A%2F%2F127.0.0.1%3A18017&token=<redacted>&mode=window",
+    "href": "file:///D:/HALOFLUX/apps/companion/renderer/index.html?bridge=http%3A%2F%2F127.0.0.1%3A18088&token=<redacted>&mode=window",
     "mode": "window",
     "preset": "agent-monitor",
     "labConsoleDisplay": "grid",
@@ -67,7 +67,7 @@
     "waitedMs": 1,
     "rows": 1,
     "rowTexts": [
-      "04:33:52\ntool.start\n<img src=x onerror=\"window.__xss=1\">\nNAT"
+      "04:54:47\ntool.start\n<img src=x onerror=\"window.__xss=1\">\nNAT"
     ],
     "feedTextContainsLiteralImg": true,
     "feedTextContainsLiteralSvg": false,

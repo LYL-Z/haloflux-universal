@@ -1,6 +1,6 @@
 {
   "task": "a11y",
-  "startedAt": "2026-11-09T12:31:51.856Z",
+  "startedAt": "2026-11-09T12:55:24.101Z",
   "url": "file:///D:/HALOFLUX/apps/companion/renderer/index.html?demo=1&mode=window",
   "ready": {
     "href": "file:///D:/HALOFLUX/apps/companion/renderer/index.html?demo=1&mode=window",
@@ -43,6 +43,7 @@
       "height": 940
     }
   },
+  "drawerOpened": false,
   "gpu": {
     "enabled": true,
     "status": {
@@ -772,6 +773,17 @@
             1,
             1
           ],
+          "labelText": "IMPORT LOCAL METADATA JSON",
+          "labelRect": {
+            "x": 1156.7874755859375,
+            "y": 803.6000366210938,
+            "width": 355.2124938964844,
+            "height": 19.100000381469727,
+            "top": 803.6000366210938,
+            "right": 1511.9999694824219,
+            "bottom": 822.7000370025635,
+            "left": 1156.7874755859375
+          },
           "labelOutline": "rgb(199, 199, 209) none 2.8px"
         }
       },
@@ -1121,7 +1133,7 @@
           "tag": "SPAN",
           "id": "perf-fps",
           "cls": "",
-          "text": "17 fps",
+          "text": "20 fps",
           "fontSize": 8.5,
           "color": "rgb(173, 173, 185)",
           "background": "rgb(5, 5, 9)",
@@ -1143,7 +1155,7 @@
           "tag": "SPAN",
           "id": "perf-frame",
           "cls": "status-item",
-          "text": "2.5 ms",
+          "text": "2.4 ms",
           "fontSize": 8.5,
           "color": "rgb(173, 173, 185)",
           "background": "rgb(5, 5, 9)",
@@ -1187,7 +1199,7 @@
           "tag": "SPAN",
           "id": "perf-particles",
           "cls": "status-item",
-          "text": "1453 particles",
+          "text": "1641 particles",
           "fontSize": 8.5,
           "color": "rgb(173, 173, 185)",
           "background": "rgb(5, 5, 9)",

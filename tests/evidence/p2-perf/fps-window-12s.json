@@ -1,6 +1,6 @@
 {
   "task": "fps",
-  "startedAt": "2026-11-09T12:32:37.763Z",
+  "startedAt": "2026-11-09T12:55:49.850Z",
   "url": "file:///D:/HALOFLUX/apps/companion/renderer/index.html?demo=1&mode=window",
   "ready": {
     "href": "file:///D:/HALOFLUX/apps/companion/renderer/index.html?demo=1&mode=window",
@@ -65,23 +65,23 @@
   },
   "fps": {
     "samples": [
-      42.91,
-      36.93,
-      35.7,
-      36.85,
-      35,
-      34.98,
-      36.85,
-      33.44,
-      33.44,
-      38.52,
-      46.42
+      30.44,
+      26.56,
+      25.16,
+      28.18,
+      27,
+      29.88,
+      31.47,
+      34.57,
+      31.74,
+      31.6,
+      36.7
     ],
     "sampleCount": 11,
-    "hudFps": "27 fps",
-    "hudFrame": "1.9 ms",
+    "hudFps": "35 fps",
+    "hudFrame": "1.8 ms",
     "hudQuality": "画质 低 · 50%",
-    "hudParticles": "682 particles",
+    "hudParticles": "735 particles",
     "statusVersion": "v0.1.0",
     "dpr": 2.5,
     "viewport": [
@@ -89,34 +89,34 @@
       878
     ],
     "heap": {
-      "usedJSHeapSize": 10000000,
-      "totalJSHeapSize": 20500000
+      "usedJSHeapSize": 16100000,
+      "totalJSHeapSize": 26000000
     },
-    "elapsedMs": 12021
+    "elapsedMs": 12026
   },
   "rendererMetrics": {
     "before": [
       {
         "type": "Tab",
-        "pid": 57612,
+        "pid": 42324,
         "cpu": {
-          "cumulativeCPUUsage": 0.48336,
+          "cumulativeCPUUsage": 0.533848,
           "percentCPUUsage": 0,
           "idleWakeupsPerSecond": 0
         },
-        "workingSetSize": 153612
+        "workingSetSize": 144644
       }
     ],
     "after": [
       {
         "type": "Tab",
-        "pid": 57612,
+        "pid": 42324,
         "cpu": {
-          "cumulativeCPUUsage": 1.679156,
-          "percentCPUUsage": 0.4144327840039251,
+          "cumulativeCPUUsage": 1.821522,
+          "percentCPUUsage": 0.44603508679754095,
           "idleWakeupsPerSecond": 0
         },
-        "workingSetSize": 182252
+        "workingSetSize": 181468
       }
     ]
   },

@@ -15,7 +15,7 @@
 | P3 可观测事件链路 | **PARTIAL** | `reports/p2/OBSERVABLE-EVENT-TRACE.md` | toolCallId 关联与真实耗时已在真实 bridge/adapter 验证；实时 DSH 需重启宿主才带入新字段；runId/筛选/暂停/详情未完成 |
 | P4 六宿主真实矩阵 | **PARTIAL** | `reports/p2/HOST-MATRIX.md`、`tests/evidence/p2-hosts/` | DSH PASS；Claude 工具 BLOCKED（未登录）；Codex/Cursor/WorkBuddy PARTIAL；TRAE UNSUPPORTED |
 | P5 Obsidian | **PARTIAL** | `reports/p2/OBSIDIAN-STATUS.md` | 静态快照导入 PASS（E2E 16/16）；实时插件 NOT IMPLEMENTED；3 项 LOW 建议 |
-| P6 安全/性能/无障碍 | **PASS（带 PARTIAL 项）** | `reports/p2/SECURITY-PERFORMANCE.md` | 安全 13/13 + 21/21 探针 PASS；30 min soak 见报告；对比度/200% 缩放/Windows token 权限为 PARTIAL |
+| P6 安全/性能/无障碍 | **PASS（带 PARTIAL 项）** | `reports/p2/SECURITY-PERFORMANCE.md` | 安全 13/13 + 定向探针 21/21 PASS；XSS 端到端 PASS；30 min soak **11311/11311 accepted**（实测 6.30/s）、RSS 59.9→74.7 MB、CPU 0.016%；可见窗口 ~30 fps（software 合成口径）。对比度 4 处 1.30:1、200% 缩放 Paper Lab 隐藏、Windows token ACL 0666 为 PARTIAL。 |
 | P7 交付文档/受控 PR 候选 | **PARTIAL** | 本目录 + `screenshots/p2/` | 文档与证据已就绪；未推送分支、未建 Draft PR（等待用户授权） |
 
 ## 2. 本轮实际代码修改

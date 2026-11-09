@@ -1,6 +1,6 @@
 {
   "schema": "haloflux.p2.security.probe.v1",
-  "generatedAt": "2026-11-09T12:33:36.267Z",
+  "generatedAt": "2026-11-09T12:54:42.087Z",
   "machine": {
     "platform": "win32",
     "release": "10.0.26300",
@@ -11,12 +11,12 @@
   },
   "bridge": {
     "entry": "packages\\event-bridge\\src\\server.mjs",
-    "port": 18083,
+    "port": 18070,
     "portRange": "18010-18099 (isolated; production 17817 untouched)",
-    "home": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\haloflux-p2sec-jJh22C",
+    "home": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\haloflux-p2sec-kEs1J3",
     "logLevel": "debug",
     "tokenMask": "sha256:1c341f379a37… (64 chars). Raw token is never written to evidence.",
-    "pid": 56404
+    "pid": 16840
   },
   "checks": [
     {
@@ -24,11 +24,11 @@
       "category": "network",
       "description": "Bridge listens on 127.0.0.1 only (Windows listener table + non-loopback IPv4/IPv6 unreachable)",
       "status": "PASS",
-      "ms": 4776,
+      "ms": 4725,
       "observed": {
         "listenerSource": "netstat",
         "listeners": [],
-        "listenerError": "Command failed: powershell.exe -NoProfile -Command Get-NetTCPConnection -LocalPort 18083 -State Listen -ErrorAction Stop | Select-Object LocalAddress,LocalPort,OwningProcess | ConvertTo-Json -Compress",
+        "listenerError": "Command failed: powershell.exe -NoProfile -Command Get-NetTCPConnection -LocalPort 18070 -State Listen -ErrorAction Stop | Select-Object LocalAddress,LocalPort,OwningProcess | ConvertTo-Json -Compress",
         "loopbackBind": {
           "host": "127.0.0.1",
           "ok": false,
@@ -53,7 +53,7 @@
       "category": "auth",
       "description": "Every /v1 endpoint except /v1/health returns 401 without a token",
       "status": "PASS",
-      "ms": 8,
+      "ms": 7,
       "observed": {
         "results": [
           {
@@ -100,7 +100,7 @@
       "category": "auth",
       "description": "Wrong / malformed token → 401 and the presented token is never echoed",
       "status": "PASS",
-      "ms": 5,
+      "ms": 6,
       "observed": {
         "results": [
           {
@@ -152,7 +152,7 @@
       "category": "network",
       "description": "Non-loopback Origin and Host are rejected; loopback/file/null Origin allowed",
       "status": "PASS",
-      "ms": 11,
+      "ms": 12,
       "observed": {
         "results": [
           {
@@ -187,7 +187,7 @@
           },
           {
             "kind": "origin-allowed",
-            "value": "http://127.0.0.1:18083",
+            "value": "http://127.0.0.1:18070",
             "status": 202
           },
           {
@@ -225,7 +225,7 @@
       "category": "limits",
       "description": ">256 KB body → 413 (declared content-length and chunked/streamed)",
       "status": "PASS",
-      "ms": 3,
+      "ms": 4,
       "observed": {
         "declaredStatus": 413,
         "declaredBody": "{\"error\":\"payload_too_large\",\"limitBytes\":262144}",
@@ -238,7 +238,7 @@
       "category": "limits",
       "description": ">100 events/batch and >8 KB serialized events are rejected (400), bridge stays alive",
       "status": "PASS",
-      "ms": 4,
+      "ms": 3,
       "observed": {
         "batchStatus": 400,
         "batchIssues": "{\"issues\":[{\"path\":\"$\",\"code\":\"invalid_batch\",\"message\":\"batch exceeds 100 events\"}]}",
@@ -254,13 +254,13 @@
       "category": "limits",
       "description": "Frequent requests on one socket → 429 with Retry-After",
       "status": "PASS",
-      "ms": 19,
+      "ms": 21,
       "observed": {
         "attempted": 400,
         "responses": 400,
         "ok200": 240,
         "rateLimited429": 160,
-        "elapsedMs": 19,
+        "elapsedMs": 21,
         "retryAfterSeen": true
       }
     },
@@ -269,7 +269,7 @@
       "category": "limits",
       "description": "A fresh socket is not locked out after the 429 burst (limit is per socket)",
       "status": "PASS",
-      "ms": 3,
+      "ms": 2,
       "observed": {
         "healthStatus": 200,
         "stateStatus": 200
@@ -280,7 +280,7 @@
       "category": "injection",
       "description": "Path traversal in URL/query cannot read files in HALOFLUX_HOME and leaks nothing",
       "status": "PASS",
-      "ms": 9,
+      "ms": 10,
       "observed": {
         "cases": [
           {
@@ -345,7 +345,7 @@
       "category": "integrity",
       "description": "Replaying the same eventId is counted as duplicate and does not change state",
       "status": "PASS",
-      "ms": 4,
+      "ms": 3,
       "observed": {
         "first": {
           "accepted": 1,
@@ -404,7 +404,7 @@
       "category": "injection",
       "description": "Bridge schema accepts untrusted label/toolName text (no charset filter) — payload reaches /v1/state verbatim",
       "status": "PASS",
-      "ms": 1,
+      "ms": 2,
       "observed": {
         "schemaAccepted": true,
         "payloadLength": 36,
@@ -457,7 +457,7 @@
       "category": "logging",
       "description": "Bridge debug log contains no token / 64-hex secret after 401/403/404/traversal traffic",
       "status": "PASS",
-      "ms": 403,
+      "ms": 415,
       "observed": {
         "logPath": "tests\\evidence\\p2-security\\bridge-debug.log",
         "logBytes": 503,
@@ -489,11 +489,11 @@
       "category": "hardening",
       "description": "Env token is never written to disk; a generated token is written 0600 best-effort inside HALOFLUX_HOME",
       "status": "PASS",
-      "ms": 151,
+      "ms": 156,
       "observed": {
         "envTokenWrittenToDisk": false,
         "envTokenNote": "HALOFLUX_TOKEN is used as-is and never persisted (docs/03 §3).",
-        "generatedTokenPath": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\haloflux-p2sec-file-IlZyHh\\token",
+        "generatedTokenPath": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\haloflux-p2sec-file-cVEoCR\\token",
         "generatedTokenBytes": 65,
         "generatedTokenMode": "0666",
         "generatedTokenAuthenticates": true,
@@ -506,11 +506,11 @@
       "category": "network",
       "description": "Probe never used the production port 17817",
       "status": "PASS",
-      "ms": 19,
+      "ms": 18,
       "observed": {
-        "probePort": 18083,
-        "productionListenersDuringProbe": 0,
-        "productionPortLine": null
+        "probePort": 18070,
+        "productionListenersDuringProbe": 1,
+        "productionPortLine": "TCP    127.0.0.1:17817        127.0.0.1:0            LISTENING       25008"
       }
     },
     {
@@ -525,7 +525,7 @@
         "eventCount": 6,
         "duplicates": 1,
         "dropped": 0,
-        "uptimeMs": 5512
+        "uptimeMs": 5472
       }
     }
   ],
@@ -535,5 +535,5 @@
     "fail": 0,
     "skip": 0
   },
-  "finishedAt": "2026-11-09T12:33:41.700Z"
+  "finishedAt": "2026-11-09T12:54:47.487Z"
 }
