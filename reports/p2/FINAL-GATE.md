@@ -35,7 +35,7 @@ git switch feat/paper-lab-p2
 npm ci
 npm run build
 npm run typecheck
-npm test                      # 86/86
+npm test                      # 93/93
 node scripts/capture.mjs      # 17+1 截图
 node scripts/p2-capture.mjs --root . --path "upstream/haloflux/lab.html" --out screenshots/p2/upstream-1600x900.png --width 1600 --height 900
 node scripts/p2-capture.mjs --root . --path "apps/companion/renderer/index.html?qa=1&mock=1&preset=agent-monitor&state=tool" --out screenshots/p2/after-1600x900.png --width 1600 --height 900
