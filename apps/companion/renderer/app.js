@@ -36,7 +36,7 @@ import { createMockStream } from './mock-session.js';
 import { projectMonitor } from './monitor-projection.mjs';
 import { parseObsidianMetadata } from './obsidian-metadata.mjs';
 import { eventRate, METRIC_REGISTRY, toolWaterfall, criticalPath } from '../../../packages/analytics/src/index.mjs';
-import { sortEvents, prepareReplay } from './replay-engine.mjs';
+import { prepareReplay } from './replay-engine.mjs';
 import { parseReplayAt, collectReplayPages } from './replay-history.mjs';
 
 /* ------------------------------------------------------------------ *
@@ -832,8 +832,14 @@ function canvasContext(canvas) {
   const width = Math.max(40, Math.round(canvas.clientWidth || 240));
   const height = Math.max(16, Math.round(canvas.clientHeight || 44));
   const dpr = Math.max(1, Math.min(3, window.devicePixelRatio || 1));
-  canvas.width = Math.round(width * dpr);
-  canvas.height = Math.round(height * dpr);
+  const pixelWidth = Math.round(width * dpr);
+  const pixelHeight = Math.round(height * dpr);
+  // Reallocating the backing store resets the canvas context and forces GPU
+  // uploads; only do it when CSS size or DPR actually changed.
+  if (canvas.width !== pixelWidth || canvas.height !== pixelHeight) {
+    canvas.width = pixelWidth;
+    canvas.height = pixelHeight;
+  }
   const ctx = canvas.getContext('2d');
   if (!ctx) return null;
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -1055,8 +1061,9 @@ function setTraceTab(tab) {
   clearNode(els.traceBody);
   if (tab === 'waterfall') {
     const result = toolWaterfall(state.events);
+    const visibleRows = result.rows.slice(-300);
     els.traceBody.appendChild(make('h4', '', `TOOL WATERFALL · ${result.rows.length} PAIRS · ${result.uncorrelated} UNCORRELATED`));
-    for (const row of [...result.rows].reverse()) {
+    for (const row of [...visibleRows].reverse()) {
       const line = make('div', 'trace-row', `${formatClock(row.timestamp)} · ${row.toolName || '—'} · ${row.status} · ${row.durationMs == null ? '—' : `${row.durationMs} ms`} · ${row.source || 'unknown'} · ${row.eventId || 'no eventId'}`);
       line.dataset.status = row.status;
       line.tabIndex = 0;
@@ -1068,6 +1075,9 @@ function setTraceTab(tab) {
       els.traceBody.appendChild(line);
     }
     if (result.rows.length === 0) els.traceBody.appendChild(make('div', 'trace-note', 'NO CORRELATED TOOL CALLS IN CACHE · TIMELINE ONLY'));
+    if (result.rows.length > visibleRows.length) {
+      els.traceBody.appendChild(make('div', 'trace-note', `SHOWING LAST ${visibleRows.length}/${result.rows.length} ROWS · FULL DATA REMAINS IN EVENT STORE`));
+    }
     els.traceBody.appendChild(make('div', 'trace-note', 'Every row maps to a stored/cached eventId; unpaired calls stay UNCORRELATED.'));
   } else if (tab === 'dag') {
     const spans = state.events.filter((event) => event.spanId || event.parentSpanId || event.traceId);
@@ -1107,10 +1117,19 @@ function renderLabMonitor() {
   const projection = projectMonitor({
     hosts: HOSTS,
     sessions: state.sessions,
-    events: state.events,
+    events: state.replay ? state.events.slice(-200) : state.events,
     selectedSessionId: state.selectedSessionId,
     mode: state.mode,
   });
+  if (state.replay) {
+    // The replay view keeps at most the visible prefix in state.events; the
+    // full count/tool/error totals come from prepared prefix counters.
+    projection.eventCount = state.replay.index + 1;
+    projection.selectedEventCount = state.replay.index + 1;
+    projection.toolEventCount = state.replay.prepared.toolCountAt(state.replay.index);
+    projection.errorEventCount = state.replay.prepared.errorCountAt(state.replay.index);
+    projection.selectedToolEventCount = projection.toolEventCount;
+  }
   const active = projection.selected;
   els.labHeadCount.textContent = `${projection.observedHostCount}/${projection.hostCount} HOSTS · ${projection.sessionCount} SESSIONS · ${projection.eventCount} EVENTS`;
   els.labFeedStatus.textContent = projection.mode === 'simulated' ? 'SIMULATED' : projection.mode.toUpperCase();
@@ -1164,7 +1183,8 @@ function renderLabMonitor() {
   }
 
   // Micro canvases: every pixel is derived from cached observed events.
-  const selectedEvents = state.events.filter((event) => event.sessionId === state.selectedSessionId);
+  const canvasEvents = state.replay ? state.events.slice(-200) : state.events;
+  const selectedEvents = canvasEvents.filter((event) => event.sessionId === state.selectedSessionId);
   drawRateCanvas(selectedEvents);
   drawFailureCanvas(selectedEvents);
   drawMatrixCanvas();
@@ -1695,9 +1715,13 @@ function bindEvents() {
     if (!replay) return;
     if (replay.playing) {
       replay.playing = false;
+      replay.elapsedBase = Math.max(0, Math.min(replay.durationMs, replay.elapsedBase + (performance.now() - replay.anchor) * replay.speed));
+      replay.elapsedMs = replay.elapsedBase;
       els.replayPlay.textContent = 'RESUME';
     } else {
       if (replay.elapsedMs >= replay.durationMs) replay.elapsedMs = 0;
+      replay.elapsedBase = replay.elapsedMs;
+      replay.anchor = performance.now();
       replay.playing = true;
       els.replayPlay.textContent = 'PAUSE';
     }
@@ -1709,10 +1733,16 @@ function bindEvents() {
     if (els.replayPlay) els.replayPlay.textContent = 'RESUME';
     const next = Math.min(replay.events.length - 1, replay.index + 1);
     replay.elapsedMs = Math.max(0, replay.events[next].timestamp - replay.events[0].timestamp);
+    replay.elapsedBase = replay.elapsedMs;
+    replay.anchor = performance.now();
     applyReplayFrame(next);
   });
   els.replaySpeed?.addEventListener('change', () => {
-    if (state.replay) state.replay.speed = Number(els.replaySpeed.value) || 1;
+    if (!state.replay) return;
+    const replay = state.replay;
+    replay.elapsedBase = replay.elapsedMs;
+    replay.anchor = performance.now();
+    replay.speed = Number(els.replaySpeed.value) || 1;
   });
   els.replayClose?.addEventListener('click', stopReplay);
   els.btnTrace?.addEventListener('click', openTrace);
@@ -1893,7 +1923,17 @@ function replayClock(ms) {
   return `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}.${Math.floor((value % 1000) / 100)}`;
 }
 
-function applyReplayFrame(index) {
+function renderReplayFrame() {
+  // Minimal update set: agents/sessions/settings do not change between replay
+  // ticks, so do not rebuild the whole page for every event cursor move.
+  renderSession();
+  renderEvents();
+  renderMode();
+  renderCompact();
+  renderLabMonitor();
+}
+
+function applyReplayFrame(index, { full = false } = {}) {
   const replay = state.replay;
   if (!replay) return;
   const frameStart = performance.now();
@@ -1904,12 +1944,17 @@ function applyReplayFrame(index) {
   state.sessions = [session];
   state.selectedSessionId = session.sessionId;
   state.selectedHost = session.host;
-  state.events = replay.events.slice(0, bounded + 1);
   state.mode = 'replay';
   state.reason = 'REPLAY · local event store';
   viz.setSessions([session]);
   viz.setSession(session);
-  renderAll();
+  if (full || !Array.isArray(state.events) || state.events.length > bounded + 1) {
+    state.events = replay.events.slice(0, bounded + 1);
+  } else if (state.events.length < bounded + 1) {
+    for (let i = state.events.length; i <= bounded; i += 1) state.events.push(replay.events[i]);
+  }
+  if (full) renderAll();
+  else renderReplayFrame();
   // TRACE is a research panel, not a per-frame overlay: re-rendering thousands
   // of waterfall rows on every replay tick was the dominant F-05 hot spot.
   // It refreshes when opened or when the user changes tabs.
@@ -1925,7 +1970,9 @@ function applyReplayFrame(index) {
 function replayTick() {
   const replay = state.replay;
   if (!replay || !replay.playing) return;
-  replay.elapsedMs += 200 * replay.speed;
+  // Monotonic clock: interval jitter must not change the effective 1x/2x speed.
+  const elapsed = replay.elapsedBase + (performance.now() - replay.anchor) * replay.speed;
+  replay.elapsedMs = elapsed;
   const duration = replay.durationMs;
   if (replay.elapsedMs >= duration) {
     replay.elapsedMs = duration;
@@ -1954,7 +2001,7 @@ async function startReplay(sessionId) {
         return res.json();
       },
     });
-    const events = sortEvents(history.events || []);
+    const events = history.events || [];
     if (events.length === 0) {
       toast('该会话没有可回放的历史事件');
       return false;
@@ -1966,7 +2013,7 @@ async function startReplay(sessionId) {
     window.__halofluxPerf = { prepareMs, events: prepared.events.length, frames: [] };
     state.replay = {
       sessionId, events: prepared.events, prepared, durationMs: prepared.durationMs,
-      index: 0, elapsedMs: 0, speed: 1, playing: true,
+      index: 0, elapsedMs: 0, elapsedBase: 0, anchor: performance.now(), speed: 1, playing: true,
       total: history.total, partial: history.partial, loaded: history.loaded,
       timer: setInterval(replayTick, 200),
     };
@@ -1981,12 +2028,14 @@ async function startReplay(sessionId) {
     if (REPLAY_AT_INFO.present && REPLAY_AT_INFO.valid) {
       const index = Math.max(0, Math.min(events.length - 1, Math.floor(REPLAY_AT_INFO.value)));
       state.replay.elapsedMs = Math.max(0, events[index].timestamp - events[0].timestamp);
+      state.replay.elapsedBase = state.replay.elapsedMs;
+      state.replay.anchor = performance.now();
       state.replay.playing = false;
       state.replay.index = index;
       if (els.replayPlay) els.replayPlay.textContent = 'RESUME';
-      applyReplayFrame(index);
+      applyReplayFrame(index, { full: true });
     } else {
-      applyReplayFrame(0);
+      applyReplayFrame(0, { full: true });
       replayTick();
     }
     return true;
@@ -2046,6 +2095,8 @@ function init() {
     const replay = state.replay;
     if (!replay) return false;
     replay.elapsedMs = Math.max(0, Number(offsetMs) || 0);
+    replay.elapsedBase = replay.elapsedMs;
+    replay.anchor = performance.now();
     replay.playing = false;
     if (els.replayPlay) els.replayPlay.textContent = 'RESUME';
     applyReplayFrame(replay.prepared.indexAt(replay.elapsedMs, 1));

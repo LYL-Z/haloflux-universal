@@ -1,8 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, rmSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
+import { DatabaseSync } from 'node:sqlite';
 
 import { createEvent } from '../../packages/event-schema/dist/index.js';
 import { EventStore, eventStorePath } from '../../packages/event-store/src/index.mjs';
@@ -139,6 +140,76 @@ test('event store ingestion cursor is a strict snapshot boundary', () => {
   store.deleteSession('session-store-1');
   assert.equal(store.query({ sessionId: 'session-store-1', limit: 10, snapshotSeq: snap.snapshotSeq }).total, 0);
   store.close();
+  rmSync(home, { recursive: true, force: true });
+});
+
+test('F-06: old P3.2-A database migrates without losing payloads or reusing seq', () => {
+  const home = mkdtempSync(path.join(tmpdir(), 'haloflux-store-'));
+  const file = path.join(home, 'events', 'haloflux-events.sqlite');
+  mkdirSync(path.dirname(file), { recursive: true });
+  // Build the pre-seq schema exactly as P3.2-A wrote it.
+  const old = new DatabaseSync(file);
+  old.exec(`CREATE TABLE events (
+    event_id TEXT PRIMARY KEY, schema_version INTEGER NOT NULL, timestamp INTEGER NOT NULL,
+    stored_at INTEGER NOT NULL, host TEXT NOT NULL, session_id TEXT NOT NULL,
+    run_id TEXT, trace_id TEXT, event_type TEXT NOT NULL, source TEXT NOT NULL,
+    confidence TEXT NOT NULL, payload TEXT NOT NULL
+  )`);
+  const a = evt({ eventId: 'evt-old-A', timestamp: 1000 });
+  const b = evt({ eventId: 'evt-old-B', timestamp: 2000 });
+  for (const event of [a, b]) {
+    old.prepare('INSERT INTO events VALUES (?,?,?,?,?,?,?,?,?,?,?,?)').run(
+      event.eventId, event.schemaVersion, event.timestamp, Date.now(), event.host, event.sessionId,
+      event.metadata?.runId || null, event.traceId || null, event.eventType, event.source, event.confidence, JSON.stringify(event),
+    );
+  }
+  old.close();
+  const store = new EventStore({ home });
+  const migrated = store.query({ sessionId: 'session-store-1', limit: 10 });
+  assert.deepEqual(migrated.events.map((e) => e.eventId).sort(), ['evt-old-A', 'evt-old-B']);
+  assert.equal(store.integrityCheck(), 'ok');
+  const snap = store.snapshot({ sessionId: 'session-store-1' });
+  assert.ok(snap.snapshotSeq >= 2);
+  const next = store.append(evt({ eventId: 'evt-old-C', timestamp: 500 }));
+  assert.ok(next.seq > snap.snapshotSeq);
+  store.close();
+  rmSync(home, { recursive: true, force: true });
+});
+
+test('F-06: deleting the maximum seq never reuses it or pollutes an old snapshot', () => {
+  const home = mkdtempSync(path.join(tmpdir(), 'haloflux-store-'));
+  const store = new EventStore({ home });
+  for (const id of ['A', 'B', 'C']) {
+    store.append(evt({ eventId: `evt-f06-${id}`, timestamp: 1000 + id.charCodeAt(0), metadata: { runId: 'r1' } }));
+  }
+  const snap = store.snapshot({ sessionId: 'session-store-1' });
+  assert.equal(snap.total, 3);
+  store.deleteEvent('evt-f06-C'); // delete the current maximum seq
+  const d = evt({ eventId: 'evt-f06-D', timestamp: 500, metadata: { runId: 'r1' } });
+  const inserted = store.append(d);
+  assert.ok(inserted.seq > snap.snapshotSeq, `new seq ${inserted.seq} must exceed old snapshot ${snap.snapshotSeq}`);
+  const old = store.query({ sessionId: 'session-store-1', limit: 100, snapshotSeq: snap.snapshotSeq });
+  assert.deepEqual(old.events.map((e) => e.eventId).sort(), ['evt-f06-A', 'evt-f06-B']);
+  const fresh = store.snapshot({ sessionId: 'session-store-1' });
+  assert.equal(fresh.total, 3);
+  assert.equal(store.query({ sessionId: 'session-store-1', limit: 100, snapshotSeq: fresh.snapshotSeq }).events.some((e) => e.eventId === 'evt-f06-D'), true);
+
+  // Multiple tail deletes, VACUUM and reopen must not lower the allocator.
+  store.deleteEvent('evt-f06-A');
+  store.deleteEvent('evt-f06-B');
+  store.deleteEvent('evt-f06-D');
+  store.vacuum();
+  const beforeClose = store.append(evt({ eventId: 'evt-f06-E' }));
+  store.close();
+  const reopened = new EventStore({ home });
+  const afterOpen = reopened.append(evt({ eventId: 'evt-f06-F' }));
+  assert.ok(afterOpen.seq > beforeClose.seq, 'reopen must not reuse seq');
+  assert.equal(reopened.query({ limit: 10 }).events.some((e) => e.eventId === 'evt-f06-F'), true);
+  reopened.deleteSession('session-store-1');
+  const afterDeleteSession = reopened.append(evt({ eventId: 'evt-f06-G' }));
+  assert.ok(afterDeleteSession.seq > afterOpen.seq, 'session deletion must not reset highwater');
+  assert.equal(reopened.query({ limit: 10 }).events[0].eventId, 'evt-f06-G');
+  reopened.close();
   rmSync(home, { recursive: true, force: true });
 });
 

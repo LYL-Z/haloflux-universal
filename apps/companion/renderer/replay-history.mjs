@@ -47,7 +47,7 @@ export async function collectReplayPages({
     if (!page.nextCursor || page.nextCursor <= afterSeq) break;
     afterSeq = page.nextCursor;
   }
-  events.sort((a, b) => (a.timestamp - b.timestamp) || String(a.eventId).localeCompare(String(b.eventId)));
+  // Keep ingestion order here; prepareReplay() performs the single display sort.
   return {
     events,
     total: snapshotTotal === null ? events.length : snapshotTotal,

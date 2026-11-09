@@ -69,26 +69,55 @@ export class EventStore {
       if (!columns.includes('seq')) this.db.exec('ALTER TABLE events ADD COLUMN seq INTEGER');
       this.db.exec('UPDATE events SET seq = rowid WHERE seq IS NULL');
       this.db.exec('CREATE UNIQUE INDEX IF NOT EXISTS idx_events_seq ON events(seq)');
+      const maxSeq = this.db.prepare('SELECT COALESCE(MAX(seq), 0) AS n FROM events').get();
+      this.db.prepare(`
+        INSERT INTO meta(key, value) VALUES ('seq_highwater', ?)
+        ON CONFLICT(key) DO UPDATE SET value = MAX(value, excluded.value)
+      `).run(Number(maxSeq?.n || 0));
       this.db.exec('PRAGMA user_version = 2');
     }
+    this.getHighwater = this.db.prepare("SELECT value FROM meta WHERE key = 'seq_highwater'");
+    this.setHighwater = this.db.prepare("UPDATE meta SET value = ? WHERE key = 'seq_highwater'");
     this.insert = this.db.prepare(`
       INSERT OR IGNORE INTO events
         (event_id, schema_version, timestamp, stored_at, seq, host, session_id, run_id, trace_id, event_type, source, confidence, payload)
-      VALUES (?, ?, ?, ?, (SELECT COALESCE(MAX(seq), 0) + 1 FROM events), ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
     this.count = this.db.prepare('SELECT COUNT(*) AS n FROM events');
   }
 
   append(event) {
     if (this.closed) throw new Error('event store is closed');
+    if (this.inTransaction) return this.#appendInTransaction(event);
+    this.db.exec('BEGIN IMMEDIATE');
+    this.inTransaction = true;
+    try {
+      const result = this.#appendInTransaction(event);
+      this.db.exec('COMMIT');
+      this.inTransaction = false;
+      return result;
+    } catch (error) {
+      try { this.db.exec('ROLLBACK'); } catch { /* ignore */ }
+      this.inTransaction = false;
+      throw error;
+    }
+  }
+
+  #appendInTransaction(event) {
     const result = validateEvent(event);
     if (!result.ok) throw new Error(`refusing invalid event: ${result.errors.map((e) => e.path).join(',')}`);
     const payload = JSON.stringify(event);
+    // Persistent high-water mark: deleting the current maximum can never make
+    // this value go backwards, so an old snapshot cannot observe new events.
+    const current = this.getHighwater.get();
+    const seq = Number(current?.value || 0) + 1;
+    this.setHighwater.run(seq);
     const info = this.insert.run(
       event.eventId,
       event.schemaVersion,
       event.timestamp,
       Date.now(),
+      seq,
       event.host,
       event.sessionId,
       event.metadata?.runId || event.runId || null,
@@ -98,7 +127,7 @@ export class EventStore {
       event.confidence,
       payload,
     );
-    return { inserted: Number(info.changes) > 0 };
+    return { inserted: Number(info.changes) > 0, seq };
   }
 
   appendMany(events) {
@@ -106,15 +135,18 @@ export class EventStore {
     let inserted = 0;
     let duplicates = 0;
     this.db.exec('BEGIN IMMEDIATE');
+    this.inTransaction = true;
     try {
       for (const event of list) {
-        const result = this.append(event);
+        const result = this.#appendInTransaction(event);
         if (result.inserted) inserted += 1;
         else duplicates += 1;
       }
       this.db.exec('COMMIT');
+      this.inTransaction = false;
     } catch (error) {
       try { this.db.exec('ROLLBACK'); } catch { /* already rolled back */ }
+      this.inTransaction = false;
       throw error;
     }
     return { inserted, duplicates, total: list.length };
@@ -203,6 +235,11 @@ export class EventStore {
   deleteSession(sessionId) {
     const info = this.db.prepare('DELETE FROM events WHERE session_id = ?').run(sessionId);
     return { deleted: Number(info.changes || 0), sessionId };
+  }
+
+  deleteEvent(eventId) {
+    const info = this.db.prepare('DELETE FROM events WHERE event_id = ?').run(eventId);
+    return { deleted: Number(info.changes || 0), eventId };
   }
 
   vacuum() {

@@ -106,9 +106,18 @@ export function prepareReplay(events, { checkpointEvery = CHECKPOINT_EVERY, bins
     }
   }
   const checkpoints = [];
+  const toolCounts = new Uint32Array(list.length || 1);
+  const errorCounts = new Uint32Array(list.length || 1);
   let session = null;
+  let toolCount = 0;
+  let errorCount = 0;
   for (let i = 0; i < list.length; i += 1) {
-    session = applyReplayEvent(session, list[i]);
+    const event = list[i];
+    if (typeof event.eventType === 'string' && event.eventType.startsWith('tool.')) toolCount += 1;
+    if (typeof event.eventType === 'string' && /error|fail/i.test(event.eventType)) errorCount += 1;
+    toolCounts[i] = toolCount;
+    errorCounts[i] = errorCount;
+    session = applyReplayEvent(session, event);
     if (i % checkpointEvery === 0) checkpoints.push({ index: i, session: cloneSession(session) });
   }
   function indexAt(elapsedMs, speed = 1) {
@@ -149,6 +158,8 @@ export function prepareReplay(events, { checkpointEvery = CHECKPOINT_EVERY, bins
     indexAt,
     sessionAtIndex,
     eventAt: (index) => list[Math.max(0, Math.min(list.length - 1, Math.floor(index)))] || null,
+    toolCountAt: (index) => (list.length ? toolCounts[Math.max(0, Math.min(list.length - 1, Math.floor(index)))] : 0),
+    errorCountAt: (index) => (list.length ? errorCounts[Math.max(0, Math.min(list.length - 1, Math.floor(index)))] : 0),
   };
 }
 
