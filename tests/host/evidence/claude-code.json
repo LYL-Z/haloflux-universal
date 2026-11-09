@@ -1,0 +1,153 @@
+{
+  "host": "claude-code",
+  "generatedAt": "2026-11-08T16:30:42.665Z",
+  "machine": {
+    "platform": "win32",
+    "release": "10.0.26300",
+    "node": "v24.16.0",
+    "cwd": "D:\\HALOFLUX"
+  },
+  "status": "PARTIAL",
+  "capabilities": {
+    "sessionStart": true,
+    "taskReceived": true,
+    "toolUse": true,
+    "toolResult": true,
+    "approval": true,
+    "outputStream": false,
+    "tokenMetrics": false,
+    "sessionEnd": true,
+    "passive": false
+  },
+  "checks": {
+    "adapterPresent": true,
+    "cliDetected": "C:\\Users\\Lenovo\\AppData\\Local\\AgentHaven\\bin\\claude.cmd",
+    "hooksInstalled": true,
+    "synthetic": {
+      "allOk": true,
+      "received": [
+        "session.start",
+        "task.received",
+        "tool.start",
+        "tool.end",
+        "tool.fail",
+        "approval.request",
+        "run.end",
+        "session.end"
+      ],
+      "missing": [],
+      "attempts": [
+        {
+          "label": "SessionStart",
+          "expectedEvent": "session.start",
+          "ok": true,
+          "exitCode": 0
+        },
+        {
+          "label": "UserPromptSubmit",
+          "expectedEvent": "task.received",
+          "ok": true,
+          "exitCode": 0
+        },
+        {
+          "label": "PreToolUse",
+          "expectedEvent": "tool.start",
+          "ok": true,
+          "exitCode": 0
+        },
+        {
+          "label": "PostToolUse",
+          "expectedEvent": "tool.end",
+          "ok": true,
+          "exitCode": 0
+        },
+        {
+          "label": "PostToolUseFailure",
+          "expectedEvent": "tool.fail",
+          "ok": true,
+          "exitCode": 0
+        },
+        {
+          "label": "PermissionRequest",
+          "expectedEvent": "approval.request",
+          "ok": true,
+          "exitCode": 0
+        },
+        {
+          "label": "Stop",
+          "expectedEvent": "run.end",
+          "ok": true,
+          "exitCode": 0
+        },
+        {
+          "label": "SessionEnd",
+          "expectedEvent": "session.end",
+          "ok": true,
+          "exitCode": 0
+        }
+      ]
+    },
+    "privacy": {
+      "secretsChecked": [
+        "QA_SECRET_PROMPT_9f2c1b"
+      ],
+      "leakedInState": [],
+      "pass": true
+    }
+  },
+  "real": {
+    "status": "PASS",
+    "reason": "real Claude Code session observed (session.start, task.received, error, session.end), but tool/completion events are missing because the host is not logged in (Not logged in · Please run /login)",
+    "events": [
+      {
+        "sessionId": "b03dca6b-bf6c-4fc6-aac5-cb83a541c77f",
+        "host": "claude-code",
+        "hostVersion": "2.1.299",
+        "state": "disconnected",
+        "reportedState": "disconnected",
+        "source": "host-native",
+        "confidence": "confirmed",
+        "connected": false,
+        "lastEventAt": 1794155442539,
+        "startedAt": 1794155438131,
+        "metrics": {},
+        "recentEvents": [
+          {
+            "eventType": "session.start",
+            "timestamp": 1794155438131,
+            "label": "startup"
+          },
+          {
+            "eventType": "task.received",
+            "timestamp": 1794155440877
+          },
+          {
+            "eventType": "error",
+            "timestamp": 1794155441536
+          },
+          {
+            "eventType": "session.end",
+            "timestamp": 1794155442539,
+            "label": "other"
+          }
+        ],
+        "warnings": []
+      }
+    ],
+    "session": {
+      "available": true,
+      "executable": "C:\\Users\\Lenovo\\AppData\\Local\\AgentHaven\\bin\\claude.cmd",
+      "code": 1,
+      "signal": null,
+      "stdout": "Not logged in · Please run /login\n",
+      "stderr": "Claude Code doesn't recognize the model \"deepseek-v4-pro\", so it assumes a context window of 200k tokens. Update Claude Code, or see https://code.claude.com/docs/en/model-config#correct-the-window-for-a-gateway-or-custom-model-id to set the window.\n[claude-code:unrecognized_model] {\"model\":\"deepseek-v4-pro\",\"query_source\":\"sdk\"}\n"
+    },
+    "startedAt": 1794155436617,
+    "eventTypes": [
+      "session.start",
+      "task.received",
+      "error",
+      "session.end"
+    ]
+  }
+}

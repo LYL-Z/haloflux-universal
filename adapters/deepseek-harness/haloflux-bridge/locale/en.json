@@ -1,0 +1,4 @@
+{
+  "name": "HALOFLUX Bridge",
+  "description": "Sends normalized DeepSeek Harness session events (metadata only) to the local HALOFLUX Event Bridge."
+}

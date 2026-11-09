@@ -1,0 +1,51 @@
+{
+  "name": "dsh-profile-desktop",
+  "private": true,
+  "dependencies": {
+    "@caob23/dsh-browser-control": "1.0.19",
+    "dsh-armorbreak": "link:D:/dsh-ABM/armorbreak",
+    "dsh-auto-continue": "0.4.7",
+    "dsh-better-sidebar": "0.28.0",
+    "dsh-chat-import": "0.26.3",
+    "dsh-claude-desktop-theme": "0.7.0",
+    "dsh-codex-effort-slider": "^1.1.3",
+    "dsh-computer-use-win": "0.5.1",
+    "dsh-connect-workbuddy": "file:D:/dsh-plugin/downloads/dsh-connect-workbuddy-5.2.3.tgz",
+    "dsh-context": "0.76.0",
+    "dsh-genui": "0.3.1",
+    "dsh-haloflux": "link:D:/HALOFLUX/upstream/dsh-haloflux",
+    "dsh-haloflux-bridge": "link:D:/HALOFLUX/adapters/deepseek-harness/haloflux-bridge",
+    "dsh-plugin-subscriptions": "0.9.12",
+    "dsh-skill-mcp-panel": "2.3.5",
+    "dshmarket": "1.66.42"
+  },
+  "dsh": {
+    "profile": {
+      "bundles": [
+        "@deepseek-ai/dsh-base",
+        "@deepseek-ai/dsh-web-app",
+        "@deepseek-ai/dsh-experimental-voice-input-bundle",
+        "@deepseek-ai/dsh-experimental-agent-team-profile",
+        "@deepseek-ai/dsh-experimental-auto-review",
+        "@deepseek-ai/dsh-experimental-inspector-profile",
+        "@caob23/dsh-browser-control",
+        "dsh-better-sidebar",
+        "dsh-connect-workbuddy",
+        "dsh-genui",
+        "dsh-skill-mcp-panel",
+        "dshmarket",
+        "dsh-claude-desktop-theme",
+        "dsh-computer-use-win",
+        "dsh-chat-import",
+        "dsh-plugin-subscriptions",
+        "dsh-haloflux",
+        "dsh-haloflux-bridge"
+      ]
+    },
+    "desktopNextPlugins": 1,
+    "desktopNextOnboarding": {
+      "version": 1,
+      "outcome": "completed"
+    }
+  }
+}

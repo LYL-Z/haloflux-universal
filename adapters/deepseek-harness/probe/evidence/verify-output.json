@@ -1,0 +1,71 @@
+﻿{
+  "timestamp": "2026-11-08T16:16:42.889Z",
+  "hostVersion": "0.2.1-rc.5",
+  "offline": {
+    "pass": true,
+    "received": 12,
+    "types": [
+      "session.start",
+      "run.start",
+      "task.received",
+      "output.start",
+      "tool.start",
+      "tool.end",
+      "output.end",
+      "run.end",
+      "tool.fail"
+    ],
+    "tokenEvent": {
+      "schemaVersion": 1,
+      "eventId": "dsh-17a47b5cdd-7-7-outputend",
+      "timestamp": 1794154602090,
+      "host": "deepseek-harness",
+      "hostVersion": "0.2.1-rc.5",
+      "sessionId": "session-verify-01",
+      "eventType": "output.end",
+      "state": "running",
+      "source": "host-native",
+      "confidence": "confirmed",
+      "metadata": {
+        "turn": 1,
+        "step": 1,
+        "tokenCount": 42,
+        "contextUsed": 1000
+      }
+    },
+    "secretLeaks": [],
+    "schemaFailures": 0,
+    "error": null
+  },
+  "gate": {
+    "configOffPass": true,
+    "settingsOffPass": true,
+    "pass": true,
+    "error": null
+  },
+  "live": {
+    "pass": false,
+    "log": "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\haloflux-dsh-bridge-events.jsonl",
+    "exists": true,
+    "events": 1236,
+    "sessions": 6,
+    "types": [
+      "tool.end",
+      "output.end",
+      "tool.start",
+      "session.heartbeat",
+      "tool.fail",
+      "error",
+      "session.end",
+      "run.start",
+      "task.received",
+      "session.start"
+    ],
+    "tokenEvents": 315,
+    "invalid": 0,
+    "missing": [
+      "run.end"
+    ],
+    "diagnostics": []
+  }
+}

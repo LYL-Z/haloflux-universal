@@ -1,0 +1,6 @@
+{
+  "name": "@haloflux/event-bridge-tests",
+  "private": true,
+  "type": "module",
+  "main": "index.js"
+}

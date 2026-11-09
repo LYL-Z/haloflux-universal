@@ -1,0 +1,6 @@
+{
+  "name": "@haloflux/settings-tests",
+  "private": true,
+  "type": "module",
+  "main": "index.js"
+}

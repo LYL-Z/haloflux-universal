@@ -1,0 +1,41 @@
+{
+  "recordedAt": "2026-11-08T16:00:00-08:00",
+  "tool": "plugin_manager",
+  "action": "install_bundle",
+  "target": "D:\\HALOFLUX\\adapters\\deepseek-harness\\haloflux-bridge",
+  "result": {
+    "stage": "enable",
+    "target": "dsh-haloflux-bridge",
+    "enabled": true,
+    "changed": true,
+    "application": "applied",
+    "registries": [
+      null
+    ],
+    "packageResult": {
+      "exitCode": 0,
+      "output": "✓ Lockfile passes supply-chain policies (verified 7m ago)\nProgress: resolved 1, reused 0, downloaded 0, added 0\n[WARN] Issues with peer dependencies found. Run \"pnpm peers check\" to list them.\nAlready up to date\nProgress: resolved 283, reused 1, downloaded 0, added 0, done\n\ndependencies:\n+ dsh-haloflux-bridge 0.1.0 <- D:\\HALOFLUX\\adapters\\deepseek-harness\\haloflux-bridge\n\nDone in 1.5s using pnpm v11.28.5\n",
+      "truncated": false,
+      "logPath": "C:\\Users\\Lenovo\\.dsh\\profiles\\desktop\\.plugin-manager\\logs\\operation-DoxV3t\\pnpm.log"
+    },
+    "bundle": "dsh-haloflux-bridge",
+    "version": "0.1.0",
+    "warnings": []
+  },
+  "profile": {
+    "path": "C:\\Users\\Lenovo\\.dsh\\profiles\\desktop",
+    "dependencySpec": "link:D:/HALOFLUX/adapters/deepseek-harness/haloflux-bridge",
+    "bundlesListed": true,
+    "pluginEntry": {
+      "entryId": "include:haloflux-bridge",
+      "moduleName": "dsh-haloflux-bridge",
+      "enabled": true,
+      "fiberPhase": "active",
+      "patchId": "haloflux-bridge"
+    }
+  },
+  "notes": [
+    "The bundle has no client half: it is headless, cannot affect the Web GUI, and adds one Host row.",
+    "remove_bundle + install_bundle updates the profile manifest but does NOT re-import an already mounted Host module; a full DSH restart is required for bridge code changes. This was observed during development (probe-log diagnostic rows from the updated code did not appear until restart)."
+  ]
+}

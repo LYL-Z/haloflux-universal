@@ -1,0 +1,29 @@
+HALOFLUX Universal Agent Visualizer
+Copyright (c) 2026. Personal, noncommercial use only.
+
+Required Notice:
+    Copyright (c) 2026 Ryder191 (RYDER CODE / Ms MAIKEBAIs CAT) - https://github.com/Ryder191/haloflux
+    Noncommercial use only. Any commercial use is strictly prohibited. No commercial licenses are offered.
+
+This project is a noncommercial derivative of HALOFLUX (PolyForm Noncommercial
+License 1.0.0). It includes and adapts the canvas light-field engine and visual
+language of HALOFLUX, and a DeepSeek Harness port by Ke-wood (dsh-haloflux,
+also PolyForm Noncommercial 1.0.0, commit 90a1caa7fbb6b7b7c24151ecf9fdde767362845f).
+
+Original work:
+    HALOFLUX - https://github.com/Ryder191/haloflux
+    Commit 016bef651c4f911f08039ba159d36a6f246ff5d2
+
+DeepSeek Harness port:
+    dsh-haloflux - https://github.com/Ke-wood/dsh-haloflux (v0.7.1)
+
+Music (not loaded by this project): "Synthwave 421k" by The Cynic Project,
+CC0, via OpenGameArt.
+
+What is new in this project:
+    the unified agent event schema, the loopback event bridge, the multi-session
+    state machine, the cross-host adapters (DeepSeek Harness, Claude Code, Codex,
+    Cursor, WorkBuddy, TRAE), the Electron desktop companion, the installer and
+    rollback tooling, and the tests. Those files were written for this project.
+
+Redistribution requires keeping LICENSE, NOTICE and the attribution above.

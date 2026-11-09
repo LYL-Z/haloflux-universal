@@ -1,0 +1,105 @@
+{
+  "host": "codex",
+  "generatedAt": "2026-11-08T16:30:01.790Z",
+  "machine": {
+    "platform": "win32",
+    "release": "10.0.26300",
+    "node": "v24.16.0",
+    "cwd": "D:\\HALOFLUX"
+  },
+  "status": "PARTIAL",
+  "capabilities": {
+    "sessionStart": true,
+    "taskReceived": true,
+    "toolUse": true,
+    "toolResult": true,
+    "approval": true,
+    "outputStream": false,
+    "tokenMetrics": false,
+    "sessionEnd": false,
+    "passive": true
+  },
+  "checks": {
+    "adapterPresent": true,
+    "cliDetected": "C:\\Users\\Lenovo\\AppData\\Local\\AgentHaven\\bin\\codex.cmd",
+    "hooksInstalled": true,
+    "synthetic": {
+      "allOk": true,
+      "received": [
+        "session.start",
+        "task.received",
+        "tool.start",
+        "approval.request",
+        "tool.end",
+        "run.end"
+      ],
+      "missing": [],
+      "attempts": [
+        {
+          "label": "SessionStart",
+          "expectedEvent": "session.start",
+          "ok": true,
+          "exitCode": 0
+        },
+        {
+          "label": "UserPromptSubmit",
+          "expectedEvent": "task.received",
+          "ok": true,
+          "exitCode": 0
+        },
+        {
+          "label": "PreToolUse",
+          "expectedEvent": "tool.start",
+          "ok": true,
+          "exitCode": 0
+        },
+        {
+          "label": "PermissionRequest",
+          "expectedEvent": "approval.request",
+          "ok": true,
+          "exitCode": 0
+        },
+        {
+          "label": "PostToolUse",
+          "expectedEvent": "tool.end",
+          "ok": true,
+          "exitCode": 0
+        },
+        {
+          "label": "Stop",
+          "expectedEvent": "run.end",
+          "ok": true,
+          "exitCode": 0
+        }
+      ]
+    },
+    "watcher": {
+      "attempted": true,
+      "events": 4,
+      "source": "derived",
+      "sourceFile": "~\\.codex\\sessions\\2026\\11\\08\\rollout-2026-11-08T08-19-40-01a1bbf5-54c6-7e92-bc4c-1662b8ddb7e0.jsonl"
+    },
+    "privacy": {
+      "secretsChecked": [
+        "QA_SECRET_CODEX_4d8e"
+      ],
+      "leakedInState": [],
+      "pass": true
+    }
+  },
+  "real": {
+    "status": "BLOCKED",
+    "reason": "real codex process ran (exit 2) but created no new codex session in the bridge; hooks likely not installed/trusted or host rejected the turn",
+    "events": [],
+    "session": {
+      "available": true,
+      "executable": "C:\\Users\\Lenovo\\AppData\\Local\\AgentHaven\\bin\\codex.cmd",
+      "code": 2,
+      "signal": null,
+      "stdout": "",
+      "stderr": "error: unexpected argument 'with' found\n\nUsage: codex exec [OPTIONS] [PROMPT]\n       codex exec [OPTIONS] <COMMAND> [ARGS]\n\nFor more information, try '--help'.\n"
+    },
+    "beforeEventCount": 10,
+    "startedAt": 1794155393184
+  }
+}

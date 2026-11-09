@@ -1,0 +1,3025 @@
+﻿{
+    "schemaVersion":  1,
+    "serverTime":  1794155333167,
+    "activeSessionId":  "71cdff68-0db6-48f4-b270-6c1b8aa9f554",
+    "hosts":  [
+                  {
+                      "host":  "deepseek-harness",
+                      "hostVersion":  "0.2.1-rc.5",
+                      "connected":  true,
+                      "lastSeen":  1794155331025,
+                      "capabilities":  {
+                                           "sessionStart":  true,
+                                           "toolUse":  true,
+                                           "tokenMetrics":  true,
+                                           "approval":  true,
+                                           "outputStream":  true
+                                       },
+                      "capabilitiesSource":  "adapter",
+                      "warnings":  [
+
+                                   ]
+                  },
+                  {
+                      "host":  "generic",
+                      "hostVersion":  "",
+                      "connected":  true,
+                      "lastSeen":  1794154981857,
+                      "capabilities":  {
+                                           "sessionStart":  true,
+                                           "toolUse":  true,
+                                           "tokenMetrics":  true,
+                                           "approval":  true,
+                                           "outputStream":  true
+                                       },
+                      "capabilitiesSource":  "adapter",
+                      "warnings":  [
+
+                                   ]
+                  },
+                  {
+                      "host":  "workbuddy",
+                      "hostVersion":  "5.9.3.0",
+                      "connected":  false,
+                      "lastSeen":  1794154981654,
+                      "capabilities":  {
+                                           "sessionStart":  true,
+                                           "toolUse":  true,
+                                           "tokenMetrics":  true,
+                                           "approval":  false,
+                                           "outputStream":  false
+                                       },
+                      "capabilitiesSource":  "adapter",
+                      "warnings":  [
+
+                                   ]
+                  },
+                  {
+                      "host":  "trae",
+                      "hostVersion":  "",
+                      "connected":  true,
+                      "lastSeen":  1794154981433,
+                      "capabilities":  {
+                                           "sessionStart":  false,
+                                           "toolUse":  false,
+                                           "tokenMetrics":  false,
+                                           "approval":  false,
+                                           "outputStream":  false
+                                       },
+                      "capabilitiesSource":  "adapter",
+                      "warnings":  [
+
+                                   ]
+                  },
+                  {
+                      "host":  "cursor",
+                      "hostVersion":  "3.29.9",
+                      "connected":  true,
+                      "lastSeen":  1794154981203,
+                      "capabilities":  {
+                                           "sessionStart":  true,
+                                           "toolUse":  true,
+                                           "tokenMetrics":  false,
+                                           "approval":  false,
+                                           "outputStream":  false
+                                       },
+                      "capabilitiesSource":  "adapter",
+                      "warnings":  [
+
+                                   ]
+                  },
+                  {
+                      "host":  "codex",
+                      "hostVersion":  "0.154.0",
+                      "connected":  true,
+                      "lastSeen":  1794154981004,
+                      "capabilities":  {
+                                           "sessionStart":  true,
+                                           "toolUse":  true,
+                                           "tokenMetrics":  false,
+                                           "approval":  true,
+                                           "outputStream":  false
+                                       },
+                      "capabilitiesSource":  "adapter",
+                      "warnings":  [
+
+                                   ]
+                  },
+                  {
+                      "host":  "claude-code",
+                      "hostVersion":  "2.1.299",
+                      "connected":  true,
+                      "lastSeen":  1794154980597,
+                      "capabilities":  {
+                                           "sessionStart":  true,
+                                           "toolUse":  true,
+                                           "tokenMetrics":  false,
+                                           "approval":  true,
+                                           "outputStream":  false
+                                       },
+                      "capabilitiesSource":  "adapter",
+                      "warnings":  [
+
+                                   ]
+                  }
+              ],
+    "sessions":  [
+                     {
+                         "sessionId":  "49c15aba-d70d-4677-b500-04bc7d0a641f",
+                         "host":  "deepseek-harness",
+                         "hostVersion":  "0.2.1-rc.5",
+                         "state":  "tool",
+                         "reportedState":  "tool",
+                         "source":  "host-native",
+                         "confidence":  "confirmed",
+                         "connected":  true,
+                         "lastEventAt":  1794155330875,
+                         "startedAt":  1794154901707,
+                         "metrics":  {
+                                         "toolName":  "pwsh",
+                                         "step":  2,
+                                         "turn":  2,
+                                         "tokenCount":  1625,
+                                         "contextUsed":  415923
+                                     },
+                         "recentEvents":  [
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794154901707
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154901709,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154909757,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794154913542
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154913546,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154913605,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154913606,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154922363,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "session.heartbeat",
+                                                  "timestamp":  1794154924338
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794154950686
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154950690,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154950750,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "session.heartbeat",
+                                                  "timestamp":  1794154954341
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794154971895
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154971900,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154971955,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "session.heartbeat",
+                                                  "timestamp":  1794154984342
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794154984956
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154984959,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154985028,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154985029,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154985097,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154985099,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.fail",
+                                                  "timestamp":  1794154985111,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794154987473
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154987476,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154989177,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794154991563
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154991565,
+                                                  "toolName":  "read"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154991581,
+                                                  "toolName":  "read"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794154996216
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154996221,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154996304,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154996306,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154996390,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155000337
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155000339,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155001882,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155004038
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155004042,
+                                                  "toolName":  "read"
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155004044,
+                                                  "toolName":  "read"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155004064,
+                                                  "toolName":  "read"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155004069,
+                                                  "toolName":  "read"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155014336
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155014340,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "session.heartbeat",
+                                                  "timestamp":  1794155014345
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155014407,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155014409,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155014471,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155014473,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155014548,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155014549,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155014619,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155020105
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155020107,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155027965,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155030704
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155030706,
+                                                  "toolName":  "read_image"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155030743,
+                                                  "toolName":  "read_image"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155038285
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155038287,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155038341,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155038342,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155039939,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155043805
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155043809,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "session.heartbeat",
+                                                  "timestamp":  1794155044345
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155045361,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155052367
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155052370,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.fail",
+                                                  "timestamp":  1794155052387,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155052389,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155052452,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155052453,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155052520,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155055248
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155055249,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155056657,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155058500
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155058503,
+                                                  "toolName":  "read"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155058517,
+                                                  "toolName":  "read"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155060408
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155060410,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155061724,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155063279
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155063282,
+                                                  "toolName":  "read"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155063298,
+                                                  "toolName":  "read"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155065398
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155065401,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155065471,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155069322
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155069323,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "session.heartbeat",
+                                                  "timestamp":  1794155074346
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155078202,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155079833
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155079835,
+                                                  "toolName":  "read_image"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155079904,
+                                                  "toolName":  "read_image"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155084572
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155084574,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155085805,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155094728
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155094733,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "session.heartbeat",
+                                                  "timestamp":  1794155104357
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155104696,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155106719
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155106720,
+                                                  "toolName":  "read_image"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155106793,
+                                                  "toolName":  "read_image"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155122876
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155122881,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "session.heartbeat",
+                                                  "timestamp":  1794155134368
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155143291,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155145611
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155145612,
+                                                  "toolName":  "read_image"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155145663,
+                                                  "toolName":  "read_image"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155153682
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155153684,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155156277,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "session.heartbeat",
+                                                  "timestamp":  1794155164376
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155175937
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155175939,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155177043,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155180502
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155180503,
+                                                  "toolName":  "read"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155180512,
+                                                  "toolName":  "read"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155185737
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155185738,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155185760,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155185761,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155187723,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155193161
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155193162,
+                                                  "toolName":  "team_task_get"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155193169,
+                                                  "toolName":  "team_task_get"
+                                              },
+                                              {
+                                                  "eventType":  "session.heartbeat",
+                                                  "timestamp":  1794155194375
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155197105
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155197106,
+                                                  "toolName":  "team_task_update"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155197116,
+                                                  "toolName":  "team_task_update"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155216528
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155216531,
+                                                  "toolName":  "send_message"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155216540,
+                                                  "toolName":  "send_message"
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155216541,
+                                                  "toolName":  "send_message"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155216549,
+                                                  "toolName":  "send_message"
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155216550,
+                                                  "toolName":  "send_message"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155216623,
+                                                  "toolName":  "send_message"
+                                              },
+                                              {
+                                                  "eventType":  "session.heartbeat",
+                                                  "timestamp":  1794155224377
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155229186
+                                              },
+                                              {
+                                                  "eventType":  "run.end",
+                                                  "timestamp":  1794155229188,
+                                                  "label":  "completed"
+                                              },
+                                              {
+                                                  "eventType":  "session.end",
+                                                  "timestamp":  1794155229206,
+                                                  "label":  "session-disposed"
+                                              },
+                                              {
+                                                  "eventType":  "session.start",
+                                                  "timestamp":  1794155315461,
+                                                  "label":  "session-created"
+                                              },
+                                              {
+                                                  "eventType":  "run.start",
+                                                  "timestamp":  1794155315476,
+                                                  "label":  "turn"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155320484
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155320488,
+                                                  "toolName":  "read_image"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155320556,
+                                                  "toolName":  "read_image"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155330857
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155330861,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.fail",
+                                                  "timestamp":  1794155330874,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155330875,
+                                                  "toolName":  "pwsh"
+                                              }
+                                          ],
+                         "warnings":  [
+
+                                      ]
+                     },
+                     {
+                         "sessionId":  "a47a2ae6-ec8e-439c-88ce-84a2ca371a72",
+                         "host":  "deepseek-harness",
+                         "hostVersion":  "0.2.1-rc.5",
+                         "state":  "disconnected",
+                         "reportedState":  "disconnected",
+                         "source":  "host-native",
+                         "confidence":  "confirmed",
+                         "connected":  false,
+                         "lastEventAt":  1794155075639,
+                         "startedAt":  1794154902393,
+                         "metrics":  {
+                                         "toolName":  "pwsh",
+                                         "step":  48,
+                                         "turn":  2,
+                                         "tokenCount":  55532,
+                                         "contextUsed":  316673
+                                     },
+                         "recentEvents":  [
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794154902393
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154902395,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154902440,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154902441,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154902468,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794154905797
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154905800,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154909202,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "session.heartbeat",
+                                                  "timestamp":  1794154915047
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794154922647
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154922652,
+                                                  "toolName":  "write"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154922685,
+                                                  "toolName":  "write"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794154933967
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154933971,
+                                                  "toolName":  "write"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154934003,
+                                                  "toolName":  "write"
+                                              },
+                                              {
+                                                  "eventType":  "session.heartbeat",
+                                                  "timestamp":  1794154945047
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794154945443
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154945446,
+                                                  "toolName":  "write"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154945483,
+                                                  "toolName":  "write"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794154953537
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154953540,
+                                                  "toolName":  "write"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154953571,
+                                                  "toolName":  "write"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794154962887
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154962892,
+                                                  "toolName":  "write"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154962925,
+                                                  "toolName":  "write"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794154971207
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154971210,
+                                                  "toolName":  "write"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154971244,
+                                                  "toolName":  "write"
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154971245,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154971294,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "session.heartbeat",
+                                                  "timestamp":  1794154975049
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794154978977
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154978981,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154983100,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794154988697
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154988700,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154990740,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794154998721
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154998725,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "session.heartbeat",
+                                                  "timestamp":  1794155005052
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155007207,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155014851
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155014854,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155020334,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155025119
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155025122,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155030177,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155031979
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155031981,
+                                                  "toolName":  "job_list"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155031990,
+                                                  "toolName":  "job_list"
+                                              },
+                                              {
+                                                  "eventType":  "session.heartbeat",
+                                                  "timestamp":  1794155035055
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155036645
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155036649,
+                                                  "toolName":  "team_task_get"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155036659,
+                                                  "toolName":  "team_task_get"
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155036660,
+                                                  "toolName":  "todo_write"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155036669,
+                                                  "toolName":  "todo_write"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155043427
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155043430,
+                                                  "toolName":  "send_message"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155043443,
+                                                  "toolName":  "send_message"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155049055
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155049057,
+                                                  "toolName":  "team_task_update"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155049070,
+                                                  "toolName":  "team_task_update"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155062933
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155062937,
+                                                  "toolName":  "send_message"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155062963,
+                                                  "toolName":  "send_message"
+                                              },
+                                              {
+                                                  "eventType":  "session.heartbeat",
+                                                  "timestamp":  1794155065056
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155067713
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155067717,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155071253,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155075599
+                                              },
+                                              {
+                                                  "eventType":  "run.end",
+                                                  "timestamp":  1794155075602,
+                                                  "label":  "completed"
+                                              },
+                                              {
+                                                  "eventType":  "session.end",
+                                                  "timestamp":  1794155075639,
+                                                  "label":  "session-disposed"
+                                              }
+                                          ],
+                         "warnings":  [
+
+                                      ]
+                     },
+                     {
+                         "sessionId":  "8e5d1bbb-caa7-491d-a9cd-674ccd63cf1c",
+                         "host":  "deepseek-harness",
+                         "hostVersion":  "0.2.1-rc.5",
+                         "state":  "disconnected",
+                         "reportedState":  "disconnected",
+                         "source":  "host-native",
+                         "confidence":  "confirmed",
+                         "connected":  false,
+                         "lastEventAt":  1794155322141,
+                         "startedAt":  1794154902478,
+                         "metrics":  {
+                                         "toolName":  "send_message",
+                                         "step":  15,
+                                         "turn":  4,
+                                         "tokenCount":  6108,
+                                         "contextUsed":  330836
+                                     },
+                         "recentEvents":  [
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154902478,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794154910382
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154910387,
+                                                  "toolName":  "team_task_get"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154910398,
+                                                  "toolName":  "team_task_get"
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154910400,
+                                                  "toolName":  "send_message"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154910409,
+                                                  "toolName":  "send_message"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794154915410
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154915412,
+                                                  "toolName":  "team_task_update"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154915425,
+                                                  "toolName":  "team_task_update"
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154915426,
+                                                  "toolName":  "send_message"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154915436,
+                                                  "toolName":  "send_message"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794154925659
+                                              },
+                                              {
+                                                  "eventType":  "run.end",
+                                                  "timestamp":  1794154925664,
+                                                  "label":  "completed"
+                                              },
+                                              {
+                                                  "eventType":  "session.end",
+                                                  "timestamp":  1794154925706,
+                                                  "label":  "session-disposed"
+                                              },
+                                              {
+                                                  "eventType":  "session.start",
+                                                  "timestamp":  1794154931719,
+                                                  "label":  "session-created"
+                                              },
+                                              {
+                                                  "eventType":  "run.start",
+                                                  "timestamp":  1794154931746,
+                                                  "label":  "turn"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794154941346
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154941350,
+                                                  "toolName":  "write"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154941383,
+                                                  "toolName":  "write"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794154944860
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154944863,
+                                                  "toolName":  "team_task_get"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154944874,
+                                                  "toolName":  "team_task_get"
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154944875,
+                                                  "toolName":  "send_message"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154944885,
+                                                  "toolName":  "send_message"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794154947785
+                                              },
+                                              {
+                                                  "eventType":  "run.end",
+                                                  "timestamp":  1794154947790,
+                                                  "label":  "completed"
+                                              },
+                                              {
+                                                  "eventType":  "session.end",
+                                                  "timestamp":  1794154947837,
+                                                  "label":  "session-disposed"
+                                              },
+                                              {
+                                                  "eventType":  "session.start",
+                                                  "timestamp":  1794155216609,
+                                                  "label":  "session-created"
+                                              },
+                                              {
+                                                  "eventType":  "run.start",
+                                                  "timestamp":  1794155216620,
+                                                  "label":  "turn"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155224143
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155224145,
+                                                  "toolName":  "read"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155224188,
+                                                  "toolName":  "read"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155227822
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155227823,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155227847,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155227848,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "session.heartbeat",
+                                                  "timestamp":  1794155246609
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155249835,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155252491
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155252495,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155259277,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155266227
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155266228,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.fail",
+                                                  "timestamp":  1794155266234,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155266235,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.fail",
+                                                  "timestamp":  1794155266239,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155268473
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155268474,
+                                                  "toolName":  "read"
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155268475,
+                                                  "toolName":  "read"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155268491,
+                                                  "toolName":  "read"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155268494,
+                                                  "toolName":  "read"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155271174
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155271175,
+                                                  "toolName":  "read"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155271201,
+                                                  "toolName":  "read"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155274473
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155274474,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155274527,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155274528,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155274573,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "session.heartbeat",
+                                                  "timestamp":  1794155276610
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155277062
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155277063,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155283917,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155286692
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155286693,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155300549,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155302523
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155302524,
+                                                  "toolName":  "read_image"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155302574,
+                                                  "toolName":  "read_image"
+                                              },
+                                              {
+                                                  "eventType":  "session.heartbeat",
+                                                  "timestamp":  1794155306612
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155308209
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155308213,
+                                                  "toolName":  "read"
+                                              },
+                                              {
+                                                  "eventType":  "tool.fail",
+                                                  "timestamp":  1794155308241,
+                                                  "toolName":  "read"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155309759
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155309760,
+                                                  "toolName":  "read"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155309771,
+                                                  "toolName":  "read"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155315273
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155315275,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155315319,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155315320,
+                                                  "toolName":  "send_message"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155315479,
+                                                  "toolName":  "send_message"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155318628
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155318630,
+                                                  "toolName":  "send_message"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155318640,
+                                                  "toolName":  "send_message"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155322106
+                                              },
+                                              {
+                                                  "eventType":  "run.end",
+                                                  "timestamp":  1794155322108,
+                                                  "label":  "completed"
+                                              },
+                                              {
+                                                  "eventType":  "session.end",
+                                                  "timestamp":  1794155322141,
+                                                  "label":  "session-disposed"
+                                              }
+                                          ],
+                         "warnings":  [
+
+                                      ]
+                     },
+                     {
+                         "sessionId":  "session-7fb30fa0-7270-4533-800e-d7583b15cdb9",
+                         "host":  "deepseek-harness",
+                         "hostVersion":  "0.2.1-rc.5",
+                         "state":  "unknown",
+                         "reportedState":  "unknown",
+                         "source":  "derived",
+                         "confidence":  "inferred",
+                         "connected":  true,
+                         "lastEventAt":  1794155316767,
+                         "startedAt":  1794154908342,
+                         "metrics":  {
+                                         "toolName":  "job_output",
+                                         "step":  75,
+                                         "turn":  4,
+                                         "tokenCount":  91,
+                                         "contextUsed":  384807
+                                     },
+                         "recentEvents":  [
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154908342,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794154911572
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154911575,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154923395,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "session.heartbeat",
+                                                  "timestamp":  1794154926698
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794154931509
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154931511,
+                                                  "toolName":  "send_message"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154931753,
+                                                  "toolName":  "send_message"
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154931754,
+                                                  "toolName":  "send_message"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154931776,
+                                                  "toolName":  "send_message"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794154937900
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154937903,
+                                                  "toolName":  "read"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154937919,
+                                                  "toolName":  "read"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794154942925
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154942928,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154942991,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154942993,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154943054,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794154945158
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154945159,
+                                                  "toolName":  "wait_agent"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154947794,
+                                                  "toolName":  "wait_agent"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794154950741
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154950743,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154952668,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154952670,
+                                                  "toolName":  "list_agents"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154952678,
+                                                  "toolName":  "list_agents"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794154956117
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154956120,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "session.heartbeat",
+                                                  "timestamp":  1794154956698
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154960995,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794154963747
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154963749,
+                                                  "toolName":  "wait_agent"
+                                              },
+                                              {
+                                                  "eventType":  "session.heartbeat",
+                                                  "timestamp":  1794154986701
+                                              },
+                                              {
+                                                  "eventType":  "session.heartbeat",
+                                                  "timestamp":  1794155016702
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155043444,
+                                                  "toolName":  "wait_agent"
+                                              },
+                                              {
+                                                  "eventType":  "session.heartbeat",
+                                                  "timestamp":  1794155046701
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155047136
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155047139,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155049100,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155051600
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155051603,
+                                                  "toolName":  "read_image"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155051639,
+                                                  "toolName":  "read_image"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155054349
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155054351,
+                                                  "toolName":  "wait_agent"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155062965,
+                                                  "toolName":  "wait_agent"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155067725
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155067727,
+                                                  "toolName":  "team_task_list"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155067742,
+                                                  "toolName":  "team_task_list"
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155067745,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155069266,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155073995
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155073997,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "session.heartbeat",
+                                                  "timestamp":  1794155076710
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155089758,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155094746
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155094748,
+                                                  "toolName":  "send_message"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155094827,
+                                                  "toolName":  "send_message"
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155094828,
+                                                  "toolName":  "wait_agent"
+                                              },
+                                              {
+                                                  "eventType":  "session.heartbeat",
+                                                  "timestamp":  1794155106716
+                                              },
+                                              {
+                                                  "eventType":  "session.heartbeat",
+                                                  "timestamp":  1794155136724
+                                              },
+                                              {
+                                                  "eventType":  "session.heartbeat",
+                                                  "timestamp":  1794155166731
+                                              },
+                                              {
+                                                  "eventType":  "session.heartbeat",
+                                                  "timestamp":  1794155196740
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155197115,
+                                                  "toolName":  "wait_agent"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155201401
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155201402,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155202335,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155204778
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155204780,
+                                                  "toolName":  "read"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155204805,
+                                                  "toolName":  "read"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155208085
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155208086,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155208999,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155211436
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155211438,
+                                                  "toolName":  "wait_agent"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155216541,
+                                                  "toolName":  "wait_agent"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155220394
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155220395,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155221338,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155224846
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155224848,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "session.heartbeat",
+                                                  "timestamp":  1794155226746
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155226764,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155231083
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155231085,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155232013,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155235558
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155235563,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155235599,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155240791
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155240793,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155241616,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "session.heartbeat",
+                                                  "timestamp":  1794155256758
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155257833
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155257836,
+                                                  "toolName":  "write"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155257863,
+                                                  "toolName":  "write"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155260296
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155260297,
+                                                  "toolName":  "job_output"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155260302,
+                                                  "toolName":  "job_output"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155263233
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155263236,
+                                                  "toolName":  "read"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155263246,
+                                                  "toolName":  "read"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155268361
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155268363,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155268386,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155268388,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155268415,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155268416,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155268432,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155268432,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155268456,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155270626
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155270628,
+                                                  "toolName":  "job_output"
+                                              },
+                                              {
+                                                  "eventType":  "session.heartbeat",
+                                                  "timestamp":  1794155286759
+                                              },
+                                              {
+                                                  "eventType":  "session.heartbeat",
+                                                  "timestamp":  1794155316767
+                                              }
+                                          ],
+                         "warnings":  [
+
+                                      ]
+                     },
+                     {
+                         "sessionId":  "71cdff68-0db6-48f4-b270-6c1b8aa9f554",
+                         "host":  "deepseek-harness",
+                         "hostVersion":  "0.2.1-rc.5",
+                         "state":  "tool",
+                         "reportedState":  "tool",
+                         "source":  "host-native",
+                         "confidence":  "confirmed",
+                         "connected":  true,
+                         "lastEventAt":  1794155331025,
+                         "startedAt":  1794154925102,
+                         "metrics":  {
+                                         "toolName":  "pwsh",
+                                         "step":  166,
+                                         "turn":  1,
+                                         "tokenCount":  544,
+                                         "contextUsed":  343104
+                                     },
+                         "recentEvents":  [
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154925102,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794154928062
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154928065,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "session.heartbeat",
+                                                  "timestamp":  1794154929638
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154929689,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794154935826
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154935828,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154937292,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794154940587
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154940592,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154940655,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154940657,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154940719,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794154943309
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154943311,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154943374,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154943375,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "session.heartbeat",
+                                                  "timestamp":  1794154959640
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154970738,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794154973112
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154973115,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154974657,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794154985689
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154985693,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154985755,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154985756,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154985810,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794154988221
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154988222,
+                                                  "toolName":  "read_image"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154988557,
+                                                  "toolName":  "read_image"
+                                              },
+                                              {
+                                                  "eventType":  "session.heartbeat",
+                                                  "timestamp":  1794154989645
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794154991248
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154991250,
+                                                  "toolName":  "read_image"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154991661,
+                                                  "toolName":  "read_image"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155000402
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155000404,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155002253,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155009197
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155009200,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155010738,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "session.heartbeat",
+                                                  "timestamp":  1794155019655
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155027112
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155027115,
+                                                  "toolName":  "write"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155027165,
+                                                  "toolName":  "write"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155043171
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155043175,
+                                                  "toolName":  "write"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155043204,
+                                                  "toolName":  "write"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155045868
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155045870,
+                                                  "toolName":  "job_output"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155045878,
+                                                  "toolName":  "job_output"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155048935
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155048939,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "session.heartbeat",
+                                                  "timestamp":  1794155049654
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155050544,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155053314
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155053316,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155056058,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155059605
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155059608,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155061095,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155066008
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155066011,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155066056,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155066058,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155066106,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155067850
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155067852,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155069296,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155072213
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155072215,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155072256,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155072258,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155072304,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155075854
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155075856,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155075898,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155075900,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155077335,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155079573
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155079575,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "session.heartbeat",
+                                                  "timestamp":  1794155079659
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155081602,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155083649
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155083653,
+                                                  "toolName":  "job_output"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155083662,
+                                                  "toolName":  "job_output"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155101540
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155101544,
+                                                  "toolName":  "write"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155101573,
+                                                  "toolName":  "write"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155104792
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155104794,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155106322,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155108511
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155108514,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "session.heartbeat",
+                                                  "timestamp":  1794155109662
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155110049,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155114227
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155114234,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155115741,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155127951
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155127956,
+                                                  "toolName":  "write"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155127988,
+                                                  "toolName":  "write"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155133327
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155133329,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155133358,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155133359,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155133375,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155135448
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155135449,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155135469,
+                                                  "toolName":  "edit"
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155135470,
+                                                  "toolName":  "job_output"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155135474,
+                                                  "toolName":  "job_output"
+                                              },
+                                              {
+                                                  "eventType":  "session.heartbeat",
+                                                  "timestamp":  1794155139669
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155142126
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155142128,
+                                                  "toolName":  "job_output"
+                                              },
+                                              {
+                                                  "eventType":  "session.heartbeat",
+                                                  "timestamp":  1794155169668
+                                              },
+                                              {
+                                                  "eventType":  "session.heartbeat",
+                                                  "timestamp":  1794155199671
+                                              },
+                                              {
+                                                  "eventType":  "session.heartbeat",
+                                                  "timestamp":  1794155229686
+                                              },
+                                              {
+                                                  "eventType":  "session.heartbeat",
+                                                  "timestamp":  1794155259696
+                                              },
+                                              {
+                                                  "eventType":  "session.heartbeat",
+                                                  "timestamp":  1794155289709
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155303869,
+                                                  "toolName":  "job_output"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155309541
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155309544,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "session.heartbeat",
+                                                  "timestamp":  1794155319712
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794155327790,
+                                                  "toolName":  "pwsh"
+                                              },
+                                              {
+                                                  "eventType":  "output.end",
+                                                  "timestamp":  1794155331022
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794155331025,
+                                                  "toolName":  "pwsh"
+                                              }
+                                          ],
+                         "warnings":  [
+
+                                      ]
+                     },
+                     {
+                         "sessionId":  "realbridge-claude-1",
+                         "host":  "claude-code",
+                         "hostVersion":  "2.1.299",
+                         "state":  "tool",
+                         "reportedState":  "tool",
+                         "source":  "host-native",
+                         "confidence":  "confirmed",
+                         "connected":  true,
+                         "lastEventAt":  1794154980597,
+                         "startedAt":  1794154980365,
+                         "metrics":  {
+                                         "toolName":  "Bash",
+                                         "model":  "deepseek-v4-pro"
+                                     },
+                         "recentEvents":  [
+                                              {
+                                                  "eventType":  "session.start",
+                                                  "timestamp":  1794154980365,
+                                                  "label":  "startup"
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154980597,
+                                                  "toolName":  "Bash"
+                                              }
+                                          ],
+                         "warnings":  [
+
+                                      ]
+                     },
+                     {
+                         "sessionId":  "realbridge-codex-1",
+                         "host":  "codex",
+                         "hostVersion":  "0.154.0",
+                         "state":  "tool",
+                         "reportedState":  "tool",
+                         "source":  "host-native",
+                         "confidence":  "confirmed",
+                         "connected":  true,
+                         "lastEventAt":  1794154981004,
+                         "startedAt":  1794154980820,
+                         "metrics":  {
+                                         "toolName":  "apply_patch",
+                                         "model":  "gpt-5.6-luna"
+                                     },
+                         "recentEvents":  [
+                                              {
+                                                  "eventType":  "session.start",
+                                                  "timestamp":  1794154980820,
+                                                  "label":  "startup"
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154981004,
+                                                  "toolName":  "apply_patch"
+                                              }
+                                          ],
+                         "warnings":  [
+
+                                      ]
+                     },
+                     {
+                         "sessionId":  "realbridge-cursor-1",
+                         "host":  "cursor",
+                         "hostVersion":  "3.29.9",
+                         "state":  "tool",
+                         "reportedState":  "tool",
+                         "source":  "host-native",
+                         "confidence":  "confirmed",
+                         "connected":  true,
+                         "lastEventAt":  1794154981203,
+                         "startedAt":  1794154981203,
+                         "metrics":  {
+                                         "toolName":  "Shell"
+                                     },
+                         "recentEvents":  [
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154981203,
+                                                  "toolName":  "Shell"
+                                              }
+                                          ],
+                         "warnings":  [
+
+                                      ]
+                     },
+                     {
+                         "sessionId":  "realbridge-trae-1",
+                         "host":  "trae",
+                         "hostVersion":  "",
+                         "state":  "connected",
+                         "reportedState":  "connected",
+                         "source":  "derived",
+                         "confidence":  "inferred",
+                         "connected":  true,
+                         "lastEventAt":  1794154981433,
+                         "startedAt":  1794154981433,
+                         "metrics":  {
+
+                                     },
+                         "recentEvents":  [
+                                              {
+                                                  "eventType":  "session.start",
+                                                  "timestamp":  1794154981433,
+                                                  "label":  "sessionStart"
+                                              }
+                                          ],
+                         "warnings":  [
+
+                                      ]
+                     },
+                     {
+                         "sessionId":  "abcabc1234567890abcabc1234567890",
+                         "host":  "workbuddy",
+                         "hostVersion":  "5.9.3.0",
+                         "state":  "disconnected",
+                         "reportedState":  "disconnected",
+                         "source":  "derived",
+                         "confidence":  "inferred",
+                         "connected":  false,
+                         "lastEventAt":  1794154981654,
+                         "startedAt":  1794154981653,
+                         "metrics":  {
+                                         "toolName":  "PowerShell",
+                                         "tokenCount":  777
+                                     },
+                         "recentEvents":  [
+                                              {
+                                                  "eventType":  "session.start",
+                                                  "timestamp":  1794154981653,
+                                                  "label":  "trace-start"
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154981653,
+                                                  "toolName":  "PowerShell"
+                                              },
+                                              {
+                                                  "eventType":  "tool.end",
+                                                  "timestamp":  1794154981654,
+                                                  "toolName":  "PowerShell"
+                                              },
+                                              {
+                                                  "eventType":  "session.end",
+                                                  "timestamp":  1794154981654,
+                                                  "label":  "trace-end"
+                                              }
+                                          ],
+                         "warnings":  [
+
+                                      ]
+                     },
+                     {
+                         "sessionId":  "realbridge-generic-1",
+                         "host":  "generic",
+                         "hostVersion":  "",
+                         "state":  "tool",
+                         "reportedState":  "tool",
+                         "source":  "derived",
+                         "confidence":  "inferred",
+                         "connected":  true,
+                         "lastEventAt":  1794154981857,
+                         "startedAt":  1794154981857,
+                         "metrics":  {
+                                         "toolName":  "Bash"
+                                     },
+                         "recentEvents":  [
+                                              {
+                                                  "eventType":  "task.received",
+                                                  "timestamp":  1794154981857
+                                              },
+                                              {
+                                                  "eventType":  "tool.start",
+                                                  "timestamp":  1794154981857,
+                                                  "toolName":  "Bash"
+                                              }
+                                          ],
+                         "warnings":  [
+
+                                      ]
+                     }
+                 ],
+    "bridge":  {
+                   "version":  "0.1.0",
+                   "uptimeMs":  432691,
+                   "eventCount":  567,
+                   "dropped":  0,
+                   "duplicates":  0
+               }
+}

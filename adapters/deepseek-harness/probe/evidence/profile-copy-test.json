@@ -1,0 +1,41 @@
+{
+  "recordedAt": "2026-11-08T16:09:30-08:00",
+  "scope": "install.ps1 / uninstall.ps1 tested on a copy of the desktop profile, never on the live profile",
+  "copyPath": "D:\\HALOFLUX\\adapters\\deepseek-harness\\probe\\evidence\\profile-copy",
+  "copySource": "C:\\Users\\Lenovo\\.dsh\\profiles\\desktop\\{package.json,cordis.patch.yml,cordis.yml}",
+  "steps": [
+    {
+      "step": "dry-run install",
+      "command": "install.ps1 -ProfileDir <copy> -DryRun",
+      "result": "PASS: printed 2 planned actions, package.json hash unchanged"
+    },
+    {
+      "step": "real install",
+      "command": "install.ps1 -ProfileDir <copy>",
+      "result": "PASS: copied bundle to <copy>\\node_modules\\dsh-haloflux-bridge; dependency=file:D:/HALOFLUX/adapters/deepseek-harness/haloflux-bridge; bundles contains dsh-haloflux-bridge; index.js exists"
+    },
+    {
+      "step": "real uninstall",
+      "command": "uninstall.ps1 -ProfileDir <copy>",
+      "result": "PASS: dependency removed, bundles entry removed, copied directory removed; package.json sha256=0980F8F55A0218A158A9F674ED1380403760455D4DD54CA9D71782A9C5501EF7 (formatting-normalised, not byte-identical to pre-install)"
+    },
+    {
+      "step": "rollback",
+      "command": "uninstall.ps1 -ProfileDir <copy> -Rollback <backup>",
+      "result": "PASS: restored package.json/cordis.patch.yml/cordis.yml with SHA256 verification; package.json sha256 back to E1B0B0312FA1F3F68E15C5C5E5DB4A3CD1D90B50C1A7E9EDC49437EEC79B9DE5, byte-identical to the backup"
+    }
+  ],
+  "hashes": {
+    "copyBeforeInstall": "E1B0B0312FA1F3F68E15C5C5E5DB4A3CD1D90B50C1A7E9EDC49437EEC79B9DE5",
+    "copyAfterUninstall": "0980F8F55A0218A158A9F674ED1380403760455D4DD54CA9D71782A9C5501EF7",
+    "copyAfterRollback": "E1B0B0312FA1F3F68E15C5C5E5DB4A3CD1D90B50C1A7E9EDC49437EEC79B9DE5"
+  },
+  "backups": [
+    "D:\\HALOFLUX\\adapters\\deepseek-harness\\backups\\20261108-080920",
+    "D:\\HALOFLUX\\adapters\\deepseek-harness\\backups\\uninstall-20261108-080927"
+  ],
+  "limitations": [
+    "Rollback restores the three manifest files only; a copied node_modules directory is removed by normal uninstall, not by rollback (documented in the script).",
+    "Restarting DSH was intentionally not performed: the user's live session would be interrupted. Script output says a restart is required for the Host to reload bundles."
+  ]
+}

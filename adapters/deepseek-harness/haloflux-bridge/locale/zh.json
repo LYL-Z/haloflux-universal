@@ -1,0 +1,4 @@
+{
+  "name": "HALOFLUX 事件桥",
+  "description": "把 DeepSeek Harness 的会话事件（仅白名单元数据）规范化后发送到本机 HALOFLUX Event Bridge。"
+}

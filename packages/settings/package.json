@@ -1,0 +1,12 @@
+{
+  "name": "@haloflux/settings",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "HALOFLUX settings schema, validation and atomic persistence.",
+  "main": "./src/index.mjs",
+  "exports": {
+    ".": "./src/index.mjs"
+  },
+  "license": "SEE LICENSE IN ../../LICENSE"
+}

@@ -1,0 +1,15 @@
+﻿{
+    "file":  "D:\\HALOFLUX\\adapters\\deepseek-harness\\probe\\evidence\\received-live.jsonl",
+    "bytes":  13342,
+    "events":  36,
+    "sessions":  4,
+    "tokenEvents":  9,
+    "firstTimestamp":  1794154012222,
+    "lastTimestamp":  1794154027735,
+    "types":  {
+                  "session.heartbeat":  3,
+                  "tool.start":  12,
+                  "output.end":  9,
+                  "tool.end":  12
+              }
+}

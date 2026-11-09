@@ -1,0 +1,18 @@
+{
+  "name": "@haloflux/event-bridge",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "HALOFLUX loopback event bridge: token-authenticated HTTP ingest + SSE state stream.",
+  "main": "./src/server.mjs",
+  "bin": {
+    "haloflux-bridge": "./src/server.mjs",
+    "haloflux-simulate": "./src/simulator.mjs"
+  },
+  "exports": {
+    ".": "./src/server.mjs",
+    "./token": "./src/token.mjs",
+    "./simulator": "./src/simulator.mjs"
+  },
+  "license": "SEE LICENSE IN ../../LICENSE"
+}

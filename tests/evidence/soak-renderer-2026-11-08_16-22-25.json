@@ -1,0 +1,19 @@
+{
+  "status": "PASS",
+  "url": "http://127.0.0.1:31416/apps/companion/renderer/index.html?qa=1&mock=1&bridge=http%3A%2F%2F127.0.0.1%3A17960&token=[redacted]",
+  "samples": [
+    {
+      "at": 1794154953366,
+      "elapsedMs": 7676,
+      "frames": 2,
+      "heapUsedBytes": 8608585,
+      "rendererCpuPercent": null,
+      "qaFps": 1,
+      "preset": "agent-monitor",
+      "state": "tool",
+      "fps": null
+    }
+  ],
+  "completedAt": "2026-11-08T16:22:35.225Z",
+  "durationMs": 9536
+}

@@ -1,0 +1,27 @@
+{
+  "host": "deepseek-harness",
+  "hostVersion": "0.2.1-rc.5",
+  "adapter": "adapters/deepseek-harness/haloflux-bridge",
+  "transport": "loopback HTTP POST /v1/events",
+  "eventSource": "host-side cordis events: session/created, session/event, session/disposed, agent/error (no polling)",
+  "capabilities": {
+    "sessionStart": true,
+    "toolUse": true,
+    "tokenMetrics": true,
+    "approval": true,
+    "outputStream": true
+  },
+  "capabilityNotes": {
+    "sessionStart": "session/created -> session.start; live observed 2026-11-08",
+    "toolUse": "tool/call -> tool.start, tool/result -> tool.end|tool.fail; live observed",
+    "tokenMetrics": "assistant/message.usage -> output.end.metadata.tokenCount/contextUsed; live observed. No tokensPerSecond is invented.",
+    "approval": "approval/asked|decided -> approval.request|resolve; implemented, NOT_TESTED live (no approval prompt occurred)",
+    "outputStream": "assistant/chunk text-delta -> output.start/output.chunk/output.end (no text content is sent)"
+  },
+  "notCovered": {
+    "thinking": "DeepSeek Harness exposes no durable or live 'thinking' state event; the adapter never emits a thinking state (architecture §4 forbids inventing it).",
+    "tokensPerSecond": "not present in SessionEvent payloads; only tokenCount/contextUsed/contextLimit are forwarded, renderer shows '—' for tokens/s.",
+    "promptContent": "deliberately not read or transmitted; user/message contributes only source.kind='user' -> task.received.",
+    "approvalLive": "implemented but no live approval prompt was triggered during verification."
+  }
+}

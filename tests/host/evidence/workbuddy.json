@@ -1,0 +1,57 @@
+{
+  "host": "workbuddy",
+  "generatedAt": "2026-11-08T16:24:15.658Z",
+  "machine": {
+    "platform": "win32",
+    "release": "10.0.26300",
+    "node": "v24.16.0",
+    "cwd": "D:\\HALOFLUX"
+  },
+  "status": "PARTIAL",
+  "capabilities": {
+    "sessionStart": true,
+    "taskReceived": false,
+    "toolUse": true,
+    "toolResult": true,
+    "approval": false,
+    "outputStream": false,
+    "tokenMetrics": true,
+    "sessionEnd": true,
+    "passive": true
+  },
+  "checks": {
+    "adapterPresent": true,
+    "fixture": {
+      "allOk": true,
+      "received": [
+        "session.start",
+        "tool.start",
+        "tool.end",
+        "session.end"
+      ],
+      "missing": [],
+      "downgradedToDerived": true,
+      "exitCode": 0
+    },
+    "realWatcher": {
+      "attempted": true,
+      "events": 81,
+      "sessionIds": [
+        "trace_f72c08ecb6f345ddaf9f2da2dd408c3a"
+      ],
+      "sourceFile": "~\\.workbuddy\\traces\\61468\\trace_f72c08ecb6f345ddaf9f2da2dd408c3a.jsonl",
+      "source": "derived"
+    },
+    "privacy": {
+      "secretsChecked": [
+        "QA_SECRET_WORKBUDDY_2b7e"
+      ],
+      "leakedInState": [],
+      "pass": true
+    }
+  },
+  "real": {
+    "status": "PARTIAL",
+    "reason": "read-only watcher derived 81 event(s) from real WorkBuddy trace logs (source=derived); WorkBuddy has no passive lifecycle hook, so real-time state is inferred, not confirmed"
+  }
+}

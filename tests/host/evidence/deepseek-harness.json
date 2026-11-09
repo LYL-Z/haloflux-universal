@@ -1,0 +1,69 @@
+{
+  "host": "deepseek-harness",
+  "generatedAt": "2026-11-08T16:09:11.946Z",
+  "machine": {
+    "platform": "win32",
+    "release": "10.0.26300",
+    "node": "v24.16.0",
+    "cwd": "D:\\HALOFLUX"
+  },
+  "status": "PARTIAL",
+  "reason": "live probe log re-validated (36 valid, 0 invalid, 4 DSH sessions) but it is a bounded mid-session window: tool/output events are proven, lifecycle types missing (session.start, task.received, run.end)",
+  "capabilities": null,
+  "checks": {
+    "artifacts": [
+      {
+        "file": "tests/host/evidence/deepseek-harness.json",
+        "bytes": 1660,
+        "hasPass": false,
+        "eventMentions": [
+          "session.start",
+          "tool.start"
+        ],
+        "hasBridgeEvidence": true
+      }
+    ],
+    "liveEvidence": {
+      "file": "adapters/deepseek-harness/probe/evidence/received-live.jsonl",
+      "present": true,
+      "events": 36,
+      "invalid": 0,
+      "invalidSamples": [],
+      "types": [
+        "output.end",
+        "tool.start",
+        "tool.end",
+        "session.heartbeat"
+      ],
+      "missingRequired": [
+        "session.start",
+        "task.received",
+        "run.end"
+      ],
+      "sessions": 4,
+      "hostVersions": [
+        "0.2.1-rc.5"
+      ],
+      "sources": [
+        "host-native",
+        "derived"
+      ],
+      "confidence": [
+        "confirmed",
+        "inferred"
+      ],
+      "firstEventAt": "2026-11-08T16:06:52.222Z",
+      "lastEventAt": "2026-11-08T16:07:07.735Z"
+    },
+    "liveBridge": {
+      "attempted": true,
+      "events": 0
+    },
+    "probeHarness": true
+  },
+  "real": {
+    "status": "PARTIAL",
+    "evidence": "adapters\\deepseek-harness\\probe\\evidence\\received-live.jsonl",
+    "provenance": "dsh-dev live probe (real DSH Host sessions); QA independently re-validated the log"
+  }
+}

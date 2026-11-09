@@ -1,0 +1,16 @@
+dsh-haloflux-bridge
+Copyright (c) 2026 HALOFLUX Universal Agent Visualizer contributors
+
+This bundle is original code written for the HALOFLUX Universal Agent Visualizer
+project. It reuses no source file from upstream `dsh-haloflux` or `haloflux`:
+those are installed separately and remain unmodified.
+
+It is distributed under the PolyForm Noncommercial License 1.0.0, matching the
+rest of this repository. Noncommercial use, modification and redistribution are
+permitted with this NOTICE and the LICENSE text retained.
+
+Upstream attribution (for the visual plugin this bridge complements):
+- HALOFLUX: Copyright (c) 2026 Ryder191 (RYDER CODE / Ms MAIKEBAIs CAT),
+  https://github.com/Ryder191/haloflux, PolyForm Noncommercial License 1.0.0.
+- dsh-haloflux port: Copyright (c) 2026 Ke-wood,
+  https://github.com/Ke-wood/dsh-haloflux, PolyForm Noncommercial License 1.0.0.

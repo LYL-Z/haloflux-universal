@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self' file:; script-src 'self' 'unsafe-inline' file:; style-src 'self' 'unsafe-inline' file:; img-src 'self' data: file:; font-src 'self' file:; connect-src http://127.0.0.1:* http://localhost:*; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>HALOFLUX — Universal Agent Visualizer</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <canvas id="haloflux-canvas" aria-hidden="true"></canvas>
+  <div class="ambient" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <svg class="svg-defs" aria-hidden="true" focusable="false">
+    <symbol id="i-sliders" viewBox="0 0 24 24">
+      <path d="M4 7h10M18 7h2M4 17h4M12 17h8" />
+      <circle cx="16" cy="7" r="2" />
+      <circle cx="10" cy="17" r="2" />
+    </symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="3.2" />
+      <path d="M12 3.5v2.2M12 18.3v2.2M4.9 7.4l1.9 1.1M17.2 15.5l1.9 1.1M4.9 16.6l1.9-1.1M17.2 8.5l1.9-1.1" />
+    </symbol>
+    <symbol id="i-info" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="8.2" />
+      <path d="M12 10.7v5.1M12 7.8v.2" />
+    </symbol>
+    <symbol id="i-close" viewBox="0 0 24 24">
+      <path d="m6.5 6.5 11 11M17.5 6.5l-11 11" />
+    </symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24">
+      <path d="M9 6.5v11M15 6.5v11" />
+    </symbol>
+    <symbol id="i-play" viewBox="0 0 24 24">
+      <path d="M8.5 6.2 18 12l-9.5 5.8Z" />
+    </symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24">
+      <path d="M19 8.5V4.8m0 0h-3.7M19 4.8l-3 3a7 7 0 1 0 2 8.2" />
+    </symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24">
+      <path d="M12 4.5 20 19H4Z" />
+      <path d="M12 9.6v4.2M12 16.5v.2" />
+    </symbol>
+    <symbol id="i-link" viewBox="0 0 24 24">
+      <path d="M10 14.5a4 4 0 0 0 5.6 0l3-3a4 4 0 0 0-5.6-5.6l-1.2 1.2" />
+      <path d="M14 9.5a4 4 0 0 0-5.6 0l-3 3a4 4 0 0 0 5.6 5.6l1.2-1.2" />
+    </symbol>
+  </svg>
+
+  <header class="topbar">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <circle cx="16" cy="16" r="12.5" stroke="currentColor" stroke-opacity=".22" />
+        <path d="M16 3.5a12.5 12.5 0 0 1 11.6 8" stroke="currentColor" stroke-width="1.3" />
+        <path d="M28 20a12.5 12.5 0 0 1-17 7.7" stroke="currentColor" stroke-opacity=".62" />
+        <circle cx="16" cy="16" r="4.3" stroke="currentColor" stroke-opacity=".45" />
+        <circle cx="16" cy="16" r="1.3" fill="currentColor" />
+      </svg>
+      <div class="brand-text">
+        <span class="brand-name">HALOFLUX</span>
+        <span class="brand-sub">UNIVERSAL AGENT VISUALIZER</span>
+      </div>
+    </div>
+
+    <nav class="preset-switch" id="preset-switch" aria-label="视觉预设"></nav>
+
+    <div class="topbar-actions">
+      <div class="link-pill" id="link-status" data-mode="connecting">
+        <span class="link-dot" aria-hidden="true"></span>
+        <span id="link-text">连接中</span>
+      </div>
+      <button class="icon-btn" id="btn-params" type="button" title="视觉参数" aria-label="视觉参数">
+        <svg><use href="#i-sliders" /></svg>
+      </button>
+      <button class="icon-btn" id="btn-settings" type="button" title="设置" aria-label="设置">
+        <svg><use href="#i-settings" /></svg>
+      </button>
+      <button class="icon-btn" id="btn-about" type="button" title="关于与许可证" aria-label="关于与许可证">
+        <svg><use href="#i-info" /></svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="hud-layer">
+    <section class="panel agent-panel" aria-label="Agent 列表">
+      <header class="panel-head">
+        <span class="eyebrow">AGENTS</span>
+        <span class="panel-note" id="agent-count">6</span>
+      </header>
+      <ul class="agent-list" id="agent-list"></ul>
+      <div class="session-switch-head">
+        <span class="eyebrow">SESSIONS</span>
+        <span class="panel-note" id="session-count">0</span>
+      </div>
+      <div class="session-switch" id="session-switch"></div>
+    </section>
+
+    <section class="panel session-panel" aria-label="当前会话">
+      <header class="panel-head">
+        <span class="eyebrow">CURRENT SESSION</span>
+        <span class="panel-note mono" id="session-affinity">—</span>
+      </header>
+
+      <div class="session-title-row">
+        <div class="state-badge" id="state-badge">
+          <span class="state-dot" aria-hidden="true"></span>
+          <span id="state-label">无会话</span>
+        </div>
+        <div class="badge-stack">
+          <span class="source-badge" id="source-badge">—</span>
+          <span class="confidence-badge" id="confidence-badge">—</span>
+        </div>
+      </div>
+
+      <div class="session-id mono" id="session-id">—</div>
+
+      <div class="metric-grid">
+        <div class="metric"><span>MODEL</span><strong id="m-model">—</strong></div>
+        <div class="metric"><span>TOK / S</span><strong id="m-tps">—</strong></div>
+        <div class="metric"><span>CONTEXT</span><strong id="m-ctx">—</strong></div>
+        <div class="metric"><span>STEP</span><strong id="m-step">—</strong></div>
+        <div class="metric"><span>TOOL</span><strong id="m-tool">—</strong></div>
+        <div class="metric"><span>TURN</span><strong id="m-turn">—</strong></div>
+      </div>
+
+      <div class="cap-chips" id="cap-chips"></div>
+      <div class="session-warnings" id="session-warnings"></div>
+    </section>
+  </main>
+
+  <aside class="panel event-panel" aria-label="事件流">
+    <header class="panel-head">
+      <span class="eyebrow">EVENT STREAM</span>
+      <span class="feed-mode" id="feed-mode">—</span>
+    </header>
+    <div class="event-scroll">
+      <ol class="event-list" id="event-list"></ol>
+      <p class="event-empty" id="event-empty">等待事件…</p>
+    </div>
+    <footer class="event-foot">
+      <span>仅事件类型 / 工具名 / 时间</span>
+      <span id="event-count">0</span>
+    </footer>
+  </aside>
+
+  <footer class="statusbar">
+    <div class="status-group">
+      <span class="status-item"><span class="status-dot" aria-hidden="true"></span><span id="perf-fps">— fps</span></span>
+      <span class="status-sep">/</span>
+      <span class="status-item" id="perf-frame">— ms</span>
+      <span class="status-sep">/</span>
+      <span class="status-item" id="perf-quality">—</span>
+      <span class="status-sep">/</span>
+      <span class="status-item" id="perf-particles">— particles</span>
+    </div>
+    <div class="status-group status-right">
+      <button class="status-btn" id="btn-pause" type="button" aria-pressed="false">
+        <svg><use href="#i-pause" /></svg>
+        <span id="pause-label">暂停渲染</span>
+      </button>
+      <span class="status-sep">/</span>
+      <span class="status-item" id="status-version">v0.1.0</span>
+    </div>
+  </footer>
+
+  <div class="sim-watermark" id="watermark" role="status" hidden>
+    <span class="sim-pulse" aria-hidden="true"></span>
+    <span class="sim-title">示例数据 · SIMULATED</span>
+    <span class="sim-sub">非真机状态</span>
+  </div>
+
+  <!-- Compact 320×320 companion HUD. Shown when electron mode=compact. -->
+  <div class="compact-hud" id="compact-hud" hidden aria-label="HALOFLUX compact">
+    <div class="compact-top">
+      <svg class="brand-mark compact-mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <circle cx="16" cy="16" r="12.5" stroke="currentColor" stroke-opacity=".22" />
+        <path d="M16 3.5a12.5 12.5 0 0 1 11.6 8" stroke="currentColor" stroke-width="1.4" />
+        <path d="M28 20a12.5 12.5 0 0 1-17 7.7" stroke="currentColor" stroke-opacity=".62" />
+        <circle cx="16" cy="16" r="4.3" stroke="currentColor" stroke-opacity=".45" />
+        <circle cx="16" cy="16" r="1.3" fill="currentColor" />
+      </svg>
+      <span class="compact-brand">HALOFLUX</span>
+      <span class="compact-mode">COMPACT</span>
+      <button class="icon-btn mini" id="compact-params" type="button" title="视觉参数" aria-label="视觉参数">
+        <svg><use href="#i-sliders" /></svg>
+      </button>
+      <button class="icon-btn mini" id="compact-settings" type="button" title="设置" aria-label="设置">
+        <svg><use href="#i-settings" /></svg>
+      </button>
+      <button class="icon-btn mini" id="compact-about" type="button" title="关于" aria-label="关于">
+        <svg><use href="#i-info" /></svg>
+      </button>
+    </div>
+    <div class="compact-bottom">
+      <div class="compact-state" id="compact-state">
+        <span class="state-dot" aria-hidden="true"></span>
+        <span id="compact-state-label">无会话</span>
+      </div>
+      <div class="compact-agent" id="compact-agent">等待事件桥</div>
+      <div class="compact-meta">
+        <span id="compact-source">—</span>
+        <span class="compact-sep">/</span>
+        <span id="compact-fps">— fps</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="drawer-backdrop" id="drawer-backdrop" hidden></div>
+
+  <aside class="drawer" id="params-drawer" aria-label="视觉参数" aria-hidden="true">
+    <header class="drawer-head">
+      <div>
+        <span class="eyebrow">VISUAL PARAMETERS</span>
+        <h3>视觉参数</h3>
+      </div>
+      <button class="icon-btn small" type="button" data-close-drawer aria-label="关闭">
+        <svg><use href="#i-close" /></svg>
+      </button>
+    </header>
+    <div class="drawer-body">
+      <section class="drawer-section">
+        <div class="section-title-row">
+          <h4>光场</h4>
+          <span class="hint">实时生效 · 本地保存</span>
+        </div>
+        <div id="param-rows" class="param-rows"></div>
+      </section>
+
+      <section class="drawer-section">
+        <div class="section-title-row"><h4>辅助</h4></div>
+        <div class="toggle-row">
+          <div class="toggle-copy">
+            <strong>减少动态效果</strong>
+            <p>遵循系统偏好；降低环速与帧率，不改变状态含义。</p>
+          </div>
+          <button class="switch" id="toggle-motion" type="button" role="switch" aria-checked="false">
+            <span class="switch-thumb"></span>
+          </button>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-copy">
+            <strong>暂停渲染</strong>
+            <p>保留最后一帧；恢复后继续绘制，不重置会话。</p>
+          </div>
+          <button class="switch" id="toggle-pause" type="button" role="switch" aria-checked="false">
+            <span class="switch-thumb"></span>
+          </button>
+        </div>
+      </section>
+
+      <section class="drawer-section">
+        <div class="section-title-row">
+          <h4>预设</h4>
+          <span class="hint">六套完整参数，可逆</span>
+        </div>
+        <div class="drawer-presets" id="drawer-presets"></div>
+      </section>
+
+      <section class="drawer-section drawer-note">
+        <p>预设保存完整的参数快照；切回「原作」会恢复每一个粒子与光束计数，而不是叠加差值。</p>
+      </section>
+    </div>
+  </aside>
+
+  <aside class="drawer" id="settings-drawer" aria-label="设置" aria-hidden="true">
+    <header class="drawer-head">
+      <div>
+        <span class="eyebrow">SETTINGS</span>
+        <h3>设置</h3>
+      </div>
+      <button class="icon-btn small" type="button" data-close-drawer aria-label="关闭">
+        <svg><use href="#i-close" /></svg>
+      </button>
+    </header>
+    <div class="drawer-body">
+      <section class="drawer-section">
+        <div class="section-title-row"><h4>事件桥</h4><span class="hint" id="settings-mode">—</span></div>
+        <dl class="kv-list">
+          <div><dt>地址</dt><dd class="mono" id="settings-bridge">—</dd></div>
+          <div><dt>Token</dt><dd id="settings-token">—</dd></div>
+          <div><dt>传输</dt><dd id="settings-transport">SSE · 只读</dd></div>
+          <div><dt>最近快照</dt><dd id="settings-snapshot">—</dd></div>
+        </dl>
+        <div class="button-row">
+          <button class="text-btn" id="btn-reconnect" type="button">
+            <svg><use href="#i-refresh" /></svg>
+            重试真实连接
+          </button>
+          <button class="text-btn" id="btn-enter-mock" type="button">
+            <svg><use href="#i-link" /></svg>
+            进入模拟演示
+          </button>
+        </div>
+        <p class="drawer-note" id="settings-reason"></p>
+      </section>
+
+      <section class="drawer-section">
+        <div class="section-title-row"><h4>关于数据边界</h4></div>
+        <ul class="plain-list">
+          <li>只读取本机事件桥（127.0.0.1）的会话快照，不读取聊天正文。</li>
+          <li>事件流只显示事件类型、工具名与时间，不显示提示词或输出内容。</li>
+          <li>模拟演示与真实数据在来源徽章、水印与事件行上全程区分。</li>
+          <li>本界面不发送遥测，不加载远程字体、图片或脚本。</li>
+        </ul>
+      </section>
+
+      <section class="drawer-section">
+        <div class="section-title-row"><h4>本地状态</h4></div>
+        <div class="toggle-row">
+          <div class="toggle-copy">
+            <strong>减少动态效果</strong>
+            <p>与「视觉参数」中的开关同步。</p>
+          </div>
+          <button class="switch" id="toggle-motion-settings" type="button" role="switch" aria-checked="false">
+            <span class="switch-thumb"></span>
+          </button>
+        </div>
+        <div class="button-row">
+          <button class="text-btn" id="btn-reset-local" type="button">恢复「原作」预设</button>
+        </div>
+      </section>
+    </div>
+  </aside>
+
+  <div class="modal-backdrop" id="about-backdrop" hidden></div>
+  <section class="modal about-modal" id="about-modal" aria-label="关于 HALOFLUX" aria-hidden="true">
+    <header class="about-head">
+      <div class="about-brand">
+        <svg class="brand-mark large" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+          <circle cx="16" cy="16" r="12.5" stroke="currentColor" stroke-opacity=".22" />
+          <path d="M16 3.5a12.5 12.5 0 0 1 11.6 8" stroke="currentColor" stroke-width="1.3" />
+          <path d="M28 20a12.5 12.5 0 0 1-17 7.7" stroke="currentColor" stroke-opacity=".62" />
+          <circle cx="16" cy="16" r="4.3" stroke="currentColor" stroke-opacity=".45" />
+          <circle cx="16" cy="16" r="1.3" fill="currentColor" />
+        </svg>
+        <div>
+          <span class="eyebrow">ABOUT</span>
+          <h3>HALOFLUX Universal Agent Visualizer</h3>
+        </div>
+      </div>
+      <button class="icon-btn small" type="button" data-close-modal aria-label="关闭">
+        <svg><use href="#i-close" /></svg>
+      </button>
+    </header>
+    <div class="about-body">
+      <p class="about-lead">
+        一束本地光场，把真实 Agent 会话状态映射成可读的运动：运行、工具、输出、等待确认与错误
+        各有独立的光环行为。没有云端账号，没有遥测。
+      </p>
+      <dl class="kv-list">
+        <div><dt>版本</dt><dd class="mono">0.1.0</dd></div>
+        <div><dt>视觉核心</dt><dd>HALOFLUX Canvas engine（移植自 dsh-haloflux v0.7.1）</dd></div>
+        <div><dt>许可</dt><dd>PolyForm Noncommercial License 1.0.0 · 仅限非商业使用</dd></div>
+      </dl>
+      <div class="about-block">
+        <h4>原作与署名</h4>
+        <p>
+          HALOFLUX © 2026 Ryder191 (RYDER CODE / Ms MAIKEBAIs CAT)<br>
+          <span class="mono">https://github.com/Ryder191/haloflux</span>
+        </p>
+        <p>
+          本项目的 Canvas 光环引擎移植自 Ke-wood/dsh-haloflux（v0.7.1，commit 90a1caa7）。<br>
+          <span class="mono">https://github.com/Ke-wood/dsh-haloflux</span>
+        </p>
+        <p class="license-note">
+          再分发时必须同时保留 LICENSE、NOTICE 与上述署名。不得移除版权声明，不得用于商业用途。
+        </p>
+      </div>
+      <div class="about-block">
+        <h4>隐私</h4>
+        <p>仅连接 127.0.0.1 事件桥；不读取对话正文；不上传任何数据。</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="toast" id="toast" hidden></div>
+
+  <!-- QA-only state buttons. Hidden by default; stable [data-state] hooks live here. -->
+  <div id="qa-state-controls" class="qa-state-controls" hidden aria-hidden="true"></div>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

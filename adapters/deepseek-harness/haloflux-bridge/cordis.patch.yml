@@ -1,0 +1,28 @@
+# HALOFLUX bridge bundle layer.
+#
+# Insert the Host-side observer row. No client half is shipped on purpose: the
+# bridge is headless, so it cannot break the Web GUI and does not need a page
+# reload after a bundle update.
+#
+# To disable without uninstalling, add this row to the *profile* patch layer
+# (C:\Users\Lenovo\.dsh\profiles\desktop\cordis.patch.yml):
+#
+#   - id: haloflux-bridge
+#     config:
+#       enabled: false
+#
+# The profile patch replaces this whole `config` block, so restate any other
+# fields you rely on. Runtime disable also works through the HALOFLUX product
+# settings file: %LOCALAPPDATA%\HALOFLUX\settings.json
+#   { "hosts": { "deepseek-harness": { "enabled": false } } }
+- insert:
+    - id: haloflux-bridge
+      name: 'dsh-haloflux-bridge'
+      config:
+        enabled: true
+        bridgeUrl: 'http://127.0.0.1:17817'
+        probeLog: 'auto'
+        heartbeatMs: 30000
+        outputChunkThrottleMs: 1000
+        maxEventsPerSecond: 20
+        includeToolNames: true

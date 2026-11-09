@@ -1,0 +1,65 @@
+{
+  "recordedAt": "2026-11-08T15:58:00-08:00",
+  "tool": "plugin_manager",
+  "action": "install_bundle",
+  "target": "D:\\HALOFLUX\\upstream\\dsh-haloflux",
+  "result": {
+    "stage": "enable",
+    "target": "dsh-haloflux",
+    "enabled": true,
+    "changed": true,
+    "application": "applied",
+    "registries": [
+      null
+    ],
+    "packageResult": {
+      "exitCode": 0,
+      "output": "✓ Lockfile passes supply-chain policies (verified 9d ago)\nUpdate available! 11.28.5 → 12.18.0.\nChangelog: https://pnpm.io/v/12.18.0\nTo update, run: Invoke-WebRequest https://get.pnpm.io/install.ps1 -UseBasicParsing | Invoke-Expression\nProgress: resolved 0, reused 1, downloaded 0, added 0\n[WARN] Issues with peer dependencies found. Run \"pnpm peers check\" to list them.\nProgress: resolved 283, reused 1, downloaded 0, added 0\nAlready up to date\nProgress: resolved 283, reused 1, downloaded 0, added 0, done\n\ndependencies:\n+ dsh-haloflux 0.7.1 <- D:\\HALOFLUX\\upstream\\dsh-haloflux\n\nDone in 1.8s using pnpm v11.28.5\n",
+      "truncated": false,
+      "logPath": "C:\\Users\\Lenovo\\.dsh\\profiles\\desktop\\.plugin-manager\\logs\\operation-31ErIu\\pnpm.log"
+    },
+    "bundle": "dsh-haloflux",
+    "version": "0.7.1",
+    "warnings": []
+  },
+  "profile": {
+    "path": "C:\\Users\\Lenovo\\.dsh\\profiles\\desktop",
+    "packageJsonBefore": {
+      "sha256": "65E96C8AA795DA213A72FFA785D0E19C184628B756DE90AA03B655F88D629A8B",
+      "bytes": 1440
+    },
+    "packageJsonAfter": {
+      "sha256": "E1B0B0312FA1F3F68E15C5C5E5DB4A3CD1D90B50C1A7E9EDC49437EEC79B9DE5",
+      "bytes": 1646,
+      "note": "hash also includes the haloflux-bridge install that followed; dsh-haloflux/dsh-haloflux-bridge are both in dependencies + dsh.profile.bundles"
+    },
+    "cordisPatchBeforeSha256": "E0AD97780179B6813D300D6BA44F5F68FB948B86AE74AF72A3AB772F07F198F7",
+    "cordisPatchAfterSha256": "E0AD97780179B6813D300D6BA44F5F68FB948B86AE74AF72A3AB772F07F198F7",
+    "cordisPatchUnchanged": true
+  },
+  "pluginEntry": {
+    "entryId": "include:haloflux",
+    "moduleName": "dsh-haloflux",
+    "enabled": true,
+    "fiberPhase": "active",
+    "patchId": "haloflux"
+  },
+  "guiEvidence": {
+    "settings": {
+      "path": "D:\\HALOFLUX\\screenshots\\dsh-haloflux-settings.png",
+      "sha256": "A9ADD6F6453D368E8CAF035DD5BEA047C5114E894F5AEC30F6E02CE47EEC30A3",
+      "bytes": 719561,
+      "shows": "Settings dialog, sidebar entry HALOFLUX, panel title 'HALOFLUX 实时光环'"
+    },
+    "overlay": {
+      "path": "D:\\HALOFLUX\\screenshots\\dsh-haloflux-overlay.png",
+      "sha256": "AF4B62AECE1EF86E9861C5B1BB8F471D19392B0D7051B3174283B316BACBBDA7",
+      "bytes": 1243202,
+      "shows": "Main conversation with the shell.overlay light field visible behind content"
+    }
+  },
+  "limitations": [
+    "The browser_* tools were unusable: the DSH Browser Control extension was not connected ([extension_offline]). Screenshots were taken from the real DeepSeek Harness Electron window with the Windows Computer Use MCP (printwindow), not from a browser tab.",
+    "Upstream dsh-haloflux was tested by the vendor on DSH 0.2.1-rc.2; this host is 0.2.1-rc.5. Its Settings page and overlay render in 0.2.1-rc.5, so the client surface still matches, but no long-run soak was performed."
+  ]
+}

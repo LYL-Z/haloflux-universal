@@ -1,0 +1,8 @@
+{
+  "name": "@haloflux/companion-renderer",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "HALOFLUX companion renderer — full-bleed Canvas light field + restrained dark HUD. No build step.",
+  "license": "PolyForm-Noncommercial-1.0.0"
+}

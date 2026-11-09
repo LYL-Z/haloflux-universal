@@ -1,0 +1,44 @@
+{
+  "host": "generic",
+  "generatedAt": "2026-11-08T16:05:22.173Z",
+  "machine": {
+    "platform": "win32",
+    "release": "10.0.26300",
+    "node": "v24.16.0",
+    "cwd": "D:\\HALOFLUX"
+  },
+  "status": "PASS",
+  "capabilities": null,
+  "checks": {
+    "adapterPresent": true,
+    "stdinJsonl": {
+      "allOk": true,
+      "exitCode": 0,
+      "received": [
+        "session.start",
+        "task.received",
+        "run.start",
+        "tool.start",
+        "tool.end",
+        "session.heartbeat",
+        "run.end"
+      ],
+      "missing": [],
+      "finalState": "idle",
+      "finalSource": "host-native",
+      "finalConfidence": "confirmed",
+      "adapterStdout": "[generic-adapter] records=7 events=7 skipped=0 posted=true"
+    },
+    "privacy": {
+      "secretsChecked": [
+        "QA_SECRET_GENERIC_8e4a"
+      ],
+      "leakedInState": [],
+      "pass": true
+    }
+  },
+  "real": {
+    "status": "PASS",
+    "reason": "stdin JSONL (the documented generic host interface) produced a full session in the real bridge"
+  }
+}

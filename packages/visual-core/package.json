@@ -1,0 +1,24 @@
+{
+  "name": "@haloflux/visual-core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "HALOFLUX Universal Agent Visualizer — Canvas light-ring engine, presets, state mapping and performance governor.",
+  "license": "PolyForm-Noncommercial-1.0.0",
+  "exports": {
+    ".": "./src/index.js",
+    "./engine": "./src/engine.js",
+    "./presets": "./src/presets.js",
+    "./perf": "./src/perf.js",
+    "./state-map": "./src/state-map.js"
+  },
+  "files": [
+    "src",
+    "LICENSE",
+    "NOTICE",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "node --test test"
+  }
+}

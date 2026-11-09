@@ -1,0 +1,87 @@
+{
+  "host": "cursor",
+  "generatedAt": "2026-11-08T16:29:10.980Z",
+  "machine": {
+    "platform": "win32",
+    "release": "10.0.26300",
+    "node": "v24.16.0",
+    "cwd": "D:\\HALOFLUX"
+  },
+  "status": "PARTIAL",
+  "capabilities": {
+    "sessionStart": true,
+    "taskReceived": true,
+    "toolUse": true,
+    "toolResult": true,
+    "approval": false,
+    "outputStream": false,
+    "tokenMetrics": false,
+    "sessionEnd": true,
+    "passive": false
+  },
+  "checks": {
+    "adapterPresent": true,
+    "hooksInstalled": true,
+    "synthetic": {
+      "allOk": true,
+      "received": [
+        "session.start",
+        "task.received",
+        "tool.start",
+        "tool.end",
+        "run.end",
+        "session.end"
+      ],
+      "missing": [],
+      "attempts": [
+        {
+          "label": "sessionStart",
+          "expectedEvent": "session.start",
+          "ok": true,
+          "exitCode": 0
+        },
+        {
+          "label": "beforeSubmitPrompt",
+          "expectedEvent": "task.received",
+          "ok": true,
+          "exitCode": 0
+        },
+        {
+          "label": "beforeShellExecution",
+          "expectedEvent": "tool.start",
+          "ok": true,
+          "exitCode": 0
+        },
+        {
+          "label": "postToolUse",
+          "expectedEvent": "tool.end",
+          "ok": true,
+          "exitCode": 0
+        },
+        {
+          "label": "stop",
+          "expectedEvent": "run.end",
+          "ok": true,
+          "exitCode": 0
+        },
+        {
+          "label": "sessionEnd",
+          "expectedEvent": "session.end",
+          "ok": true,
+          "exitCode": 0
+        }
+      ]
+    },
+    "privacy": {
+      "secretsChecked": [
+        "QA_SECRET_CURSOR_5a1d"
+      ],
+      "leakedInState": [],
+      "pass": true
+    }
+  },
+  "real": {
+    "status": "BLOCKED",
+    "reason": "Cursor hooks entry is installed, but Cursor is a GUI host with no headless session driver; no real Cursor session was observed by QA"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "name": "dsh-haloflux-bridge",
+  "version": "0.1.0",
+  "description": "Host-side HALOFLUX event bridge for DeepSeek Harness: forwards normalized, metadata-only session events to the loopback HALOFLUX Event Bridge.",
+  "license": "PolyForm-Noncommercial-1.0.0",
+  "type": "module",
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "haloflux",
+    "session-events",
+    "observability"
+  ],
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./package.json": "./package.json",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "index.js",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "icon.svg",
+    "NOTICE"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}

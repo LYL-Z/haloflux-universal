@@ -1,0 +1,67 @@
+{
+  "status": "PASS",
+  "startedAt": "2026-11-08T16:07:03.479Z",
+  "durationMinutes": 0.15,
+  "eventsPerSecond": 8,
+  "rendererRequested": false,
+  "machine": {
+    "platform": "win32",
+    "release": "10.0.26300",
+    "arch": "x64",
+    "cpu": "Intel(R) Core(TM) Ultra 9 290HX Plus",
+    "cores": 24,
+    "totalMemBytes": 68378017792,
+    "node": "v24.16.0",
+    "electron": null
+  },
+  "samples": [
+    {
+      "at": "2026-11-08T16:07:03.814Z",
+      "elapsedMs": 0,
+      "eventCount": 1,
+      "sessions": 1,
+      "bridgeRssBytes": 66318336,
+      "bridgeCpuPercent": null,
+      "sent": 1,
+      "accepted": 1,
+      "postErrors": 0
+    },
+    {
+      "at": "2026-11-08T16:07:08.836Z",
+      "elapsedMs": 5022,
+      "eventCount": 28,
+      "sessions": 12,
+      "bridgeRssBytes": 67620864,
+      "bridgeCpuPercent": 0.09,
+      "sent": 28,
+      "accepted": 28,
+      "postErrors": 0
+    }
+  ],
+  "rendererSamples": [],
+  "summary": {
+    "durationActualMs": 10226,
+    "samples": 2,
+    "eventsSent": 28,
+    "eventsAccepted": 28,
+    "postErrors": 0,
+    "bridgeEventCount": 28,
+    "sessions": 12,
+    "bridgeRssStartMB": 63.25,
+    "bridgeRssEndMB": 64.49,
+    "bridgeRssGrowthMB": 1.24,
+    "bridgeCpuMeanPercent": 0.09,
+    "bridgeCpuMaxPercent": 0.09,
+    "fpsMean": null,
+    "fpsMin": null,
+    "fpsMax": null,
+    "fpsSource": "offscreen Electron window requestAnimationFrame probe",
+    "rendererHeapStartMB": null,
+    "rendererHeapEndMB": null,
+    "rendererHeapGrowthMB": null,
+    "rendererCpuMeanPercent": null,
+    "rendererPresent": false
+  },
+  "completedAt": "2026-11-08T16:07:14.040Z",
+  "reason": "completed headless (no renderer fps)"
+}

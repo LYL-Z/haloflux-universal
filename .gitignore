@@ -1,0 +1,34 @@
+node_modules/
+dist/
+.env
+*.log
+config/local.json
+config/token
+screenshots/tmp/
+tmp/
+.haloflux/
+bin/
+
+# Nested upstream clones: keep their content, never their git metadata.
+upstream/*/.git/
+
+# --- privacy / runtime data that must not be published -------------------
+# Backups contain copies of this machine's real host configs and are not part
+# of the project source. They stay local for rollback.
+config/backups/
+# Installer-generated manifest carries this machine's paths.
+config/install-manifest.json
+# DSH profile snapshots made by the installer (machine-specific).
+adapters/deepseek-harness/backups/
+# Full-resolution evidence captures (4K) stay local; the repo ships 1600px copies.
+screenshots/_originals/
+# Adapter runtime state and test fixtures.
+adapters/_shared/.test-bridge-token
+adapters/_shared/.test-bridge-events.jsonl
+adapters/_shared/.watch-state/
+
+# --- upstream media omitted from this derivative -------------------------
+# Both upstream copies of the CC0 background track are ~7 MB each and are not
+# loaded by this project. They remain available from the upstream repository.
+upstream/haloflux/audio/
+upstream/haloflux/wallpaper/audio/

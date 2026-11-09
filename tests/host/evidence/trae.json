@@ -1,0 +1,77 @@
+{
+  "host": "trae",
+  "generatedAt": "2026-11-08T16:04:39.873Z",
+  "machine": {
+    "platform": "win32",
+    "release": "10.0.26300",
+    "node": "v24.16.0",
+    "cwd": "D:\\HALOFLUX"
+  },
+  "status": "SIMULATED",
+  "capabilities": null,
+  "checks": {
+    "adapterPresent": true,
+    "synthetic": {
+      "allOk": true,
+      "received": [
+        "session.start",
+        "task.received",
+        "tool.start",
+        "tool.end",
+        "run.end",
+        "session.end"
+      ],
+      "missing": [],
+      "downgradedToDerived": true,
+      "attempts": [
+        {
+          "label": "sessionStart",
+          "expectedEvent": "session.start",
+          "ok": true,
+          "exitCode": 0
+        },
+        {
+          "label": "beforeSubmitPrompt",
+          "expectedEvent": "task.received",
+          "ok": true,
+          "exitCode": 0
+        },
+        {
+          "label": "preToolUse",
+          "expectedEvent": "tool.start",
+          "ok": true,
+          "exitCode": 0
+        },
+        {
+          "label": "postToolUse",
+          "expectedEvent": "tool.end",
+          "ok": true,
+          "exitCode": 0
+        },
+        {
+          "label": "stop",
+          "expectedEvent": "run.end",
+          "ok": true,
+          "exitCode": 0
+        },
+        {
+          "label": "sessionEnd",
+          "expectedEvent": "session.end",
+          "ok": true,
+          "exitCode": 0
+        }
+      ]
+    },
+    "privacy": {
+      "secretsChecked": [
+        "QA_SECRET_TRAE_7c3f"
+      ],
+      "leakedInState": [],
+      "pass": true
+    }
+  },
+  "real": {
+    "status": "BLOCKED",
+    "reason": "TRAE has no headless CLI and its hook payload vocabulary is unverified; no real TRAE session can be driven by QA. Installer refuses hooks by default (-Mode Hooks required)."
+  }
+}

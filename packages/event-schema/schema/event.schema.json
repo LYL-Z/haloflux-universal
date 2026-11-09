@@ -1,0 +1,70 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://haloflux.local/schema/event.v1.json",
+  "title": "HALOFLUX unified agent event (v1)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion", "eventId", "timestamp", "host", "hostVersion",
+    "sessionId", "eventType", "state", "source", "confidence", "metadata"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "eventId": { "type": "string", "pattern": "^[A-Za-z0-9_-]{8,128}$" },
+    "timestamp": { "type": "number", "minimum": 1 },
+    "host": {
+      "type": "string",
+      "enum": ["deepseek-harness", "codex", "cursor", "claude-code", "workbuddy", "trae", "generic", "simulator"]
+    },
+    "hostVersion": { "type": "string", "maxLength": 64 },
+    "sessionId": { "type": "string", "pattern": "^[A-Za-z0-9._:@-]{1,128}$" },
+    "eventType": {
+      "type": "string",
+      "enum": [
+        "host.connected", "host.disconnected", "session.start", "session.end", "session.switch",
+        "session.heartbeat", "task.received", "run.start", "run.end", "tool.start", "tool.end",
+        "tool.fail", "output.start", "output.chunk", "output.end", "approval.request",
+        "approval.resolve", "error", "state.snapshot"
+      ]
+    },
+    "state": {
+      "type": "string",
+      "enum": ["disconnected", "connected", "idle", "running", "tool", "output", "waiting_approval", "done", "error", "unknown"]
+    },
+    "source": { "type": "string", "enum": ["host-native", "derived", "simulated"] },
+    "confidence": { "type": "string", "enum": ["confirmed", "inferred", "unverified"] },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "maxProperties": 24,
+      "properties": {
+        "toolName": { "type": "string", "maxLength": 80 },
+        "toolCategory": { "type": "string", "maxLength": 40 },
+        "toolStatus": { "type": "string", "enum": ["running", "ok", "failed", "cancelled"] },
+        "step": { "type": "number", "minimum": 0 },
+        "turn": { "type": "number", "minimum": 0 },
+        "label": { "type": "string", "maxLength": 120 },
+        "errorCode": { "type": "string", "maxLength": 64 },
+        "durationMs": { "type": "number", "minimum": 0 },
+        "tokenCount": { "type": "number", "minimum": 0 },
+        "tokensPerSecond": { "type": "number", "minimum": 0 },
+        "contextUsed": { "type": "number", "minimum": 0 },
+        "contextLimit": { "type": "number", "minimum": 0 },
+        "model": { "type": "string", "maxLength": 80 },
+        "projectName": { "type": "string", "maxLength": 120 },
+        "sessionTitle": { "type": "string", "maxLength": 160 },
+        "agentName": { "type": "string", "maxLength": 80 },
+        "permissionMode": { "type": "string", "maxLength": 40 },
+        "approvalKind": { "type": "string", "maxLength": 40 },
+        "queueDepth": { "type": "number", "minimum": 0 },
+        "latencyMs": { "type": "number", "minimum": 0 },
+        "cwdHint": { "type": "string", "maxLength": 80 },
+        "custom": {
+          "type": "object",
+          "maxProperties": 16,
+          "additionalProperties": { "type": ["string", "number", "boolean", "null"] }
+        }
+      }
+    }
+  }
+}

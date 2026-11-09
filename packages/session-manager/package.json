@@ -1,0 +1,12 @@
+{
+  "name": "@haloflux/session-manager",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "HALOFLUX multi-session state machine: dedupe, ordering, timeout ladder, SessionView snapshots.",
+  "main": "./src/index.mjs",
+  "exports": {
+    ".": "./src/index.mjs"
+  },
+  "license": "SEE LICENSE IN ../../LICENSE"
+}

@@ -1,0 +1,11 @@
+{
+  "sessionStart": true,
+  "taskReceived": true,
+  "toolUse": true,
+  "toolResult": true,
+  "approval": false,
+  "outputStream": false,
+  "tokenMetrics": false,
+  "sessionEnd": true,
+  "passive": false
+}

@@ -1,0 +1,223 @@
+﻿{
+    "capturedAt":  "2026-11-08T08:20:13.3807648-08:00",
+    "health":  {
+                   "ok":  true,
+                   "name":  "haloflux-bridge",
+                   "version":  "0.1.0",
+                   "schemaVersion":  1,
+                   "uptimeMs":  308576,
+                   "port":  17817
+               },
+    "serverTime":  1794154813438,
+    "activeSessionId":  "f8d486fe-0872-4878-85de-0749d65bf95c",
+    "bridge":  {
+                   "version":  "0.1.0",
+                   "uptimeMs":  308603,
+                   "eventCount":  735,
+                   "dropped":  0,
+                   "duplicates":  0
+               },
+    "hosts":  [
+                  {
+                      "host":  "deepseek-harness",
+                      "hostVersion":  "0.2.1-rc.5",
+                      "connected":  true,
+                      "lastSeen":  1794154812651,
+                      "capabilitiesSource":  "default",
+                      "capabilities":  {
+                                           "sessionStart":  false,
+                                           "toolUse":  false,
+                                           "tokenMetrics":  false,
+                                           "approval":  false,
+                                           "outputStream":  false
+                                       }
+                  },
+                  {
+                      "host":  "codex",
+                      "hostVersion":  "0.154.0",
+                      "connected":  true,
+                      "lastSeen":  1794154790630,
+                      "capabilitiesSource":  "default",
+                      "capabilities":  {
+                                           "sessionStart":  false,
+                                           "toolUse":  false,
+                                           "tokenMetrics":  false,
+                                           "approval":  false,
+                                           "outputStream":  false
+                                       }
+                  },
+                  {
+                      "host":  "workbuddy",
+                      "hostVersion":  "5.9.3.0",
+                      "connected":  false,
+                      "lastSeen":  1794154746328,
+                      "capabilitiesSource":  "default",
+                      "capabilities":  {
+                                           "sessionStart":  false,
+                                           "toolUse":  false,
+                                           "tokenMetrics":  false,
+                                           "approval":  false,
+                                           "outputStream":  false
+                                       }
+                  },
+                  {
+                      "host":  "claude-code",
+                      "hostVersion":  "2.1.299",
+                      "connected":  true,
+                      "lastSeen":  1794154650952,
+                      "capabilitiesSource":  "default",
+                      "capabilities":  {
+                                           "sessionStart":  false,
+                                           "toolUse":  false,
+                                           "tokenMetrics":  false,
+                                           "approval":  false,
+                                           "outputStream":  false
+                                       }
+                  }
+              ],
+    "sessions":  [
+                     {
+                         "sessionId":  "71cdff68-0db6-48f4-b270-6c1b8aa9f554",
+                         "host":  "deepseek-harness",
+                         "state":  "unknown",
+                         "reportedState":  "unknown",
+                         "source":  "derived",
+                         "confidence":  "inferred",
+                         "connected":  true,
+                         "lastEventAt":  1794154809608,
+                         "recentEvents":  37
+                     },
+                     {
+                         "sessionId":  "f8d486fe-0872-4878-85de-0749d65bf95c",
+                         "host":  "deepseek-harness",
+                         "state":  "tool",
+                         "reportedState":  "tool",
+                         "source":  "host-native",
+                         "confidence":  "confirmed",
+                         "connected":  true,
+                         "lastEventAt":  1794154812651,
+                         "recentEvents":  179
+                     },
+                     {
+                         "sessionId":  "session-7fb30fa0-7270-4533-800e-d7583b15cdb9",
+                         "host":  "deepseek-harness",
+                         "state":  "unknown",
+                         "reportedState":  "unknown",
+                         "source":  "derived",
+                         "confidence":  "inferred",
+                         "connected":  true,
+                         "lastEventAt":  1794154806677,
+                         "recentEvents":  134
+                     },
+                     {
+                         "sessionId":  "49c15aba-d70d-4677-b500-04bc7d0a641f",
+                         "host":  "deepseek-harness",
+                         "state":  "unknown",
+                         "reportedState":  "unknown",
+                         "source":  "derived",
+                         "confidence":  "inferred",
+                         "connected":  true,
+                         "lastEventAt":  1794154804322,
+                         "recentEvents":  99
+                     },
+                     {
+                         "sessionId":  "a47a2ae6-ec8e-439c-88ce-84a2ca371a72",
+                         "host":  "deepseek-harness",
+                         "state":  "running",
+                         "reportedState":  "running",
+                         "source":  "host-native",
+                         "confidence":  "confirmed",
+                         "connected":  true,
+                         "lastEventAt":  1794154812036,
+                         "recentEvents":  56
+                     },
+                     {
+                         "sessionId":  "8e5d1bbb-caa7-491d-a9cd-674ccd63cf1c",
+                         "host":  "deepseek-harness",
+                         "state":  "unknown",
+                         "reportedState":  "unknown",
+                         "source":  "derived",
+                         "confidence":  "inferred",
+                         "connected":  true,
+                         "lastEventAt":  1794154806480,
+                         "recentEvents":  131
+                     },
+                     {
+                         "sessionId":  "lead-test-cc-001",
+                         "host":  "claude-code",
+                         "state":  "tool",
+                         "reportedState":  "tool",
+                         "source":  "host-native",
+                         "confidence":  "confirmed",
+                         "connected":  true,
+                         "lastEventAt":  1794154604879,
+                         "recentEvents":  2
+                     },
+                     {
+                         "sessionId":  "f1327e03-ef8c-4f14-b553-0c336bdb909e",
+                         "host":  "claude-code",
+                         "state":  "disconnected",
+                         "reportedState":  "disconnected",
+                         "source":  "host-native",
+                         "confidence":  "confirmed",
+                         "connected":  false,
+                         "lastEventAt":  1794154640197,
+                         "recentEvents":  4
+                     },
+                     {
+                         "sessionId":  "d6c9a9f5-e849-40cd-80f2-38b00416f27f",
+                         "host":  "claude-code",
+                         "state":  "disconnected",
+                         "reportedState":  "disconnected",
+                         "source":  "host-native",
+                         "confidence":  "confirmed",
+                         "connected":  false,
+                         "lastEventAt":  1794154650952,
+                         "recentEvents":  4
+                     },
+                     {
+                         "sessionId":  "01a1bbf3-aed0-7993-9d28-0bf136658557",
+                         "host":  "codex",
+                         "state":  "connected",
+                         "reportedState":  "idle",
+                         "source":  "derived",
+                         "confidence":  "inferred",
+                         "connected":  true,
+                         "lastEventAt":  1794154691044,
+                         "recentEvents":  2
+                     },
+                     {
+                         "sessionId":  "trace_f72c08ecb6f345ddaf9f2da2dd408c3a",
+                         "host":  "workbuddy",
+                         "state":  "disconnected",
+                         "reportedState":  "disconnected",
+                         "source":  "derived",
+                         "confidence":  "inferred",
+                         "connected":  false,
+                         "lastEventAt":  1794154746328,
+                         "recentEvents":  81
+                     },
+                     {
+                         "sessionId":  "01a1bbf4-ebfe-7822-891f-b0edc08cfac4",
+                         "host":  "codex",
+                         "state":  "connected",
+                         "reportedState":  "idle",
+                         "source":  "derived",
+                         "confidence":  "inferred",
+                         "connected":  true,
+                         "lastEventAt":  1794154767804,
+                         "recentEvents":  2
+                     },
+                     {
+                         "sessionId":  "01a1bbf5-54c6-7e92-bc4c-1662b8ddb7e0",
+                         "host":  "codex",
+                         "state":  "idle",
+                         "reportedState":  "idle",
+                         "source":  "derived",
+                         "confidence":  "inferred",
+                         "connected":  true,
+                         "lastEventAt":  1794154790630,
+                         "recentEvents":  4
+                     }
+                 ]
+}

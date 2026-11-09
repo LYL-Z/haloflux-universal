@@ -1,0 +1,1336 @@
+/**
+ * HALOFLUX Universal Agent Visualizer — companion renderer.
+ *
+ * Data paths (only one is active at a time):
+ *   1. live  : GET /v1/stream (SSE) on the loopback event bridge, token-authed.
+ *   2. demo  : local simulated snapshot stream (`mock-session.js`), always
+ *              marked source=simulated, confidence=unverified and watermarked.
+ *
+ * Truthfulness rules enforced here:
+ *   - simulated data never looks like a host-native session (source badge,
+ *     watermark, per-event marker, agent row tag);
+ *   - missing token/context metrics render as "—" (capability chips explain why);
+ *   - event rows only show event type / tool name / time — never prompt text.
+ *
+ * No build step, native ES modules, no third-party assets. License:
+ * PolyForm Noncommercial 1.0.0 — see About.
+ */
+import {
+  createVisualizer,
+  PRESETS,
+  PRESET_ORDER,
+  PRESET_META,
+  CURATED_PARAMS,
+  STATE_META,
+  SOURCE_META,
+  CONFIDENCE_META,
+  AGENT_STATES,
+  normalizeSession,
+  pickPrimarySession,
+  sourceBadge,
+  confidenceBadge,
+  capabilityChips,
+  formatMetric,
+} from '../../../packages/visual-core/src/index.js';
+import { createMockStream } from './mock-session.js';
+
+/* ------------------------------------------------------------------ *
+ * environment / query
+ * ------------------------------------------------------------------ */
+
+const query = new URLSearchParams(window.location.search);
+const config = (window.halofluxConfig && typeof window.halofluxConfig === 'object')
+  ? window.halofluxConfig
+  : {};
+
+const DEMO = query.get('demo') === '1' || query.get('mock') === '1' || config.demo === true;
+const QA = query.get('qa') === '1' || query.has('preset') || query.has('state');
+const MULTI = query.get('multi') === '1';
+
+const HOSTS = [
+  { id: 'deepseek-harness', name: 'DeepSeek Harness', short: 'DS' },
+  { id: 'codex', name: 'Codex', short: 'CX' },
+  { id: 'cursor', name: 'Cursor', short: 'CU' },
+  { id: 'workbuddy', name: 'WorkBuddy', short: 'WB' },
+  { id: 'claude-code', name: 'Claude Code', short: 'CC' },
+  { id: 'trae', name: 'TRAE', short: 'TR' },
+];
+const HOST_BY_ID = new Map(HOSTS.map((host) => [host.id, host]));
+
+const PREFS_KEY = 'haloflux.renderer.prefs.v1';
+
+const WARNING_LABELS = Object.freeze({
+  'no-token-metrics': '该宿主不提供 token 指标',
+  'no-native-output-events': '该宿主不上报原生输出事件',
+  'no-tool-events': '该宿主不上报工具事件',
+  'no-native-approval': '该宿主无原生审批事件',
+});
+
+function readPreferences() {
+  try {
+    const raw = window.localStorage.getItem(PREFS_KEY);
+    if (!raw) return {};
+    const value = JSON.parse(raw);
+    return value && typeof value === 'object' ? value : {};
+  } catch {
+    return {};
+  }
+}
+
+function writePreferences(prefs) {
+  try {
+    window.localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
+  } catch {
+    /* private mode / disk full: preferences are optional */
+  }
+}
+
+function prefersReducedMotion() {
+  try {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  } catch {
+    return false;
+  }
+}
+
+/** Only loopback HTTP(S) bridges are allowed. No accidental egress. */
+function normalizeBridgeUrl(raw) {
+  try {
+    const url = new URL(String(raw || 'http://127.0.0.1:17817'));
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') return null;
+    if (!['127.0.0.1', 'localhost', '[::1]', '::1'].includes(url.hostname)) return null;
+    return `${url.protocol}//${url.host}`;
+  } catch {
+    return null;
+  }
+}
+
+const prefs = readPreferences();
+const queryPreset = query.get('preset');
+const initialPreset = (queryPreset && Object.prototype.hasOwnProperty.call(PRESETS, queryPreset))
+  ? queryPreset
+  : (typeof prefs.preset === 'string' && Object.prototype.hasOwnProperty.call(PRESETS, prefs.preset)
+    ? prefs.preset
+    : 'agent-monitor');
+const initialOverrides = (!queryPreset && prefs.overrides && typeof prefs.overrides === 'object')
+  ? prefs.overrides
+  : {};
+const initialReducedMotion = query.get('motion') === 'reduce'
+  ? true
+  : query.get('motion') === 'full'
+    ? false
+    : (typeof prefs.reducedMotion === 'boolean' ? prefs.reducedMotion : prefersReducedMotion());
+
+const BRIDGE_URL = normalizeBridgeUrl(query.get('bridge') || config.bridgeUrl || 'http://127.0.0.1:17817');
+const TOKEN = String(query.get('token') || config.token || '').trim();
+const QUERY_STATE = query.get('state');
+const PINNED_STATE = (QUERY_STATE && STATE_META[QUERY_STATE]) ? QUERY_STATE : null;
+/** Electron shell mode: window | overlay | compact. Overlay keeps the normal
+ *  HUD; compact swaps to a 320×320 mini layout. */
+const CONFIG_MODE = String(query.get('mode') || config.mode || 'window').toLowerCase();
+let appMode = ['window', 'overlay', 'compact'].includes(CONFIG_MODE) ? CONFIG_MODE : 'window';
+
+/* ------------------------------------------------------------------ *
+ * DOM
+ * ------------------------------------------------------------------ */
+
+const $ = (id) => document.getElementById(id);
+
+const els = {
+  canvas: $('haloflux-canvas'),
+  presetSwitch: $('preset-switch'),
+  drawerPresets: $('drawer-presets'),
+  agentList: $('agent-list'),
+  agentCount: $('agent-count'),
+  sessionSwitch: $('session-switch'),
+  sessionCount: $('session-count'),
+  stateBadge: $('state-badge'),
+  stateLabel: $('state-label'),
+  sourceBadge: $('source-badge'),
+  confidenceBadge: $('confidence-badge'),
+  sessionId: $('session-id'),
+  sessionAffinity: $('session-affinity'),
+  mModel: $('m-model'),
+  mTps: $('m-tps'),
+  mCtx: $('m-ctx'),
+  mStep: $('m-step'),
+  mTool: $('m-tool'),
+  mTurn: $('m-turn'),
+  capChips: $('cap-chips'),
+  sessionWarnings: $('session-warnings'),
+  eventList: $('event-list'),
+  eventEmpty: $('event-empty'),
+  eventCount: $('event-count'),
+  feedMode: $('feed-mode'),
+  linkStatus: $('link-status'),
+  linkText: $('link-text'),
+  watermark: $('watermark'),
+  perfFps: $('perf-fps'),
+  perfFrame: $('perf-frame'),
+  perfQuality: $('perf-quality'),
+  perfParticles: $('perf-particles'),
+  btnPause: $('btn-pause'),
+  pauseLabel: $('pause-label'),
+  statusVersion: $('status-version'),
+  paramRows: $('param-rows'),
+  toggleMotion: $('toggle-motion'),
+  toggleMotionSettings: $('toggle-motion-settings'),
+  togglePause: $('toggle-pause'),
+  paramsDrawer: $('params-drawer'),
+  settingsDrawer: $('settings-drawer'),
+  drawerBackdrop: $('drawer-backdrop'),
+  aboutModal: $('about-modal'),
+  aboutBackdrop: $('about-backdrop'),
+  settingsMode: $('settings-mode'),
+  settingsBridge: $('settings-bridge'),
+  settingsToken: $('settings-token'),
+  settingsTransport: $('settings-transport'),
+  settingsSnapshot: $('settings-snapshot'),
+  settingsReason: $('settings-reason'),
+  btnParams: $('btn-params'),
+  btnSettings: $('btn-settings'),
+  btnAbout: $('btn-about'),
+  btnReconnect: $('btn-reconnect'),
+  btnEnterMock: $('btn-enter-mock'),
+  btnResetLocal: $('btn-reset-local'),
+  toast: $('toast'),
+  qaStateControls: $('qa-state-controls'),
+  compactHud: $('compact-hud'),
+  compactState: $('compact-state'),
+  compactStateLabel: $('compact-state-label'),
+  compactAgent: $('compact-agent'),
+  compactSource: $('compact-source'),
+  compactFps: $('compact-fps'),
+  compactParams: $('compact-params'),
+  compactSettings: $('compact-settings'),
+  compactAbout: $('compact-about'),
+};
+
+/* ------------------------------------------------------------------ *
+ * app state
+ * ------------------------------------------------------------------ */
+
+const state = {
+  mode: 'connecting',            // connecting | live | offline | simulated
+  reason: '',
+  snapshot: null,
+  hosts: new Map(),
+  sessions: [],
+  selectedSessionId: null,
+  selectedHost: null,
+  manualSelection: false,
+  preferredSessionId: query.get('session') || null,
+  events: [],
+  preset: initialPreset,
+  overrides: { ...initialOverrides },
+  uiValues: { ...PRESETS[initialPreset], ...initialOverrides },
+  reducedMotion: initialReducedMotion,
+  paused: false,
+  stats: null,
+  lastSnapshotAt: 0,
+  gotSnapshot: false,
+  mock: null,
+  eventSource: null,
+  connectTimer: null,
+  qaSessions: false,
+};
+
+let saveTimer = null;
+let toastTimer = null;
+
+const viz = createVisualizer({
+  canvas: els.canvas,
+  preset: initialPreset,
+  reducedMotion: initialReducedMotion,
+  // Demo/QA captures run on a possibly throttled offscreen clock; do not make
+  // the ring wait for an envelope that may only get one frame per second.
+  instantTransitions: DEMO || QA,
+  // The renderer has a DOM watermark; a second canvas label would be noise.
+  showSimulatedMark: false,
+  // Hidden Electron windows can throttle rAF to ~1 Hz even with
+  // backgroundThrottling:false. The watchdog only fires when rAF stalls.
+  watchdog: true,
+});
+viz.start();
+if (Object.keys(initialOverrides).length > 0) {
+  viz.setParams(initialOverrides);
+}
+state.stats = viz.getStats();
+
+/* ------------------------------------------------------------------ *
+ * small helpers
+ * ------------------------------------------------------------------ */
+
+function clearNode(node) {
+  if (!node) return;
+  while (node.firstChild) node.removeChild(node.firstChild);
+}
+
+function make(tag, className, text) {
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  if (text !== undefined) node.textContent = text;
+  return node;
+}
+
+function formatClock(timestamp) {
+  const ms = Number(timestamp);
+  if (!Number.isFinite(ms) || ms <= 0) return '--:--:--';
+  const date = new Date(ms);
+  const pad = (value) => (value < 10 ? `0${value}` : String(value));
+  return `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+}
+
+function formatParamValue(meta, value) {
+  if (!Number.isFinite(Number(value))) return '—';
+  if (meta.format === 'percent') return `${Math.round(Number(value) * 100)}%`;
+  if (meta.format === 'fps') return `${Math.round(Number(value))} fps`;
+  if (meta.format === 'int') return String(Math.round(Number(value)));
+  const fixed = Number(value).toFixed(2);
+  return fixed.replace(/\.?0+$/, '') || '0';
+}
+
+function contextText(metrics) {
+  const used = Number(metrics.contextUsed);
+  const limit = Number(metrics.contextLimit);
+  if (Number.isFinite(used) && used > 0) {
+    const usedText = formatMetric(used, { compact: true });
+    if (Number.isFinite(limit) && limit > 0) {
+      return `${usedText} · ${formatMetric(used, { percent: true, total: limit })}`;
+    }
+    return usedText;
+  }
+  return '—';
+}
+
+function selectedSession() {
+  if (!state.selectedSessionId) return null;
+  return state.sessions.find((session) => session.sessionId === state.selectedSessionId) || null;
+}
+
+function hostFor(hostId) {
+  return state.hosts.get(hostId) || null;
+}
+
+function sessionsForHost(hostId) {
+  return state.sessions.filter((session) => session.host === hostId);
+}
+
+function bestSessionForHost(hostId) {
+  return pickPrimarySession(sessionsForHost(hostId)) || null;
+}
+
+function persistPreferences() {
+  if (saveTimer) {
+    clearTimeout(saveTimer);
+    saveTimer = null;
+  }
+  writePreferences({
+    preset: state.preset,
+    overrides: state.overrides,
+    reducedMotion: state.reducedMotion,
+  });
+}
+
+function schedulePersist() {
+  if (saveTimer) clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    saveTimer = null;
+    writePreferences({
+      preset: state.preset,
+      overrides: state.overrides,
+      reducedMotion: state.reducedMotion,
+    });
+  }, 250);
+}
+
+function toast(message) {
+  if (!els.toast) return;
+  els.toast.textContent = message;
+  els.toast.hidden = false;
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    els.toast.hidden = true;
+    toastTimer = null;
+  }, 2400);
+}
+
+/* ------------------------------------------------------------------ *
+ * presets
+ * ------------------------------------------------------------------ */
+
+function applyPreset(name, options = {}) {
+  if (!Object.prototype.hasOwnProperty.call(PRESETS, name)) return false;
+  const { persist = true, silent = false } = options;
+  state.preset = name;
+  state.overrides = {};
+  state.uiValues = { ...PRESETS[name] };
+  viz.setPreset(name);
+  syncPresetButtons();
+  syncParamControls();
+  if (persist) persistPreferences();
+  if (!silent) toast(`预设 · ${PRESET_META[name].nameZh} / ${PRESET_META[name].nameEn}`);
+  return true;
+}
+
+function buildPresetButtons() {
+  clearNode(els.presetSwitch);
+  clearNode(els.drawerPresets);
+  for (const name of PRESET_ORDER) {
+    const meta = PRESET_META[name];
+    const button = make('button', 'preset-btn', meta.nameZh);
+    button.type = 'button';
+    button.dataset.preset = name;
+    button.title = `${meta.nameEn} — ${meta.descriptionZh}`;
+    button.setAttribute('aria-pressed', String(name === state.preset));
+    els.presetSwitch.appendChild(button);
+
+    const drawerButton = make('button', 'drawer-preset');
+    drawerButton.type = 'button';
+    drawerButton.dataset.preset = name;
+    drawerButton.setAttribute('aria-pressed', String(name === state.preset));
+    const strong = make('strong', '', `${meta.nameZh} · ${meta.nameEn}`);
+    const description = make('span', '', meta.descriptionZh);
+    drawerButton.append(strong, description);
+    els.drawerPresets.appendChild(drawerButton);
+  }
+  els.presetSwitch.addEventListener('click', onPresetClick);
+  els.drawerPresets.addEventListener('click', onPresetClick);
+}
+
+function onPresetClick(event) {
+  const button = event.target.closest('[data-preset]');
+  if (!button) return;
+  applyPreset(button.dataset.preset);
+}
+
+function syncPresetButtons() {
+  for (const button of document.querySelectorAll('[data-preset]')) {
+    button.setAttribute('aria-pressed', String(button.dataset.preset === state.preset));
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * parameter drawer
+ * ------------------------------------------------------------------ */
+
+function buildParamRows() {
+  clearNode(els.paramRows);
+  for (const meta of CURATED_PARAMS) {
+    const row = make('label', 'param-row');
+    row.dataset.param = meta.key;
+    const label = make('span', 'param-label', meta.labelZh);
+    const output = make('output', 'param-value');
+    output.id = `out-${meta.key}`;
+    const input = make('input');
+    input.type = 'range';
+    input.id = `slider-${meta.key}`;
+    input.min = String(meta.min);
+    input.max = String(meta.max);
+    input.step = String(meta.step);
+    input.setAttribute('aria-label', meta.labelZh);
+    input.addEventListener('input', () => {
+      setUserParam(meta.key, input.value);
+    });
+    row.append(label, output, input);
+    els.paramRows.appendChild(row);
+    syncParamControl(meta.key);
+  }
+}
+
+function setUserParam(key, rawValue) {
+  const meta = CURATED_PARAMS.find((entry) => entry.key === key);
+  if (!meta) return;
+  let value = Number(rawValue);
+  if (!Number.isFinite(value)) return;
+  value = Math.min(meta.max, Math.max(meta.min, value));
+  if (meta.kind === 'visual') value = Math.round(value);
+  state.overrides[key] = value;
+  state.uiValues[key] = value;
+  viz.setParams({ [key]: value });
+  syncParamControl(key);
+  schedulePersist();
+}
+
+function syncParamControl(key) {
+  const meta = CURATED_PARAMS.find((entry) => entry.key === key);
+  if (!meta) return;
+  const row = els.paramRows ? els.paramRows.querySelector(`.param-row[data-param="${key}"]`) : null;
+  if (!row) return;
+  const input = row.querySelector('input');
+  const output = row.querySelector('output');
+  const raw = state.uiValues[key];
+  const value = Number.isFinite(Number(raw)) ? Number(raw) : meta.min;
+  if (input) {
+    input.value = String(value);
+    const ratio = meta.max === meta.min ? 0 : (value - meta.min) / (meta.max - meta.min);
+    input.style.setProperty('--fill', `${Math.min(100, Math.max(0, ratio * 100))}%`);
+  }
+  if (output) output.textContent = formatParamValue(meta, value);
+}
+
+function syncParamControls() {
+  for (const meta of CURATED_PARAMS) syncParamControl(meta.key);
+}
+
+/* ------------------------------------------------------------------ *
+ * toggles
+ * ------------------------------------------------------------------ */
+
+function syncMotionControls() {
+  for (const button of [els.toggleMotion, els.toggleMotionSettings]) {
+    if (button) button.setAttribute('aria-checked', String(state.reducedMotion));
+  }
+}
+
+function setReducedMotion(value, persist = true) {
+  state.reducedMotion = !!value;
+  viz.setReducedMotion(state.reducedMotion);
+  syncMotionControls();
+  if (persist) persistPreferences();
+}
+
+function syncPauseControls() {
+  for (const button of [els.togglePause, els.btnPause]) {
+    if (button) button.setAttribute('aria-pressed', String(state.paused));
+  }
+  if (els.pauseLabel) els.pauseLabel.textContent = state.paused ? '继续渲染' : '暂停渲染';
+  if (els.btnPause) {
+    const use = els.btnPause.querySelector('use');
+    if (use) use.setAttribute('href', state.paused ? '#i-play' : '#i-pause');
+  }
+  if (els.togglePause) els.togglePause.setAttribute('aria-checked', String(state.paused));
+}
+
+function setPaused(paused) {
+  state.paused = !!paused;
+  if (state.paused) viz.pause();
+  else viz.resume();
+  syncPauseControls();
+}
+
+/* ------------------------------------------------------------------ *
+ * panels / drawers
+ * ------------------------------------------------------------------ */
+
+function closeDrawers() {
+  for (const drawer of [els.paramsDrawer, els.settingsDrawer]) {
+    if (drawer) {
+      drawer.classList.remove('is-open');
+      drawer.setAttribute('aria-hidden', 'true');
+    }
+  }
+  if (els.drawerBackdrop) els.drawerBackdrop.hidden = true;
+}
+
+function openDrawer(drawer) {
+  if (!drawer) return;
+  closeDrawers();
+  drawer.classList.add('is-open');
+  drawer.setAttribute('aria-hidden', 'false');
+  if (els.drawerBackdrop) els.drawerBackdrop.hidden = false;
+}
+
+function closeAbout() {
+  if (els.aboutModal) {
+    els.aboutModal.classList.remove('is-open');
+    els.aboutModal.setAttribute('aria-hidden', 'true');
+  }
+  if (els.aboutBackdrop) els.aboutBackdrop.hidden = true;
+}
+
+function openAbout() {
+  if (els.aboutModal) {
+    els.aboutModal.classList.add('is-open');
+    els.aboutModal.setAttribute('aria-hidden', 'false');
+  }
+  if (els.aboutBackdrop) els.aboutBackdrop.hidden = false;
+}
+
+function closeAllOverlays() {
+  closeDrawers();
+  closeAbout();
+}
+
+/* ------------------------------------------------------------------ *
+ * render: agents, sessions, current session, events, mode
+ * ------------------------------------------------------------------ */
+
+function renderAgents() {
+  clearNode(els.agentList);
+  let withSessions = 0;
+  for (const host of HOSTS) {
+    const entry = hostFor(host.id);
+    const sessions = sessionsForHost(host.id);
+    const session = (healthiestSession(sessions) || null);
+    if (session) withSessions += 1;
+    const stateName = session ? session.state : 'disconnected';
+    const meta = STATE_META[stateName] || STATE_META.disconnected;
+    const selected = (selectedSession() && selectedSession().host === host.id)
+      || (!selectedSession() && state.selectedHost === host.id);
+
+    const row = make('li', 'agent-row');
+    row.dataset.host = host.id;
+    row.setAttribute('role', 'button');
+    row.tabIndex = 0;
+    row.setAttribute('aria-selected', String(selected));
+    if (session) row.classList.add('has-session');
+    row.style.setProperty('--state-color', meta.color);
+
+    const mark = make('span', 'agent-mark', host.short);
+    const main = make('div', 'agent-main');
+    const name = make('span', 'agent-name', host.name);
+    const metaLine = make('span', 'agent-meta');
+    const version = entry && entry.hostVersion ? `v${String(entry.hostVersion).replace(/^v/, '')}` : '—';
+    metaLine.append(make('span', '', version));
+    if (session) {
+      metaLine.append(make('span', '', '·'));
+      const source = make('span', 'agent-source', SOURCE_META[session.source] ? SOURCE_META[session.source].short : session.source);
+      source.dataset.source = session.source;
+      metaLine.append(source);
+    } else {
+      metaLine.append(make('span', '', '·'));
+      metaLine.append(make('span', '', entry && entry.connected ? '无活动会话' : '未连接'));
+    }
+    main.append(name, metaLine);
+
+    const stateLabel = make('span', 'agent-state', session ? meta.short : '无会话');
+    row.append(mark, main, stateLabel);
+
+    row.addEventListener('click', () => selectHost(host.id));
+    row.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        selectHost(host.id);
+      }
+    });
+    els.agentList.appendChild(row);
+  }
+  if (els.agentCount) els.agentCount.textContent = `${withSessions}/${HOSTS.length}`;
+}
+
+function healthiestSession(sessions) {
+  if (!sessions || sessions.length === 0) return null;
+  return pickPrimarySession(sessions);
+}
+
+function renderSessions() {
+  clearNode(els.sessionSwitch);
+  if (els.sessionCount) els.sessionCount.textContent = String(state.sessions.length);
+  if (state.sessions.length === 0) {
+    els.sessionSwitch.appendChild(make('span', 'session-chip-empty', '暂无活动会话'));
+    return;
+  }
+  const sorted = state.sessions.slice().sort((a, b) => {
+    const bySeverity = (STATE_META[a.state] || STATE_META.unknown).severity - (STATE_META[b.state] || STATE_META.unknown).severity;
+    if (bySeverity !== 0) return bySeverity;
+    return (Number(b.lastEventAt) || 0) - (Number(a.lastEventAt) || 0);
+  });
+  for (const session of sorted) {
+    const meta = STATE_META[session.state] || STATE_META.unknown;
+    const chip = make('button', 'session-chip', `${HOST_BY_ID.get(session.host)?.short || session.host} · ${meta.short}`);
+    chip.type = 'button';
+    chip.dataset.session = session.sessionId;
+    chip.title = `${session.host} · ${session.sessionId}`;
+    chip.style.setProperty('--state-color', meta.color);
+    chip.setAttribute('aria-pressed', String(session.sessionId === state.selectedSessionId));
+    chip.addEventListener('click', () => selectSession(session.sessionId));
+    els.sessionSwitch.appendChild(chip);
+  }
+}
+
+function renderSession() {
+  const session = selectedSession();
+  if (!session) {
+    if (els.stateBadge) els.stateBadge.style.setProperty('--state-color', STATE_META.disconnected.color);
+    if (els.stateLabel) els.stateLabel.textContent = '无会话';
+    if (els.sourceBadge) {
+      els.sourceBadge.textContent = '—';
+      els.sourceBadge.removeAttribute('data-source');
+    }
+    if (els.confidenceBadge) {
+      els.confidenceBadge.textContent = '—';
+      els.confidenceBadge.removeAttribute('data-confidence');
+    }
+    if (els.sessionId) {
+      els.sessionId.textContent = '—';
+      els.sessionId.removeAttribute('title');
+    }
+    if (els.sessionAffinity) {
+      els.sessionAffinity.textContent = state.mode === 'simulated'
+        ? '模拟流'
+        : state.mode === 'connecting' ? '等待事件桥' : '—';
+    }
+    for (const key of ['mModel', 'mTps', 'mCtx', 'mStep', 'mTool', 'mTurn']) {
+      if (els[key]) els[key].textContent = '—';
+    }
+    if (els.capChips) {
+      clearNode(els.capChips);
+      const chip = make('span', 'chip', state.mode === 'simulated' ? '模拟流 · 等待选择会话' : '等待事件桥');
+      chip.dataset.tone = 'muted';
+      els.capChips.appendChild(chip);
+    }
+    if (els.sessionWarnings) els.sessionWarnings.textContent = '';
+    document.title = 'HALOFLUX — Universal Agent Visualizer';
+    return;
+  }
+
+  const meta = STATE_META[session.state] || STATE_META.unknown;
+  if (els.stateBadge) els.stateBadge.style.setProperty('--state-color', meta.color);
+  if (els.stateLabel) els.stateLabel.textContent = `${meta.labelZh} · ${meta.labelEn}`;
+  if (els.sessionId) {
+    els.sessionId.textContent = `${session.host} · ${session.sessionId}`;
+    els.sessionId.title = `${session.host} / ${session.sessionId}`;
+  }
+  if (els.sessionAffinity) {
+    els.sessionAffinity.textContent = session.hostVersion ? `v${String(session.hostVersion).replace(/^v/, '')}` : '—';
+  }
+
+  const source = sourceBadge(session.source);
+  if (els.sourceBadge) {
+    els.sourceBadge.dataset.source = source.key;
+    els.sourceBadge.textContent = `${source.labelZh} · ${source.labelEn}`;
+    els.sourceBadge.title = source.descriptionZh;
+  }
+  const confidence = confidenceBadge(session.confidence);
+  if (els.confidenceBadge) {
+    els.confidenceBadge.dataset.confidence = confidence.key;
+    els.confidenceBadge.textContent = `${confidence.labelZh} · ${confidence.labelEn}`;
+  }
+
+  const metrics = session.metrics || {};
+  if (els.mModel) els.mModel.textContent = metrics.model || '—';
+  if (els.mTps) els.mTps.textContent = formatMetric(metrics.tokensPerSecond);
+  if (els.mCtx) els.mCtx.textContent = contextText(metrics);
+  if (els.mStep) els.mStep.textContent = formatMetric(metrics.step);
+  if (els.mTool) els.mTool.textContent = metrics.toolName || '—';
+  if (els.mTurn) els.mTurn.textContent = formatMetric(metrics.turn);
+
+  if (els.capChips) {
+    clearNode(els.capChips);
+    if (session.source === 'simulated') {
+      const sim = make('span', 'chip', '模拟数据');
+      sim.dataset.tone = 'warn';
+      els.capChips.appendChild(sim);
+    }
+    const entry = hostFor(session.host);
+    const chips = capabilityChips(entry ? entry.capabilities : null);
+    for (const info of chips) {
+      const chip = make('span', 'chip', info.label);
+      chip.dataset.tone = info.tone;
+      els.capChips.appendChild(chip);
+    }
+  }
+
+  if (els.sessionWarnings) {
+    const warnings = (session.warnings || []).map((warning) => WARNING_LABELS[warning] || warning);
+    els.sessionWarnings.textContent = warnings.length > 0 ? `警告 · ${warnings.join('；')}` : '';
+  }
+
+  document.title = `HALOFLUX — ${meta.labelZh} · ${HOST_BY_ID.get(session.host)?.name || session.host}`;
+}
+
+function renderEvents() {
+  if (!els.eventList) return;
+  clearNode(els.eventList);
+  const events = state.events.slice(-30).reverse();
+  for (const event of events) {
+    const row = make('li', 'event-row');
+    row.dataset.sim = event.source === 'simulated' || state.mode === 'simulated' ? '1' : '0';
+    const time = make('span', 'event-time', formatClock(event.timestamp));
+    const type = make('span', 'event-type', event.eventType);
+    const tool = make('span', 'event-tool', event.toolName || '');
+    row.append(time, type, tool);
+    els.eventList.appendChild(row);
+  }
+  if (els.eventEmpty) els.eventEmpty.hidden = events.length > 0;
+  if (els.eventCount) els.eventCount.textContent = String(events.length);
+}
+
+function renderMode() {
+  const session = selectedSession();
+  const simulated = state.mode === 'simulated' || !!(session && session.source === 'simulated');
+  const mode = simulated ? 'simulated' : state.mode;
+
+  if (els.linkStatus) els.linkStatus.dataset.mode = mode;
+  if (els.linkText) {
+    if (mode === 'simulated') els.linkText.textContent = '模拟演示 · 非真机数据';
+    else if (mode === 'live') els.linkText.textContent = `实时 · ${state.snapshot?.bridge?.version ? `bridge ${state.snapshot.bridge.version}` : 'SSE'}`;
+    else if (mode === 'offline') els.linkText.textContent = '连接中断 · 数据可能过期';
+    else els.linkText.textContent = '连接事件桥';
+  }
+  if (els.watermark) els.watermark.hidden = !simulated;
+  document.body.classList.toggle('is-simulated', simulated);
+
+  if (els.feedMode) {
+    const feedMode = state.mode === 'simulated' ? 'simulated' : state.mode === 'live' ? 'live' : state.mode === 'offline' ? 'offline' : 'connecting';
+    els.feedMode.dataset.mode = feedMode;
+    els.feedMode.textContent = feedMode === 'simulated' ? '示例' : feedMode === 'live' ? 'LIVE' : feedMode === 'offline' ? 'STALE' : '—';
+  }
+}
+
+/** 320×320 mini HUD: one state badge, one agent line, source + fps. */
+function renderCompact() {
+  if (!els.compactHud) return;
+  const compact = isCompactLayout();
+  document.body.classList.toggle('mode-compact', compact);
+  els.compactHud.hidden = !compact;
+  if (!compact) return;
+
+  const session = selectedSession();
+  const stateName = session ? session.state : 'disconnected';
+  const meta = STATE_META[stateName] || STATE_META.disconnected;
+  if (els.compactState) els.compactState.style.setProperty('--state-color', meta.color);
+  if (els.compactStateLabel) {
+    els.compactStateLabel.textContent = session ? `${meta.labelZh} · ${meta.labelEn}` : '无会话';
+  }
+  if (els.compactAgent) {
+    if (session) {
+      const host = HOST_BY_ID.get(session.host);
+      els.compactAgent.textContent = `${host ? host.name : session.host} · ${session.sessionId}`;
+    } else {
+      els.compactAgent.textContent = state.mode === 'simulated'
+        ? '模拟流 · 等待会话'
+        : state.mode === 'live' ? '实时桥已连接 · 等待会话' : '等待事件桥';
+    }
+  }
+  if (els.compactSource) {
+    if (session) {
+      // source label + confidence *value*: for derived/inferred the two Chinese
+      // labels would otherwise read as a redundant "推断 · 推断".
+      els.compactSource.textContent = `${sourceBadge(session.source).labelZh} · ${confidenceBadge(session.confidence).labelEn}`;
+    } else {
+      els.compactSource.textContent = state.mode === 'simulated' ? '模拟 · SIMULATED' : '—';
+    }
+  }
+  if (els.compactFps) {
+    const fps = state.stats && state.stats.fps > 0 ? Math.round(state.stats.fps) : null;
+    els.compactFps.textContent = fps ? `${fps} fps` : '— fps';
+  }
+}
+
+function isCompactLayout() {
+  return appMode === 'compact' || (typeof window.innerWidth === 'number' && window.innerWidth < 480);
+}
+
+function setAppMode(mode) {
+  const next = String(mode || '').toLowerCase();
+  if (!['window', 'overlay', 'compact'].includes(next)) return;
+  appMode = next;
+  document.body.dataset.mode = next;
+  renderCompact();
+}
+
+function applyResponsiveMode() {
+  document.body.dataset.mode = appMode;
+  renderCompact();
+}
+
+function renderSettings() {
+  if (els.settingsMode) {
+    els.settingsMode.textContent = state.mode === 'simulated'
+      ? '模拟'
+      : state.mode === 'live' ? '实时' : state.mode === 'offline' ? '中断' : '连接中';
+  }
+  if (els.settingsBridge) els.settingsBridge.textContent = BRIDGE_URL || '已拒绝（非 loopback）';
+  if (els.settingsToken) els.settingsToken.textContent = TOKEN ? '已配置（不回显）' : '未配置';
+  if (els.settingsTransport) {
+    els.settingsTransport.textContent = state.mode === 'simulated'
+      ? '本地模拟流 · 仅演示'
+      : 'SSE · 只读';
+  }
+  if (els.settingsSnapshot) {
+    els.settingsSnapshot.textContent = state.lastSnapshotAt ? formatClock(state.lastSnapshotAt) : '—';
+  }
+  if (els.settingsReason) {
+    els.settingsReason.textContent = state.reason || '事件桥只在本机回环地址监听；token 不会写入界面。';
+  }
+}
+
+function renderAll() {
+  renderAgents();
+  renderSessions();
+  renderSession();
+  renderEvents();
+  renderMode();
+  renderSettings();
+  renderCompact();
+}
+
+/* ------------------------------------------------------------------ *
+ * selection
+ * ------------------------------------------------------------------ */
+
+function selectSession(sessionId) {
+  const session = state.sessions.find((entry) => entry.sessionId === sessionId);
+  if (!session) return;
+  state.manualSelection = true;
+  state.selectedSessionId = session.sessionId;
+  state.selectedHost = session.host;
+  viz.setSession(session);
+  renderAll();
+}
+
+function selectHost(hostId) {
+  const session = bestSessionForHost(hostId);
+  state.manualSelection = true;
+  state.selectedHost = hostId;
+  if (session) {
+    state.selectedSessionId = session.sessionId;
+    viz.setSession(session);
+  } else {
+    state.selectedSessionId = null;
+    viz.setSession(undefined);
+  }
+  renderAll();
+}
+
+function resolveSelectedSession(sessions, activeSessionId) {
+  if (state.manualSelection) {
+    if (state.selectedSessionId) {
+      const found = sessions.find((session) => session.sessionId === state.selectedSessionId);
+      if (found) return found;
+    }
+    if (state.selectedHost) {
+      const hostSessions = sessions.filter((session) => session.host === state.selectedHost);
+      if (hostSessions.length > 0) return pickPrimarySession(hostSessions);
+      return null;
+    }
+  }
+  if (state.preferredSessionId) {
+    const preferred = sessions.find((session) => session.sessionId === state.preferredSessionId);
+    if (preferred) return preferred;
+  }
+  if (activeSessionId) {
+    const active = sessions.find((session) => session.sessionId === activeSessionId);
+    if (active) return active;
+  }
+  return pickPrimarySession(sessions) || null;
+}
+
+/* ------------------------------------------------------------------ *
+ * snapshots / events
+ * ------------------------------------------------------------------ */
+
+function unwrapSnapshot(payload) {
+  if (!payload || typeof payload !== 'object') return null;
+  if (Array.isArray(payload.sessions)) return payload;
+  if (payload.snapshot && Array.isArray(payload.snapshot.sessions)) return payload.snapshot;
+  if (payload.data && Array.isArray(payload.data.sessions)) return payload.data;
+  if (payload.state && Array.isArray(payload.state.sessions)) return payload.state;
+  return null;
+}
+
+function parseSsePayload(event) {
+  if (!event || typeof event.data !== 'string') return null;
+  try {
+    return unwrapSnapshot(JSON.parse(event.data));
+  } catch {
+    return null;
+  }
+}
+
+function ingestEvents(sessions) {
+  const existing = new Set(state.events.map((event) => event.key));
+  for (const session of sessions) {
+    for (const event of session.recentEvents || []) {
+      const key = `${session.sessionId}|${event.timestamp}|${event.eventType}|${event.toolName || ''}`;
+      if (existing.has(key)) continue;
+      existing.add(key);
+      state.events.push({
+        key,
+        sessionId: session.sessionId,
+        host: session.host,
+        source: session.source,
+        eventType: event.eventType,
+        timestamp: event.timestamp,
+        toolName: event.toolName || '',
+      });
+    }
+  }
+  state.events.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+  if (state.events.length > 30) state.events = state.events.slice(state.events.length - 30);
+}
+
+function handleSnapshot(payload, kind) {
+  const snapshot = unwrapSnapshot(payload);
+  if (!snapshot) return;
+
+  state.snapshot = snapshot;
+  state.lastSnapshotAt = Date.now();
+  state.hosts = new Map(
+    (Array.isArray(snapshot.hosts) ? snapshot.hosts : [])
+      .filter((entry) => entry && typeof entry.host === 'string')
+      .map((entry) => [entry.host, entry]),
+  );
+
+  const sessions = (Array.isArray(snapshot.sessions) ? snapshot.sessions : [])
+    .map((view) => normalizeSession(view))
+    .filter(Boolean);
+  state.sessions = sessions;
+
+  const selected = resolveSelectedSession(sessions, snapshot.activeSessionId);
+  state.selectedSessionId = selected ? selected.sessionId : null;
+  if (selected) state.selectedHost = selected.host;
+  else if (!state.manualSelection) state.selectedHost = null;
+
+  viz.setSessions(sessions);
+  viz.setSession(selected || undefined);
+  ingestEvents(sessions);
+
+  if (kind === 'live') {
+    state.mode = 'live';
+    state.reason = '';
+    state.gotSnapshot = true;
+    if (state.connectTimer) {
+      clearTimeout(state.connectTimer);
+      state.connectTimer = null;
+    }
+  }
+
+  renderAll();
+}
+
+/* ------------------------------------------------------------------ *
+ * live SSE
+ * ------------------------------------------------------------------ */
+
+function closeEventSource() {
+  if (state.connectTimer) {
+    clearTimeout(state.connectTimer);
+    state.connectTimer = null;
+  }
+  if (state.eventSource) {
+    try { state.eventSource.close(); } catch { /* ignore */ }
+    state.eventSource = null;
+  }
+}
+
+function connectLive() {
+  closeEventSource();
+  stopMock();
+  if (!BRIDGE_URL) {
+    enterSimulated('已拒绝非 loopback 事件桥地址');
+    return;
+  }
+  if (!TOKEN) {
+    enterSimulated('未配置事件桥 token，进入模拟演示');
+    return;
+  }
+
+  state.mode = 'connecting';
+  state.reason = '已连接事件桥，等待首个快照';
+  state.gotSnapshot = false;
+  // Never mix a previous demo feed with real bridge snapshots.
+  state.events = [];
+  state.sessions = [];
+  state.snapshot = null;
+  renderAll();
+
+  let source;
+  try {
+    source = new EventSource(`${BRIDGE_URL}/v1/stream?token=${encodeURIComponent(TOKEN)}`);
+  } catch {
+    enterSimulated('EventSource 不可用，进入模拟演示');
+    return;
+  }
+  state.eventSource = source;
+
+  state.connectTimer = setTimeout(() => {
+    state.connectTimer = null;
+    if (!state.gotSnapshot && state.eventSource === source) {
+      enterSimulated(`无法连接 ${BRIDGE_URL}，进入模拟演示`);
+    }
+  }, 4500);
+
+  const onSnapshot = (event) => {
+    const snapshot = parseSsePayload(event);
+    if (!snapshot) return;
+    state.gotSnapshot = true;
+    handleSnapshot(snapshot, 'live');
+  };
+  source.addEventListener('snapshot', onSnapshot);
+  source.addEventListener('update', onSnapshot);
+  source.onopen = () => {
+    if (!state.gotSnapshot) {
+      state.mode = 'connecting';
+      state.reason = 'SSE 已打开，等待快照';
+      renderAll();
+    }
+  };
+  source.onerror = () => {
+    if (!state.gotSnapshot) return; // the fallback timer owns the first-connect path
+    state.mode = 'offline';
+    state.reason = 'SSE 连接中断，保留最后快照；可能已过期';
+    renderAll();
+  };
+}
+
+/* ------------------------------------------------------------------ *
+ * simulated demo
+ * ------------------------------------------------------------------ */
+
+function stopMock() {
+  if (state.mock) {
+    try { state.mock.stop(); } catch { /* ignore */ }
+    state.mock = null;
+  }
+}
+
+function enterSimulated(reason) {
+  closeEventSource();
+  stopMock();
+  state.mode = 'simulated';
+  state.reason = reason || '模拟演示 · 非真机数据';
+  state.gotSnapshot = false;
+  state.events = [];
+  state.snapshot = null;
+  state.sessions = [];
+  state.hosts = new Map();
+  state.selectedSessionId = null;
+  state.selectedHost = null;
+  state.manualSelection = false;
+  renderAll();
+
+  state.mock = createMockStream({
+    multi: MULTI,
+    initialState: PINNED_STATE || undefined,
+    intervalMs: 3200,
+    onSnapshot: (snapshot) => {
+      handleSnapshot(snapshot, 'simulated');
+    },
+  });
+  state.mock.start();
+}
+
+/* ------------------------------------------------------------------ *
+ * stats
+ * ------------------------------------------------------------------ */
+
+function updateStats(stats) {
+  if (!stats) return;
+  state.stats = stats;
+  if (els.perfFps) els.perfFps.textContent = stats.fps > 0 ? `${Math.round(stats.fps)} fps` : '— fps';
+  if (els.perfFrame) els.perfFrame.textContent = stats.frameMs > 0 ? `${stats.frameMs.toFixed(1)} ms` : '— ms';
+  if (els.perfQuality) {
+    const label = ['高', '中', '低'][stats.qualityLevel] || '高';
+    els.perfQuality.textContent = `画质 ${label} · ${Math.round((stats.quality || 1) * 100)}%`;
+  }
+  if (els.perfParticles) els.perfParticles.textContent = `${stats.particles || 0} particles`;
+  if (els.statusVersion) els.statusVersion.textContent = `v0.1.0${stats.reducedMotion ? ' · reduce-motion' : ''}`;
+  if (els.compactFps) {
+    els.compactFps.textContent = stats.fps > 0 ? `${Math.round(stats.fps)} fps` : '— fps';
+  }
+  if (isCompactLayout()) renderCompact();
+  if (stats.reducedMotion !== undefined && stats.reducedMotion !== state.reducedMotion) {
+    state.reducedMotion = stats.reducedMotion;
+    syncMotionControls();
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * UI events
+ * ------------------------------------------------------------------ */
+
+function bindEvents() {
+  els.btnParams?.addEventListener('click', () => openDrawer(els.paramsDrawer));
+  els.btnSettings?.addEventListener('click', () => openDrawer(els.settingsDrawer));
+  els.btnAbout?.addEventListener('click', openAbout);
+  els.compactParams?.addEventListener('click', () => openDrawer(els.paramsDrawer));
+  els.compactSettings?.addEventListener('click', () => openDrawer(els.settingsDrawer));
+  els.compactAbout?.addEventListener('click', openAbout);
+
+  document.querySelectorAll('[data-close-drawer]').forEach((button) => {
+    button.addEventListener('click', closeDrawers);
+  });
+  document.querySelectorAll('[data-close-modal]').forEach((button) => {
+    button.addEventListener('click', closeAbout);
+  });
+  els.drawerBackdrop?.addEventListener('click', closeDrawers);
+  els.aboutBackdrop?.addEventListener('click', closeAbout);
+
+  els.toggleMotion?.addEventListener('click', () => setReducedMotion(!state.reducedMotion));
+  els.toggleMotionSettings?.addEventListener('click', () => setReducedMotion(!state.reducedMotion));
+  els.togglePause?.addEventListener('click', () => setPaused(!state.paused));
+  els.btnPause?.addEventListener('click', () => setPaused(!state.paused));
+
+  els.btnReconnect?.addEventListener('click', () => {
+    toast('重新连接本机事件桥…');
+    connectLive();
+  });
+  els.btnEnterMock?.addEventListener('click', () => {
+    enterSimulated('手动进入模拟演示 · 非真机数据');
+  });
+  els.btnResetLocal?.addEventListener('click', () => {
+    applyPreset('original', { persist: false, silent: true });
+    setReducedMotion(false, false);
+    try { window.localStorage.removeItem(PREFS_KEY); } catch { /* ignore */ }
+    toast('已恢复原作预设与默认动效');
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') closeAllOverlays();
+  });
+
+  window.addEventListener('resize', applyResponsiveMode);
+  window.halofluxConfig?.mode && setAppMode(window.halofluxConfig.mode);
+
+  // Optional Electron-shell bridge (during normal window / compact / overlay
+  // operation). Safe on file:// previews where the preload does not exist.
+  const shell = window.haloflux || window.halofluxCompanion || null;
+  if (shell) {
+    try {
+      if (typeof shell.onStateChange === 'function') {
+        shell.onStateChange((info) => {
+          const mode = typeof info === 'string' ? info : (info && info.mode);
+          if (mode) setAppMode(mode);
+        });
+      }
+      if (typeof shell.onPause === 'function') {
+        shell.onPause(() => { if (!state.paused) viz.pause(); });
+      }
+      if (typeof shell.onResume === 'function') {
+        shell.onResume(() => { if (!state.paused) viz.resume(); });
+      }
+    } catch {
+      /* shell integration is optional */
+    }
+  }
+
+  window.addEventListener('beforeunload', () => {
+    stopMock();
+    closeEventSource();
+    if (saveTimer) clearTimeout(saveTimer);
+    if (toastTimer) clearTimeout(toastTimer);
+    try { viz.destroy(); } catch { /* ignore */ }
+  });
+}
+
+/* ------------------------------------------------------------------ *
+ * QA hook (optional; harmless in production)
+ * ------------------------------------------------------------------ */
+
+function installQaHook() {
+  const controls = els.qaStateControls;
+  if (controls) {
+    for (const stateName of AGENT_STATES) {
+      const button = make('button', '', stateName);
+      button.type = 'button';
+      button.dataset.state = stateName;
+      button.addEventListener('click', () => qaSetState(stateName));
+      controls.appendChild(button);
+    }
+  }
+
+  window.__halofluxQA = {
+    ready: false,
+    version: '0.1.0',
+    setPreset(name) {
+      if (!Object.prototype.hasOwnProperty.call(PRESETS, name)) return false;
+      applyPreset(name, { persist: false, silent: true });
+      return true;
+    },
+    setState(stateName) {
+      return qaSetState(stateName);
+    },
+    setSessions(views) {
+      if (!Array.isArray(views)) return false;
+      const sessions = views.map((view) => normalizeSession(view)).filter(Boolean);
+      if (sessions.length === 0) return false;
+      state.qaSessions = true;
+      state.sessions = sessions;
+      state.hosts = new Map(
+        sessions.map((session) => [session.host, {
+          host: session.host,
+          hostVersion: session.hostVersion,
+          connected: session.connected,
+          capabilities: {},
+        }]),
+      );
+      state.manualSelection = true;
+      state.selectedSessionId = sessions[0].sessionId;
+      state.selectedHost = sessions[0].host;
+      viz.setSessions(sessions);
+      viz.setSession(sessions[0]);
+      renderAll();
+      return true;
+    },
+    getStats() {
+      const stats = viz.getStats();
+      return {
+        fps: stats.fps,
+        frameMs: stats.frameMs,
+        quality: stats.quality,
+        particles: stats.particles,
+        particlesByKind: stats.particlesByKind || null,
+        preset: stats.preset,
+        state: stats.state,
+        source: stats.source,
+        confidence: stats.confidence,
+        simulated: stats.simulated,
+        sessionId: stats.sessionId,
+        sessions: stats.sessions,
+        canvasWidth: stats.canvasWidth,
+        canvasHeight: stats.canvasHeight,
+        mode: state.mode,
+        paused: state.paused,
+      };
+    },
+    getSnapshot() {
+      return state.snapshot;
+    },
+  };
+
+  const markReady = () => { window.__halofluxQA.ready = true; };
+  if (typeof requestAnimationFrame === 'function') requestAnimationFrame(markReady);
+  setTimeout(markReady, 50);
+}
+
+function qaSetState(stateName) {
+  if (!STATE_META[stateName]) return false;
+  if (state.mode !== 'simulated' || !state.mock) {
+    enterSimulated('QA 状态截图 · 模拟数据');
+  }
+  if (!state.mock) return false;
+  state.mock.setState(stateName);
+  return true;
+}
+
+/* ------------------------------------------------------------------ *
+ * boot
+ * ------------------------------------------------------------------ */
+
+function init() {
+  buildPresetButtons();
+  buildParamRows();
+  syncMotionControls();
+  syncPauseControls();
+  bindEvents();
+  applyResponsiveMode();
+
+  viz.onStats(updateStats);
+  viz.setStateHook((stats) => {
+    if (stats && Number.isFinite(stats.fps)) updateStats(stats);
+  });
+
+  renderAll();
+
+  if (DEMO) {
+    enterSimulated('演示模式 · ?demo=1');
+  } else if (!BRIDGE_URL) {
+    enterSimulated('已拒绝非 loopback 事件桥地址');
+  } else if (!TOKEN) {
+    enterSimulated('未配置事件桥 token，进入模拟演示');
+  } else {
+    connectLive();
+  }
+
+  installQaHook();
+
+  if (QA) {
+    // QA runs need a stable first frame before screenshots.
+    document.documentElement.dataset.qa = '1';
+  }
+}
+
+init();

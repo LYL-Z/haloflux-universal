@@ -1,0 +1,6 @@
+{
+  "name": "@haloflux/session-manager-tests",
+  "private": true,
+  "type": "module",
+  "main": "index.js"
+}

@@ -1,0 +1,28 @@
+{
+  "recordedAt": "2026-11-08T16:09:00-08:00",
+  "host": "DeepSeek Harness desktop 0.2.1-rc.5",
+  "webGuiUrl": "http://127.0.0.1:57397",
+  "browserTools": {
+    "status": "BLOCKED",
+    "evidence": "browser_info / browser_tabs returned [extension_offline] no browser extension connected. The DSH Browser Control extension is not installed in any Chrome/Edge profile found on this machine (checked Chrome User Data Preferences for 'Browser Control' and all profile Extensions folders).",
+    "fallback": "Windows Computer Use MCP captured the real Electron window (printwindow) and drove the Settings UI via OCR coordinates."
+  },
+  "settingsScreenshot": {
+    "file": "D:\\HALOFLUX\\screenshots\\dsh-haloflux-settings.png",
+    "sha256": "A9ADD6F6453D368E8CAF035DD5BEA047C5114E894F5AEC30F6E02CE47EEC30A3",
+    "bytes": 719561,
+    "observedText": [
+      "设置",
+      "HALOFLUX",
+      "HALOFLUX 实时光环",
+      "由当前会话驱动的全帧光环背景：圆盘转动、词元抓取与光束跟随模型调用，调用结束即同步停止。",
+      "数据抓取档位 / 预设与配置 / 参数 110"
+    ]
+  },
+  "overlayScreenshot": {
+    "file": "D:\\HALOFLUX\\screenshots\\dsh-haloflux-overlay.png",
+    "sha256": "AF4B62AECE1EF86E9861C5B1BB8F471D19392B0D7051B3174283B316BACBBDA7",
+    "bytes": 1243202,
+    "observed": "Main conversation view; the HALOFLUX light field (soft rotating ring, beams and data blocks including the 'STABILITY CHECK' panel) is visible behind the chat content, consistent with the shell.overlay slot."
+  }
+}

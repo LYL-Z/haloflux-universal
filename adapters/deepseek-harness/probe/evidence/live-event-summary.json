@@ -1,0 +1,190 @@
+﻿{
+    "log":  "C:\\Users\\Lenovo\\AppData\\Local\\Temp\\haloflux-dsh-bridge-events.jsonl",
+    "lines":  1203,
+    "sessions":  6,
+    "tokenEvents":  307,
+    "types":  {
+                  "session.start":  3,
+                  "session.end":  3,
+                  "run.start":  6,
+                  "output.end":  307,
+                  "tool.end":  380,
+                  "error":  6,
+                  "tool.start":  392,
+                  "tool.fail":  10,
+                  "task.received":  4,
+                  "session.heartbeat":  92
+              },
+    "samples":  {
+                    "session.start":  {
+                                          "schemaVersion":  1,
+                                          "eventId":  "dsh-81ac910272-6bfa9af4-lt-sessionstart",
+                                          "timestamp":  1794154501699,
+                                          "host":  "deepseek-harness",
+                                          "hostVersion":  "0.2.1-rc.5",
+                                          "sessionId":  "f8d486fe-0872-4878-85de-0749d65bf95c",
+                                          "eventType":  "session.start",
+                                          "state":  "connected",
+                                          "source":  "host-native",
+                                          "confidence":  "confirmed",
+                                          "metadata":  {
+                                                           "label":  "session-created"
+                                                       }
+                                      },
+                    "session.end":  {
+                                        "schemaVersion":  1,
+                                        "eventId":  "dsh-81ac910272-ebb1e4a0-j6-sessionend",
+                                        "timestamp":  1794154356653,
+                                        "host":  "deepseek-harness",
+                                        "hostVersion":  "0.2.1-rc.5",
+                                        "sessionId":  "f8d486fe-0872-4878-85de-0749d65bf95c",
+                                        "eventType":  "session.end",
+                                        "state":  "disconnected",
+                                        "source":  "host-native",
+                                        "confidence":  "confirmed",
+                                        "metadata":  {
+                                                         "label":  "session-disposed"
+                                                     }
+                                    },
+                    "run.start":  {
+                                      "schemaVersion":  1,
+                                      "eventId":  "dsh-417b34a55c-873-je-runstart",
+                                      "timestamp":  1794154360533,
+                                      "host":  "deepseek-harness",
+                                      "hostVersion":  "0.2.1-rc.5",
+                                      "sessionId":  "session-7fb30fa0-7270-4533-800e-d7583b15cdb9",
+                                      "eventType":  "run.start",
+                                      "state":  "running",
+                                      "source":  "host-native",
+                                      "confidence":  "confirmed",
+                                      "metadata":  {
+                                                       "turn":  2,
+                                                       "label":  "turn"
+                                                   }
+                                  },
+                    "output.end":  {
+                                       "schemaVersion":  1,
+                                       "eventId":  "dsh-daf323c589-590-3-outputend",
+                                       "timestamp":  1794153777564,
+                                       "host":  "deepseek-harness",
+                                       "hostVersion":  "0.2.1-rc.5",
+                                       "sessionId":  "71cdff68-0db6-48f4-b270-6c1b8aa9f554",
+                                       "eventType":  "output.end",
+                                       "state":  "running",
+                                       "source":  "host-native",
+                                       "confidence":  "confirmed",
+                                       "metadata":  {
+                                                        "turn":  1,
+                                                        "step":  68,
+                                                        "tokenCount":  176,
+                                                        "contextUsed":  215500
+                                                    }
+                                   },
+                    "tool.end":  {
+                                     "schemaVersion":  1,
+                                     "eventId":  "dsh-a5e663970d-589-1-toolend",
+                                     "timestamp":  1794153777201,
+                                     "host":  "deepseek-harness",
+                                     "hostVersion":  "0.2.1-rc.5",
+                                     "sessionId":  "a47a2ae6-ec8e-439c-88ce-84a2ca371a72",
+                                     "eventType":  "tool.end",
+                                     "state":  "running",
+                                     "source":  "host-native",
+                                     "confidence":  "confirmed",
+                                     "metadata":  {
+                                                      "toolName":  "tool",
+                                                      "toolStatus":  "ok",
+                                                      "turn":  1,
+                                                      "step":  72
+                                                  }
+                                 },
+                    "error":  {
+                                  "schemaVersion":  1,
+                                  "eventId":  "dsh-81ac910272-adc4357a-j4-error",
+                                  "timestamp":  1794154356604,
+                                  "host":  "deepseek-harness",
+                                  "hostVersion":  "0.2.1-rc.5",
+                                  "sessionId":  "f8d486fe-0872-4878-85de-0749d65bf95c",
+                                  "eventType":  "error",
+                                  "state":  "error",
+                                  "source":  "host-native",
+                                  "confidence":  "confirmed",
+                                  "metadata":  {
+                                                   "turn":  1,
+                                                   "step":  149,
+                                                   "errorCode":  "ACCOUNT_QUOTA"
+                                               }
+                              },
+                    "tool.start":  {
+                                       "schemaVersion":  1,
+                                       "eventId":  "dsh-daf323c589-591-4-toolstart",
+                                       "timestamp":  1794153777565,
+                                       "host":  "deepseek-harness",
+                                       "hostVersion":  "0.2.1-rc.5",
+                                       "sessionId":  "71cdff68-0db6-48f4-b270-6c1b8aa9f554",
+                                       "eventType":  "tool.start",
+                                       "state":  "tool",
+                                       "source":  "host-native",
+                                       "confidence":  "confirmed",
+                                       "metadata":  {
+                                                        "toolName":  "pwsh",
+                                                        "toolCategory":  "shell",
+                                                        "toolStatus":  "running",
+                                                        "turn":  1,
+                                                        "step":  68
+                                                    }
+                                   },
+                    "tool.fail":  {
+                                      "schemaVersion":  1,
+                                      "eventId":  "dsh-a5e663970d-704-1t-toolfail",
+                                      "timestamp":  1794153919254,
+                                      "host":  "deepseek-harness",
+                                      "hostVersion":  "0.2.1-rc.5",
+                                      "sessionId":  "a47a2ae6-ec8e-439c-88ce-84a2ca371a72",
+                                      "eventType":  "tool.fail",
+                                      "state":  "running",
+                                      "source":  "host-native",
+                                      "confidence":  "confirmed",
+                                      "metadata":  {
+                                                       "toolName":  "write",
+                                                       "toolCategory":  "file",
+                                                       "toolStatus":  "failed",
+                                                       "turn":  1,
+                                                       "step":  87,
+                                                       "durationMs":  15,
+                                                       "errorCode":  "FS_STALE_VERSION"
+                                                   }
+                                  },
+                    "task.received":  {
+                                          "schemaVersion":  1,
+                                          "eventId":  "dsh-417b34a55c-895-kl-taskreceived",
+                                          "timestamp":  1794154459932,
+                                          "host":  "deepseek-harness",
+                                          "hostVersion":  "0.2.1-rc.5",
+                                          "sessionId":  "session-7fb30fa0-7270-4533-800e-d7583b15cdb9",
+                                          "eventType":  "task.received",
+                                          "state":  "running",
+                                          "source":  "host-native",
+                                          "confidence":  "confirmed",
+                                          "metadata":  {
+                                                           "turn":  4,
+                                                           "label":  "user-prompt"
+                                                       }
+                                      },
+                    "session.heartbeat":  {
+                                              "schemaVersion":  1,
+                                              "eventId":  "dsh-a5e663970d-ebe93f41-21-sessionheart",
+                                              "timestamp":  1794153807205,
+                                              "host":  "deepseek-harness",
+                                              "hostVersion":  "0.2.1-rc.5",
+                                              "sessionId":  "a47a2ae6-ec8e-439c-88ce-84a2ca371a72",
+                                              "eventType":  "session.heartbeat",
+                                              "state":  "unknown",
+                                              "source":  "derived",
+                                              "confidence":  "inferred",
+                                              "metadata":  {
+
+                                                           }
+                                          }
+                }
+}

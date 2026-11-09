@@ -1,0 +1,81 @@
+{
+  "status": "PASS",
+  "startedAt": "2026-11-08T16:22:24.915Z",
+  "durationMinutes": 0.15,
+  "eventsPerSecond": 10,
+  "rendererRequested": true,
+  "machine": {
+    "platform": "win32",
+    "release": "10.0.26300",
+    "arch": "x64",
+    "cpu": "Intel(R) Core(TM) Ultra 9 290HX Plus",
+    "cores": 24,
+    "totalMemBytes": 68378017792,
+    "node": "v24.16.0",
+    "electron": null
+  },
+  "samples": [
+    {
+      "at": "2026-11-08T16:22:25.267Z",
+      "elapsedMs": 0,
+      "eventCount": 1,
+      "sessions": 1,
+      "bridgeRssBytes": 68198400,
+      "bridgeCpuPercent": null,
+      "sent": 1,
+      "accepted": 1,
+      "postErrors": 0
+    },
+    {
+      "at": "2026-11-08T16:22:30.267Z",
+      "elapsedMs": 5000,
+      "eventCount": 30,
+      "sessions": 12,
+      "bridgeRssBytes": 69615616,
+      "bridgeCpuPercent": 0.09,
+      "sent": 30,
+      "accepted": 30,
+      "postErrors": 0
+    }
+  ],
+  "rendererSamples": [
+    {
+      "at": 1794154953366,
+      "elapsedMs": 7676,
+      "frames": 2,
+      "heapUsedBytes": 8608585,
+      "rendererCpuPercent": null,
+      "qaFps": 1,
+      "preset": "agent-monitor",
+      "state": "tool",
+      "fps": null
+    }
+  ],
+  "summary": {
+    "durationActualMs": 10429,
+    "samples": 2,
+    "eventsSent": 30,
+    "eventsAccepted": 30,
+    "postErrors": 0,
+    "bridgeEventCount": 30,
+    "sessions": 12,
+    "bridgeRssStartMB": 65.04,
+    "bridgeRssEndMB": 66.39,
+    "bridgeRssGrowthMB": 1.35,
+    "bridgeCpuMeanPercent": 0.09,
+    "bridgeCpuMaxPercent": 0.09,
+    "fpsMean": null,
+    "fpsMin": null,
+    "fpsMax": null,
+    "fpsSource": "offscreen Electron window requestAnimationFrame probe",
+    "rendererHeapStartMB": null,
+    "rendererHeapEndMB": null,
+    "rendererHeapGrowthMB": null,
+    "rendererCpuMeanPercent": null,
+    "rendererPresent": true
+  },
+  "rendererStatus": "PASS",
+  "rendererError": null,
+  "completedAt": "2026-11-08T16:22:35.696Z",
+  "reason": "completed with offscreen renderer sampling"
+}
