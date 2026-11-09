@@ -175,6 +175,12 @@ const els = {
   labHosts: $('lab-hosts'),
   labKnowledgeDetails: $('lab-knowledge-details'),
   labObsidianFile: $('lab-obsidian-file'),
+  labMasthead: $('lab-masthead'),
+  labKpiHosts: $('lab-kpi-hosts'),
+  labKpiSessions: $('lab-kpi-sessions'),
+  labKpiEvents: $('lab-kpi-events'),
+  labKpiTools: $('lab-kpi-tools'),
+  labKpiErrors: $('lab-kpi-errors'),
   feedMode: $('feed-mode'),
   linkStatus: $('link-status'),
   linkText: $('link-text'),
@@ -777,6 +783,13 @@ function renderLabMonitor() {
   const active = projection.selected;
   els.labHeadCount.textContent = `${projection.observedHostCount}/${projection.hostCount} HOSTS · ${projection.sessionCount} SESSIONS · ${projection.eventCount} EVENTS`;
   els.labFeedStatus.textContent = projection.mode === 'simulated' ? 'SIMULATED' : projection.mode.toUpperCase();
+  if (els.labMasthead) {
+    els.labKpiHosts.textContent = `${projection.observedHostCount}/${projection.hostCount}`;
+    els.labKpiSessions.textContent = String(projection.sessionCount);
+    els.labKpiEvents.textContent = String(projection.eventCount);
+    els.labKpiTools.textContent = String(projection.toolEventCount);
+    els.labKpiErrors.textContent = String(projection.errorEventCount);
+  }
 
   clearNode(els.labFeedRows);
   if (projection.recent.length === 0) {
@@ -949,6 +962,12 @@ function applyResponsiveMode() {
   document.body.dataset.mode = appMode;
   document.body.dataset.preset = state.preset;
   renderCompact();
+  // The engine scales the ring with the viewport height; at 1280x720 the arc
+  // reads ~6% larger than upstream. Only the Agent Monitor preset compensates,
+  // other presets keep their authored composition.
+  if (state.preset === 'agent-monitor' && typeof viz?.setParams === 'function') {
+    viz.setParams({ scale: window.innerWidth < 1400 ? 0.78 : 0.86 });
+  }
 }
 
 function renderSettings() {
