@@ -1,0 +1,21 @@
+{
+  "before": {
+    "events": 1091,
+    "firstTimestamp": 1794237596765,
+    "lastTimestamp": 1794238223840,
+    "file": "C:\\Users\\Lenovo\\AppData\\Local\\HALOFLUX\\events\\haloflux-events.sqlite",
+    "sizeBytes": 528384,
+    "integrity": "ok"
+  },
+  "after": {
+    "events": 1157,
+    "firstTimestamp": 1794237596765,
+    "lastTimestamp": 1794238232276,
+    "file": "C:\\Users\\Lenovo\\AppData\\Local\\HALOFLUX\\events\\haloflux-events.sqlite",
+    "sizeBytes": 4681376,
+    "integrity": "ok"
+  },
+  "persisted": true,
+  "firstTimestampStable": true,
+  "integrity": "ok"
+}
