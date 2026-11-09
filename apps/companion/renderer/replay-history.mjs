@@ -20,19 +20,20 @@ export async function collectReplayPages({
   fetchPage,
   pageSize = 1000,
   maxEvents = 20000,
-  snapshotTo = Date.now(),
 } = {}) {
   if (typeof fetchPage !== 'function') throw new TypeError('fetchPage is required');
   const events = [];
   const seen = new Set();
-  let offset = 0;
-  let total = null;
+  let snapshotSeq = 0;
+  let snapshotTotal = null;
+  let afterSeq = 0;
   let pages = 0;
   let partial = false;
   for (;;) {
-    const page = await fetchPage({ offset, limit: Math.max(1, Math.min(1000, pageSize)), to: snapshotTo });
+    const page = await fetchPage({ afterSeq, limit: Math.max(1, Math.min(1000, pageSize)), snapshotSeq });
     pages += 1;
-    total = Number.isFinite(page.total) ? page.total : total;
+    if (!snapshotSeq) snapshotSeq = Number(page.snapshotSeq) || 0;
+    if (snapshotTotal === null) snapshotTotal = Number.isFinite(page.total) ? page.total : null;
     const batch = Array.isArray(page.events) ? page.events : [];
     for (const event of batch) {
       const id = event?.eventId;
@@ -41,17 +42,18 @@ export async function collectReplayPages({
       events.push(event);
     }
     if (batch.length === 0) break;
-    if (total !== null && events.length >= total) break;
+    if (snapshotTotal !== null && events.length >= snapshotTotal) break;
     if (events.length >= maxEvents) { partial = true; break; }
-    offset += batch.length;
+    if (!page.nextCursor || page.nextCursor <= afterSeq) break;
+    afterSeq = page.nextCursor;
   }
   events.sort((a, b) => (a.timestamp - b.timestamp) || String(a.eventId).localeCompare(String(b.eventId)));
   return {
     events,
-    total: total === null ? events.length : total,
+    total: snapshotTotal === null ? events.length : snapshotTotal,
     loaded: events.length,
     pages,
-    snapshotTo,
-    partial: partial || (total !== null && events.length < total),
+    snapshotSeq,
+    partial: partial || (snapshotTotal !== null && events.length < snapshotTotal),
   };
 }

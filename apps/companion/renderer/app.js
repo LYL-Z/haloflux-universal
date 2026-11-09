@@ -36,7 +36,7 @@ import { createMockStream } from './mock-session.js';
 import { projectMonitor } from './monitor-projection.mjs';
 import { parseObsidianMetadata } from './obsidian-metadata.mjs';
 import { eventRate, METRIC_REGISTRY, toolWaterfall, criticalPath } from '../../../packages/analytics/src/index.mjs';
-import { sortEvents, sessionAt, frameIndexAt, replayDurationMs } from './replay-engine.mjs';
+import { sortEvents, prepareReplay } from './replay-engine.mjs';
 import { parseReplayAt, collectReplayPages } from './replay-history.mjs';
 
 /* ------------------------------------------------------------------ *
@@ -956,12 +956,24 @@ function drawTimeBand() {
   ctx.moveTo(0, height - 4);
   ctx.lineTo(width, height - 4);
   ctx.stroke();
-  for (const event of list) {
-    if (typeof event.timestamp !== 'number' || event.timestamp < start || event.timestamp > end) continue;
-    const x = ((event.timestamp - start) / span) * width;
-    const tone = event.source === 'simulated' ? '#8f8f66' : event.source === 'derived' ? '#7f8f9f' : '#e4e4ec';
-    ctx.fillStyle = tone;
-    ctx.fillRect(Math.max(0, Math.min(width - 1, x)), 5, 1, height - 10);
+  if (replay?.prepared?.density) {
+    // Pixel-column aggregation: never draw 20k overlapping ticks per frame.
+    const bins = replay.prepared.density;
+    const max = Math.max(1, ...bins);
+    for (let x = 0; x < width; x += 1) {
+      const bin = Math.min(bins.length - 1, Math.floor((x / Math.max(1, width - 1)) * (bins.length - 1)));
+      if (!bins[bin]) continue;
+      ctx.fillStyle = bins[bin] > max * 0.5 ? '#e4e4ec' : '#7f8f9f';
+      const h = Math.max(1, Math.min(height - 8, Math.round((bins[bin] / max) * (height - 8))));
+      ctx.fillRect(x, height - 4 - h, 1, h);
+    }
+  } else {
+    for (const event of list) {
+      if (typeof event.timestamp !== 'number' || event.timestamp < start || event.timestamp > end) continue;
+      const x = ((event.timestamp - start) / span) * width;
+      ctx.fillStyle = event.source === 'simulated' ? '#8f8f66' : event.source === 'derived' ? '#7f8f9f' : '#e4e4ec';
+      ctx.fillRect(Math.max(0, Math.min(width - 1, x)), 5, 1, height - 10);
+    }
   }
   if (replay && list.length) {
     const cursorTime = list[replay.index]?.timestamp ?? start;
@@ -1685,7 +1697,7 @@ function bindEvents() {
       replay.playing = false;
       els.replayPlay.textContent = 'RESUME';
     } else {
-      if (replay.elapsedMs >= replayDurationMs(replay.events)) replay.elapsedMs = 0;
+      if (replay.elapsedMs >= replay.durationMs) replay.elapsedMs = 0;
       replay.playing = true;
       els.replayPlay.textContent = 'PAUSE';
     }
@@ -1884,9 +1896,10 @@ function replayClock(ms) {
 function applyReplayFrame(index) {
   const replay = state.replay;
   if (!replay) return;
+  const frameStart = performance.now();
   const bounded = Math.max(0, Math.min(replay.events.length - 1, index));
   replay.index = bounded;
-  const session = sessionAt(replay.events, bounded, { sessionId: replay.sessionId });
+  const session = replay.prepared.sessionAtIndex(bounded, { sessionId: replay.sessionId });
   if (!session) return;
   state.sessions = [session];
   state.selectedSessionId = session.sessionId;
@@ -1897,9 +1910,15 @@ function applyReplayFrame(index) {
   viz.setSessions([session]);
   viz.setSession(session);
   renderAll();
-  if (els.tracePanel && !els.tracePanel.hidden) setTraceTab(traceTab);
+  // TRACE is a research panel, not a per-frame overlay: re-rendering thousands
+  // of waterfall rows on every replay tick was the dominant F-05 hot spot.
+  // It refreshes when opened or when the user changes tabs.
   if (els.replayClock) {
     els.replayClock.textContent = replayClock((replay.events[bounded].timestamp - replay.events[0].timestamp) || 0);
+  }
+  if (window.__halofluxPerf) {
+    window.__halofluxPerf.frames.push(performance.now() - frameStart);
+    if (window.__halofluxPerf.frames.length > 200) window.__halofluxPerf.frames.shift();
   }
 }
 
@@ -1907,13 +1926,13 @@ function replayTick() {
   const replay = state.replay;
   if (!replay || !replay.playing) return;
   replay.elapsedMs += 200 * replay.speed;
-  const duration = replayDurationMs(replay.events);
+  const duration = replay.durationMs;
   if (replay.elapsedMs >= duration) {
     replay.elapsedMs = duration;
     replay.playing = false;
     if (els.replayPlay) els.replayPlay.textContent = 'RESUME';
   }
-  const index = frameIndexAt(replay.events, replay.elapsedMs, 1);
+  const index = replay.prepared.indexAt(replay.elapsedMs, 1);
   if (index !== replay.index) applyReplayFrame(index);
   else if (els.replayClock) {
     const offset = Math.min(duration, replay.elapsedMs);
@@ -1924,13 +1943,11 @@ function replayTick() {
 async function startReplay(sessionId) {
   if (!sessionId || !TOKEN) return false;
   try {
-    const snapshotTo = Date.now();
     const history = await collectReplayPages({
       pageSize: 1000,
       maxEvents: 20000,
-      snapshotTo,
-      fetchPage: async ({ offset, limit, to }) => {
-        const res = await fetch(`${BRIDGE_URL}/v1/history?sessionId=${encodeURIComponent(sessionId)}&limit=${limit}&offset=${offset}&to=${to}`, {
+      fetchPage: async ({ afterSeq, limit, snapshotSeq }) => {
+        const res = await fetch(`${BRIDGE_URL}/v1/history?sessionId=${encodeURIComponent(sessionId)}&limit=${limit}&afterSeq=${afterSeq}${snapshotSeq ? `&snapshotSeq=${snapshotSeq}` : ''}`, {
           headers: { authorization: `Bearer ${TOKEN}` },
         });
         if (!res.ok) throw new Error(`history HTTP ${res.status}`);
@@ -1943,8 +1960,13 @@ async function startReplay(sessionId) {
       return false;
     }
     if (state.replay?.timer) clearInterval(state.replay.timer);
+    const prepareStart = performance.now();
+    const prepared = prepareReplay(events);
+    const prepareMs = performance.now() - prepareStart;
+    window.__halofluxPerf = { prepareMs, events: prepared.events.length, frames: [] };
     state.replay = {
-      sessionId, events, index: 0, elapsedMs: 0, speed: 1, playing: true,
+      sessionId, events: prepared.events, prepared, durationMs: prepared.durationMs,
+      index: 0, elapsedMs: 0, speed: 1, playing: true,
       total: history.total, partial: history.partial, loaded: history.loaded,
       timer: setInterval(replayTick, 200),
     };
@@ -2026,7 +2048,7 @@ function init() {
     replay.elapsedMs = Math.max(0, Number(offsetMs) || 0);
     replay.playing = false;
     if (els.replayPlay) els.replayPlay.textContent = 'RESUME';
-    applyReplayFrame(frameIndexAt(replay.events, replay.elapsedMs, 1));
+    applyReplayFrame(replay.prepared.indexAt(replay.elapsedMs, 1));
     return true;
   };
   window.__halofluxEnterReplay = (sessionId) => startReplay(sessionId);

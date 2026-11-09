@@ -107,6 +107,41 @@ test('event store survives a second concurrent writer and an unclean reopen', ()
   rmSync(home, { recursive: true, force: true });
 });
 
+test('event store ingestion cursor is a strict snapshot boundary', () => {
+  const home = mkdtempSync(path.join(tmpdir(), 'haloflux-store-'));
+  const store = new EventStore({ home });
+  for (let i = 0; i < 1205; i += 1) {
+    store.append(evt({ eventId: `evt-cursor-${String(i).padStart(5, '0')}`, timestamp: 1000 + i }));
+  }
+  const snap = store.snapshot({ sessionId: 'session-store-1' });
+  assert.equal(snap.total, 1205);
+  assert.ok(snap.snapshotSeq >= 1205);
+  const first = store.query({ sessionId: 'session-store-1', limit: 1000, afterSeq: 0, snapshotSeq: snap.snapshotSeq });
+  const second = store.query({ sessionId: 'session-store-1', limit: 1000, afterSeq: first.nextCursor, snapshotSeq: snap.snapshotSeq });
+  assert.equal(first.returned, 1000);
+  assert.equal(second.returned, 205);
+  assert.ok(second.nextCursor >= 1205);
+  const third = store.query({ sessionId: 'session-store-1', limit: 1000, afterSeq: second.nextCursor, snapshotSeq: snap.snapshotSeq });
+  assert.equal(third.returned, 0);
+  assert.equal(third.nextCursor, null);
+
+  // A late event with an older timestamp gets a NEW seq, so the old snapshot
+  // cannot see it; only a new snapshot can.
+  store.append(evt({ eventId: 'evt-late-old-ts', timestamp: 500 }));
+  const oldAgain = store.query({ sessionId: 'session-store-1', limit: 10, afterSeq: 0, snapshotSeq: snap.snapshotSeq });
+  assert.equal(oldAgain.total, 1205);
+  assert.equal(oldAgain.events.some((e) => e.eventId === 'evt-late-old-ts'), false);
+  const fresh = store.snapshot({ sessionId: 'session-store-1' });
+  assert.equal(fresh.total, 1206);
+  assert.equal(store.query({ sessionId: 'session-store-1', limit: 10, afterSeq: snap.snapshotSeq, snapshotSeq: fresh.snapshotSeq }).events[0].eventId, 'evt-late-old-ts');
+
+  // Deletion inside a snapshot must be observable as fewer rows than total.
+  store.deleteSession('session-store-1');
+  assert.equal(store.query({ sessionId: 'session-store-1', limit: 10, snapshotSeq: snap.snapshotSeq }).total, 0);
+  store.close();
+  rmSync(home, { recursive: true, force: true });
+});
+
 test('event store refuses events that fail the privacy schema', () => {
   const home = mkdtempSync(path.join(tmpdir(), 'haloflux-store-'));
   const store = new EventStore({ home });

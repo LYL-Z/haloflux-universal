@@ -36,16 +36,20 @@ export class EventStore {
     this.readonly = readonly;
     mkdirSync(path.dirname(this.file), { recursive: true });
     this.db = new DatabaseSync(this.file, { readOnly: readonly });
-    this.db.exec('PRAGMA journal_mode = WAL');
-    this.db.exec('PRAGMA synchronous = NORMAL');
-    this.db.exec('PRAGMA secure_delete = ON');
+    if (!readonly) {
+      this.db.exec('PRAGMA journal_mode = WAL');
+      this.db.exec('PRAGMA synchronous = NORMAL');
+      this.db.exec('PRAGMA secure_delete = ON');
+    }
     this.db.exec('PRAGMA busy_timeout = 3000');
-    this.db.exec(`
+    if (!readonly) {
+      this.db.exec(`
       CREATE TABLE IF NOT EXISTS events (
         event_id TEXT PRIMARY KEY,
         schema_version INTEGER NOT NULL,
         timestamp INTEGER NOT NULL,
         stored_at INTEGER NOT NULL,
+        seq INTEGER,
         host TEXT NOT NULL,
         session_id TEXT NOT NULL,
         run_id TEXT,
@@ -55,15 +59,22 @@ export class EventStore {
         confidence TEXT NOT NULL,
         payload TEXT NOT NULL
       );
+      CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value INTEGER NOT NULL);
       CREATE INDEX IF NOT EXISTS idx_events_timestamp ON events(timestamp);
       CREATE INDEX IF NOT EXISTS idx_events_session ON events(session_id, timestamp);
       CREATE INDEX IF NOT EXISTS idx_events_run ON events(run_id, timestamp);
       CREATE INDEX IF NOT EXISTS idx_events_trace ON events(trace_id, timestamp);
     `);
+      const columns = this.db.prepare("PRAGMA table_info(events)").all().map((row) => row.name);
+      if (!columns.includes('seq')) this.db.exec('ALTER TABLE events ADD COLUMN seq INTEGER');
+      this.db.exec('UPDATE events SET seq = rowid WHERE seq IS NULL');
+      this.db.exec('CREATE UNIQUE INDEX IF NOT EXISTS idx_events_seq ON events(seq)');
+      this.db.exec('PRAGMA user_version = 2');
+    }
     this.insert = this.db.prepare(`
       INSERT OR IGNORE INTO events
-        (event_id, schema_version, timestamp, stored_at, host, session_id, run_id, trace_id, event_type, source, confidence, payload)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        (event_id, schema_version, timestamp, stored_at, seq, host, session_id, run_id, trace_id, event_type, source, confidence, payload)
+      VALUES (?, ?, ?, ?, (SELECT COALESCE(MAX(seq), 0) + 1 FROM events), ?, ?, ?, ?, ?, ?, ?, ?)
     `);
     this.count = this.db.prepare('SELECT COUNT(*) AS n FROM events');
   }
@@ -109,7 +120,13 @@ export class EventStore {
     return { inserted, duplicates, total: list.length };
   }
 
-  query({ sessionId = '', runId = '', traceId = '', from = 0, to = 0, limit = 200, offset = 0 } = {}) {
+  snapshot({ sessionId = '', runId = '', traceId = '', from = 0, to = 0 } = {}) {
+    const { clause, args } = this.#filter({ sessionId, runId, traceId, from, to });
+    const row = this.db.prepare(`SELECT MAX(seq) AS maxSeq, COUNT(*) AS total FROM events ${clause}`).get(...args);
+    return { snapshotSeq: Number(row?.maxSeq || 0), total: Number(row?.n || row?.total || 0) };
+  }
+
+  #filter({ sessionId = '', runId = '', traceId = '', from = 0, to = 0 } = {}) {
     const where = [];
     const args = [];
     if (sessionId) { where.push('session_id = ?'); args.push(sessionId); }
@@ -117,18 +134,45 @@ export class EventStore {
     if (traceId) { where.push('trace_id = ?'); args.push(traceId); }
     if (Number.isFinite(from) && from > 0) { where.push('timestamp >= ?'); args.push(from); }
     if (Number.isFinite(to) && to > 0) { where.push('timestamp <= ?'); args.push(to); }
+    return { clause: where.length ? `WHERE ${where.join(' AND ')}` : '', args };
+  }
+
+  query({
+    sessionId = '', runId = '', traceId = '', from = 0, to = 0,
+    limit = 200, offset = 0, snapshotSeq = 0, afterSeq = null,
+  } = {}) {
+    const { clause, args } = this.#filter({ sessionId, runId, traceId, from, to });
     const cap = Math.max(1, Math.min(MAX_QUERY_LIMIT, Number(limit) || 200));
     const skip = Math.max(0, Number(offset) || 0);
-    const clause = where.length ? `WHERE ${where.join(' AND ')}` : '';
-    const rows = this.db.prepare(`SELECT payload FROM events ${clause} ORDER BY timestamp ASC, event_id ASC LIMIT ? OFFSET ?`)
-      .all(...args, cap, skip);
-    const totalRow = this.db.prepare(`SELECT COUNT(*) AS n FROM events ${clause}`).get(...args);
+    let snapshot = Number(snapshotSeq) || 0;
+    if (!snapshot) {
+      const row = this.db.prepare(`SELECT MAX(seq) AS maxSeq FROM events ${clause}`).get(...args);
+      snapshot = Number(row?.maxSeq || 0);
+    }
+    const pageWhere = clause ? `${clause} AND seq <= ?` : 'WHERE seq <= ?';
+    const pageArgs = [...args, snapshot];
+    const cursorMode = afterSeq !== null && afterSeq !== undefined;
+    let rows;
+    let totalRow;
+    if (cursorMode) {
+      const cursor = Math.max(0, Number(afterSeq) || 0);
+      rows = this.db.prepare(`SELECT seq, payload FROM events ${pageWhere} AND seq > ? ORDER BY seq ASC LIMIT ?`)
+        .all(...pageArgs, cursor, cap);
+      totalRow = this.db.prepare(`SELECT COUNT(*) AS n FROM events ${pageWhere}`).get(...pageArgs);
+    } else {
+      rows = this.db.prepare(`SELECT seq, payload FROM events ${pageWhere} ORDER BY timestamp ASC, event_id ASC LIMIT ? OFFSET ?`)
+        .all(...pageArgs, cap, skip);
+      totalRow = this.db.prepare(`SELECT COUNT(*) AS n FROM events ${pageWhere}`).get(...pageArgs);
+    }
     return {
       events: rows.map((row) => JSON.parse(row.payload)),
       total: Number(totalRow?.n || 0),
       returned: rows.length,
       limit: cap,
-      offset: skip,
+      offset: cursorMode ? null : skip,
+      snapshotSeq: snapshot,
+      nextCursor: rows.length ? Number(rows[rows.length - 1].seq) : null,
+      cursorMode,
       window: { from: from || null, to: to || null },
       schemaVersion: SCHEMA_VERSION,
     };

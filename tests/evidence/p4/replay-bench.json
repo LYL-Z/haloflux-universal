@@ -1,0 +1,45 @@
+{
+  "generatedAt": "2026-11-09T16:05:30.231Z",
+  "rows": [
+    {
+      "events": 652,
+      "prepareMs": 2.3038999999999987,
+      "index2000Ms": 0.931200000000004,
+      "seek200Ms": 7.462299999999999,
+      "naiveSessionAtMs": 0.6939999999999955,
+      "checkpoints": 6,
+      "heapUsedMB": 5.9920196533203125,
+      "rssMB": 65.22265625
+    },
+    {
+      "events": 2500,
+      "prepareMs": 1.6052999999999997,
+      "index2000Ms": 0.680800000000005,
+      "seek200Ms": 7.824100000000001,
+      "naiveSessionAtMs": 0.9056000000000068,
+      "checkpoints": 20,
+      "heapUsedMB": 9.637977600097656,
+      "rssMB": 70.875
+    },
+    {
+      "events": 5000,
+      "prepareMs": 3.4816000000000003,
+      "index2000Ms": 0.2516999999999996,
+      "seek200Ms": 10.426299999999998,
+      "naiveSessionAtMs": 1.1343999999999994,
+      "checkpoints": 40,
+      "heapUsedMB": 12.154273986816406,
+      "rssMB": 83.37890625
+    },
+    {
+      "events": 20000,
+      "prepareMs": 15.79170000000002,
+      "index2000Ms": 0.21420000000000528,
+      "seek200Ms": 10.791699999999992,
+      "naiveSessionAtMs": 3.302899999999994,
+      "checkpoints": 157,
+      "heapUsedMB": 29.949493408203125,
+      "rssMB": 110.1796875
+    }
+  ]
+}

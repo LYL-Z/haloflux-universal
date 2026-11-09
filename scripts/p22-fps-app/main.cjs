@@ -44,7 +44,8 @@ const server = createServer((req, res) => {
 
 server.listen(0, '127.0.0.1', async () => {
   const port = server.address().port;
-  const url = `http://127.0.0.1:${port}/apps/companion/renderer/index.html?qa=1&mock=1&preset=agent-monitor&state=tool`;
+  const pagePath = process.env.HALOFLUX_FPS_PATH || 'apps/companion/renderer/index.html?qa=1&mock=1&preset=agent-monitor&state=tool';
+  const url = `http://127.0.0.1:${port}/${pagePath}`;
   await app.whenReady();
   const win = new BrowserWindow({
     width: WIDTH, height: HEIGHT,
@@ -94,6 +95,9 @@ server.listen(0, '127.0.0.1', async () => {
     };
   })()`, true);
   mkdirSync(path.dirname(OUT), { recursive: true });
+  try {
+    sample.pagePerf = await win.webContents.executeJavaScript('window.__halofluxPerf || null');
+  } catch { /* optional */ }
   try {
     sample.appMetrics = app.getAppMetrics().map((metric) => ({
       type: metric.type,

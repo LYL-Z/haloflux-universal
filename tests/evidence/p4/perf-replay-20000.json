@@ -1,0 +1,50 @@
+{
+  "mode": "window",
+  "viewport": [
+    1536,
+    900
+  ],
+  "dpr": 2.5,
+  "durationSeconds": 8.023200000000001,
+  "frames": 179,
+  "fps": 22.31030012962409,
+  "frameMsMean": 44.82234636871509,
+  "frameMsP50": 54.20000000000073,
+  "frameMsP95": 83.39999999999964,
+  "frameMsMax": 133.40000000000055,
+  "frameMsMin": -1.800000000000182,
+  "heapUsedBytes": 31291493,
+  "pagePerf": {
+    "prepareMs": 14.099999997764826,
+    "events": 20000,
+    "frames": [
+      34.80000000074506
+    ]
+  },
+  "appMetrics": [
+    {
+      "type": "Browser",
+      "pid": 44412,
+      "cpuPercent": 0,
+      "workingSetMb": 103
+    },
+    {
+      "type": "GPU",
+      "pid": 58396,
+      "cpuPercent": 0,
+      "workingSetMb": 403
+    },
+    {
+      "type": "Utility",
+      "pid": 57392,
+      "cpuPercent": 0,
+      "workingSetMb": 63
+    },
+    {
+      "type": "Tab",
+      "pid": 17028,
+      "cpuPercent": 0,
+      "workingSetMb": 209
+    }
+  ]
+}

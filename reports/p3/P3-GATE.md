@@ -27,7 +27,7 @@
 ```powershell
 npm run build       # tsc，exit 0
 npm run typecheck   # tsc --noEmit，exit 0
-npm test            # 120 / 120 pass，0 fail，0 skipped
+npm test            # 123 / 123 pass，0 fail，0 skipped
 ```
 
 新增测试：
@@ -36,7 +36,7 @@ npm test            # 120 / 120 pass，0 fail，0 skipped
 - `tests/unit/analytics.test.mjs`：速率/分位数/瀑布/关键路径/环/公平/Jain/Little/熵/JS/状态转移（7）。
 - `tests/unit/event-store.test.mjs`：持久化/重启内容哈希/去重/时间窗/删除/并发/脏关闭/schema 拒收/1205 分页（5）。
 - `tests/unit/replay-engine.test.mjs`：确定性帧/provenance/单步（2）。
-- `tests/unit/replay-history.test.mjs`：`at` 缺失/0/非法、2500 分页、5000 上限 PARTIAL、快照边界（4）。
+- `tests/unit/replay-history.test.mjs`：`at` 缺失/0/非法、2500 分页、5000 上限 PARTIAL、快照边界（4→游标/迟到/删除）。
 - `tests/unit/event-schema.test.mjs`：trace/span/status/单调时钟新增（1）。
 - `tests/e2e/bridge.test.mjs`：真实 bridge POST→`/v1/history` 持久化、重复 eventId 去重（12 项 suite）。
 - 既有测试保持通过。

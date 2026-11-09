@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { sortEvents, sessionAt, frameIndexAt, replayDurationMs, stepIndex } from '../../apps/companion/renderer/replay-engine.mjs';
+import { sortEvents, sessionAt, frameIndexAt, replayDurationMs, stepIndex, prepareReplay } from '../../apps/companion/renderer/replay-engine.mjs';
 
 const events = [
   { eventId: 'e1', timestamp: 1000, sessionId: 's1', host: 'deepseek-harness', eventType: 'session.start', state: 'connected', source: 'host-native', confidence: 'confirmed' },
@@ -34,3 +34,28 @@ test('sessionAt only shows events up to the frame and keeps per-event source', (
   assert.equal(end.recentEvents[3].source, 'derived');
   assert.equal(end.state, 'done');
 });
+
+test('prepareReplay matches the simple implementation at checkpoints and between them', () => {
+  const many = Array.from({ length: 2000 }, (_, i) => ({
+    eventId: `evt-${i}`, timestamp: 1000 + i * 10, sessionId: 's1', host: 'deepseek-harness',
+    eventType: i % 2 ? 'tool.end' : 'tool.start', state: i % 2 ? 'output' : 'tool',
+    source: 'host-native', confidence: 'confirmed',
+    metadata: { toolName: 'Bash', toolCallId: `c-${Math.floor(i / 2)}`, durationMs: i % 2 ? 10 : undefined },
+  }));
+  const prepared = prepareReplay(many);
+  assert.equal(prepared.events.length, 2000);
+  assert.equal(prepared.durationMs, 19990);
+  assert.equal(prepared.indexAt(0), 0);
+  assert.equal(prepared.indexAt(1000), 100);
+  assert.equal(prepared.indexAt(999999), 1999);
+  for (const index of [0, 1, 127, 128, 129, 999, 1500, 1999]) {
+    const fast = prepared.sessionAtIndex(index);
+    const slow = sessionAt(many, index);
+    assert.equal(fast.state, slow.state, `state at ${index}`);
+    assert.equal(fast.recentEvents.length, slow.recentEvents.length, `recent length at ${index}`);
+    assert.equal(fast.recentEvents.at(-1)?.eventType, slow.recentEvents.at(-1)?.eventType);
+    assert.deepEqual(fast.metrics, slow.metrics);
+  }
+  assert.equal(prepared.density.reduce((a, b) => a + b, 0), 2000);
+});
+

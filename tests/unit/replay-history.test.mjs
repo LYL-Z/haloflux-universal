@@ -19,24 +19,36 @@ function makeEvents(count, start = 0) {
   }));
 }
 
-test('collectReplayPages loads all pages with a stable snapshot and no duplicates', async () => {
+function fakeServer(all, { snapshotTotal = all.length, pageSize = 1000 } = {}) {
+  return async ({ afterSeq, limit }) => {
+    const offset = Number(afterSeq) || 0;
+    const events = all.slice(offset, offset + Math.min(limit, pageSize));
+    const next = offset + events.length;
+    return {
+      events,
+      total: snapshotTotal,
+      snapshotSeq: all.length,
+      nextCursor: events.length ? next : null,
+    };
+  };
+}
+
+test('collectReplayPages loads all pages with a stable ingestion cursor and no duplicates', async () => {
   const all = makeEvents(2500);
   const calls = [];
   const result = await collectReplayPages({
     pageSize: 1000,
     maxEvents: 20000,
-    snapshotTo: 999999,
-    fetchPage: async ({ offset, limit, to }) => {
-      calls.push({ offset, limit, to });
-      return { events: all.slice(offset, offset + limit), total: all.length };
-    },
+    fetchPage: async (args) => { calls.push(args); return fakeServer(all)(args); },
   });
   assert.equal(result.total, 2500);
   assert.equal(result.loaded, 2500);
   assert.equal(result.partial, false);
   assert.equal(result.pages, 3);
   assert.equal(calls.length, 3);
-  assert.ok(calls.every((call) => call.to === 999999));
+  assert.equal(calls[0].afterSeq, 0);
+  assert.equal(calls[1].afterSeq, 1000);
+  assert.equal(calls[2].afterSeq, 2000);
   assert.equal(result.events[0].eventId, 'evt-0');
   assert.equal(result.events.at(-1).eventId, 'evt-2499');
   assert.equal(new Set(result.events.map((e) => e.eventId)).size, 2500);
@@ -47,7 +59,7 @@ test('collectReplayPages stops at the cap and marks PARTIAL', async () => {
   const result = await collectReplayPages({
     pageSize: 1000,
     maxEvents: 2000,
-    fetchPage: async ({ offset, limit }) => ({ events: all.slice(offset, offset + limit), total: all.length }),
+    fetchPage: fakeServer(all),
   });
   assert.equal(result.loaded, 2000);
   assert.equal(result.total, 5000);
@@ -55,20 +67,32 @@ test('collectReplayPages stops at the cap and marks PARTIAL', async () => {
   assert.equal(result.pages, 2);
 });
 
-test('collectReplayPages does not request pages beyond a writer snapshot', async () => {
-  const before = makeEvents(1200);
-  let appended = false;
+test('a late event with an older timestamp cannot enter an existing snapshot', async () => {
+  const original = makeEvents(1200);
+  // The server snapshot only exposes the first 1200 rows. A late row with
+  // timestamp 1 would be ignored by the ingestion cursor, not by timestamp.
+  const withLate = [...original, { ...makeEvents(1, 1)[0], eventId: 'evt-late', timestamp: 1 }];
+  const result = await collectReplayPages({ pageSize: 1000, fetchPage: fakeServer(original) });
+  assert.equal(result.loaded, 1200);
+  assert.equal(result.events.some((e) => e.eventId === 'evt-late'), false);
+  assert.equal(withLate.length, 1201);
+});
+
+test('deletion/retention during paging produces PARTIAL instead of silent completeness', async () => {
+  const all = makeEvents(1500);
+  let first = true;
   const result = await collectReplayPages({
     pageSize: 1000,
-    snapshotTo: 1234,
-    fetchPage: async ({ offset, limit, to }) => {
-      assert.equal(to, 1234);
-      if (offset === 1000) appended = true;
-      return { events: before.slice(offset, offset + limit), total: before.length };
+    fetchPage: async (args) => {
+      if (first) {
+        first = false;
+        return { events: all.slice(0, 1000), total: 1500, snapshotSeq: 1500, nextCursor: 1000 };
+      }
+      // Retention deletes the remaining 500 rows after page 1.
+      return { events: [], total: 1500, snapshotSeq: 1500, nextCursor: null };
     },
   });
-  assert.equal(result.loaded, 1200);
-  assert.equal(result.total, 1200);
-  assert.equal(appended, true);
-  assert.equal(result.partial, false);
+  assert.equal(result.loaded, 1000);
+  assert.equal(result.total, 1500);
+  assert.equal(result.partial, true);
 });

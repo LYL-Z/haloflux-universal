@@ -392,6 +392,7 @@ export function createBridgeServer(options = {}) {
     }
     const q = url.searchParams;
     const limit = Math.max(1, Math.min(1000, Number(q.get('limit')) || 200));
+    const afterSeqRaw = q.get('afterSeq');
     const result = eventStore.query({
       sessionId: q.get('sessionId') || '',
       runId: q.get('runId') || '',
@@ -400,6 +401,8 @@ export function createBridgeServer(options = {}) {
       to: Number(q.get('to')) || 0,
       limit,
       offset: Number(q.get('offset')) || 0,
+      snapshotSeq: Number(q.get('snapshotSeq')) || 0,
+      afterSeq: afterSeqRaw === null ? null : Number(afterSeqRaw) || 0,
     });
     sendJson(res, 200, { ...result, stats: eventStore.stats() });
   }
