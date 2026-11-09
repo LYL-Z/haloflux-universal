@@ -82,14 +82,24 @@ export function toolWaterfall(events) {
   const rows = [];
   for (const event of Array.isArray(events) ? events : []) {
     if (!event || typeof event.eventType !== 'string') continue;
-    const callId = typeof event.toolCallId === 'string' ? event.toolCallId : '';
+    const meta = event.metadata && typeof event.metadata === 'object' ? event.metadata : {};
+    const callId = typeof event.toolCallId === 'string' ? event.toolCallId
+      : (typeof meta.toolCallId === 'string' ? meta.toolCallId : '');
+    const runId = event.runId || meta.runId || '';
     if (!callId) {
       if (event.eventType === 'tool.end' || event.eventType === 'tool.fail') {
-        rows.push({ ...event, status: 'UNCORRELATED', durationMs: null });
+        const hostDuration = num(event.durationMs) ?? num(meta.durationMs);
+        rows.push({
+          ...event,
+          status: hostDuration !== null ? 'HOST_REPORTED' : 'UNCORRELATED',
+          durationMs: hostDuration,
+          correlated: false,
+          evidence: hostDuration !== null ? 'HOST_REPORTED' : 'UNKNOWN',
+        });
       }
       continue;
     }
-    const key = `${event.sessionId || ''}\u0000${event.runId || ''}\u0000${callId}`;
+    const key = `${event.sessionId || ''}\u0000${runId}\u0000${callId}`;
     if (event.eventType === 'tool.start') {
       if (!open.has(key)) open.set(key, event);
       continue;
@@ -100,10 +110,12 @@ export function toolWaterfall(events) {
     const duration = start ? (num(event.timestamp) ?? 0) - (num(start.timestamp) ?? 0) : null;
     rows.push({
       ...event,
-      toolName: event.toolName || start?.toolName,
+      toolName: event.toolName || meta.toolName || start?.toolName || start?.metadata?.toolName,
       durationMs: num(event.durationMs) ?? (start && duration !== null && duration >= 0 ? duration : null),
       status: start ? (event.eventType === 'tool.fail' ? 'FAILED' : 'COMPLETED') : 'UNCORRELATED',
       correlated: Boolean(start),
+      toolCallId: callId,
+      runId,
     });
   }
   return {

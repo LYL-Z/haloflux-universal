@@ -87,6 +87,9 @@ function parseArgs(argv) {
       case '--token':
         args.token = value();
         break;
+      case '--replay':
+        args.replay = value();
+        break;
       case '--click-through':
         args.clickThrough = true;
         break;
@@ -188,6 +191,7 @@ export function buildChildEnv(options, env = process.env) {
   delete childEnv.ELECTRON_RUN_AS_NODE;
   if (options.bridgeUrl) childEnv.HALOFLUX_BRIDGE_URL = options.bridgeUrl;
   if (options.token) childEnv.HALOFLUX_TOKEN = options.token;
+  if (options.replay) childEnv.HALOFLUX_REPLAY = options.replay;
   if (options.opacity !== '') childEnv.HALOFLUX_OPACITY = String(options.opacity);
   if (options.screenshot) childEnv.HALOFLUX_SCREENSHOT = options.screenshot;
   if (options.screenshotDelay !== '') childEnv.HALOFLUX_SCREENSHOT_DELAY = String(options.screenshotDelay);

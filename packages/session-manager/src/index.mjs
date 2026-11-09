@@ -503,7 +503,7 @@ export class SessionManager {
   }
 
   #pushRecent(session, event) {
-    const entry = { eventType: event.eventType, timestamp: event.timestamp };
+    const entry = { eventType: event.eventType, timestamp: event.timestamp, eventId: event.eventId };
     // Event-level provenance, not the session aggregate: a derived heartbeat in
     // a host-native session must still render as DRV/inferred.
     entry.source = event.source;

@@ -32,6 +32,7 @@ import {
   supervisorPaths, Supervisor, discoverHosts, writeJsonFile, readJsonFile,
   releaseSupervisorLock,
 } from '../packages/service-manager/src/index.mjs';
+import { EventStore } from '../packages/event-store/src/index.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const HOME = process.env.HALOFLUX_HOME || (process.platform === 'win32'
@@ -220,8 +221,14 @@ async function cmdCompanion(args) {
     HALOFLUX_TOKEN: token(),
     HALOFLUX_MODE: mode,
     HALOFLUX_DEMO: demo ? '1' : '0',
+    HALOFLUX_REPLAY: argValue(args, '--replay', ''),
   };
-  const pid = spawnDetached('companion', process.execPath, [launcher, '--mode', mode, ...(demo ? ['--demo'] : [])], env);
+  const replay = argValue(args, '--replay', '');
+  const pid = spawnDetached('companion', process.execPath, [
+    launcher, '--mode', mode,
+    ...(demo ? ['--demo'] : []),
+    ...(replay ? ['--replay', replay] : []),
+  ], env);
   console.log(`companion started pid=${pid} mode=${mode}${demo ? ' demo' : ''} log=${logFile('companion')}`);
   return 0;
 }
@@ -349,6 +356,77 @@ async function cmdSupervise(args) {
   }
   console.log(`supervisor stopped state=${result.state}`);
   return 0;
+}
+
+async function cmdHistory(args) {
+  const store = new EventStore({ home: HOME });
+  try {
+    if (args.includes('--stats')) {
+      console.log(JSON.stringify({ ...store.stats(), integrity: store.integrityCheck() }, null, 2));
+      return 0;
+    }
+    const pruneIndex = args.indexOf('--prune-days');
+    if (pruneIndex !== -1) {
+      const days = Math.max(1, Number(args[pruneIndex + 1]) || 30);
+      const result = store.pruneBefore(Date.now() - days * 86400000);
+      store.vacuum();
+      console.log(`pruned ${result.deleted} events older than ${days} days`);
+      return 0;
+    }
+    const deleteSession = argValue(args, '--delete-session', '');
+    if (deleteSession) {
+      const result = store.deleteSession(deleteSession);
+      store.vacuum();
+      console.log(`deleted ${result.deleted} events for session ${deleteSession}`);
+      return 0;
+    }
+    const result = store.query({
+      sessionId: argValue(args, '--session', ''),
+      runId: argValue(args, '--run', ''),
+      traceId: argValue(args, '--trace', ''),
+      from: Number(argValue(args, '--from', '0')),
+      to: Number(argValue(args, '--to', '0')),
+      limit: Number(argValue(args, '--limit', '200')),
+    });
+    const exportPath = argValue(args, '--export', '');
+    if (exportPath) {
+      const exported = store.exportJsonl(path.resolve(exportPath));
+      console.log(`exported ${exported.exported} events -> ${exported.file}`);
+    }
+    if (args.includes('--json')) {
+      console.log(JSON.stringify(result, null, 2));
+      return 0;
+    }
+    console.log(`history total=${result.total} returned=${result.returned} window=${result.window.from || '-'}..${result.window.to || '-'}`);
+    for (const event of result.events) {
+      const tool = event.metadata?.toolName ? ` ${event.metadata.toolName}` : '';
+      console.log(`${new Date(event.timestamp).toISOString()}  ${event.sessionId.slice(0, 24).padEnd(26)} ${event.eventType.padEnd(18)} ${event.source}/${event.confidence}${tool}`);
+    }
+    return 0;
+  } catch (error) {
+    console.error(`history failed: ${error && error.message ? error.message : error}`);
+    return 1;
+  } finally {
+    store.close();
+  }
+}
+
+async function cmdReplay(args) {
+  const session = argValue(args, '--session', args.find((a) => !a.startsWith('--')) || '');
+  if (!session) {
+    console.error('usage: node scripts/haloflux.mjs replay --session <sessionId> [--mode window] [--speed 1]');
+    return 2;
+  }
+  const store = new EventStore({ home: HOME });
+  let total = 0;
+  try { total = store.query({ sessionId: session, limit: 1 }).total; } finally { store.close(); }
+  if (total === 0) {
+    console.error(`no stored events for session: ${session}`);
+    return 1;
+  }
+  const mode = argValue(args, '--mode', 'window');
+  console.log(`replay ${session} (${total} events) mode=${mode} — window will show REPLAY`);
+  return cmdCompanion(['--mode', mode, '--replay', session]);
 }
 
 async function cmdStop() {
@@ -653,6 +731,8 @@ async function main() {
     case 'companion': return cmdCompanion(args);
     case 'autostart': return cmdAutostart(args);
     case 'supervise': return cmdSupervise(args);
+    case 'history': return cmdHistory(args);
+    case 'replay': return cmdReplay(args);
     case 'stop': return cmdStop();
     case 'status': return cmdStatus(args.includes('--json'));
     case 'doctor': return cmdDoctor(args);
@@ -666,11 +746,11 @@ async function main() {
     case 'help':
     case '--help':
     case '-h':
-      console.log('commands: start bridge companion autostart supervise stop status doctor simulate watch logs backup restore hosts version');
+      console.log('commands: start bridge companion autostart supervise history replay stop status doctor simulate watch logs backup restore hosts version');
       return 0;
     default:
       console.error(`unknown command: ${command}`);
-      console.error('commands: start bridge companion autostart supervise stop status doctor simulate watch logs backup restore hosts version');
+      console.error('commands: start bridge companion autostart supervise history replay stop status doctor simulate watch logs backup restore hosts version');
       return 2;
   }
 }

@@ -9,6 +9,20 @@
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
+  <div class="replay-bar" id="replay-bar" hidden role="status" aria-label="历史回放模式">
+    <strong>REPLAY</strong>
+    <span id="replay-session">—</span>
+    <span id="replay-clock">00:00.0</span>
+    <button id="replay-play" type="button">PAUSE</button>
+    <button id="replay-step" type="button">STEP</button>
+    <select id="replay-speed" aria-label="回放倍速">
+      <option value="0.5">0.5×</option>
+      <option value="1" selected>1×</option>
+      <option value="2">2×</option>
+      <option value="4">4×</option>
+    </select>
+    <button id="replay-close" type="button">LIVE</button>
+  </div>
   <canvas id="haloflux-canvas" aria-hidden="true"></canvas>
   <div class="ambient" aria-hidden="true"></div>
   <div class="grain" aria-hidden="true"></div>
@@ -79,6 +93,7 @@
         <span class="link-dot" aria-hidden="true"></span>
         <span id="link-text">连接中</span>
       </div>
+      <button class="icon-btn trace-btn" id="btn-trace" type="button" title="执行链研究面板" aria-label="打开执行链研究面板">TRACE</button>
       <button class="icon-btn" id="btn-params" type="button" title="视觉参数" aria-label="视觉参数">
         <svg><use href="#i-sliders" /></svg>
       </button>
@@ -418,6 +433,19 @@
   </section>
 
   <div class="toast" id="toast" hidden></div>
+
+  <aside class="trace-panel" id="trace-panel" hidden aria-label="执行链研究面板">
+    <div class="trace-head">
+      <h3>EXECUTION TRACE</h3>
+      <button id="trace-close" type="button" aria-label="关闭执行链面板">×</button>
+    </div>
+    <div class="trace-tabs" role="tablist">
+      <button id="trace-tab-waterfall" type="button" role="tab" aria-selected="true">TOOL WATERFALL</button>
+      <button id="trace-tab-dag" type="button" role="tab" aria-selected="false">EXECUTION DAG</button>
+      <button id="trace-tab-critical" type="button" role="tab" aria-selected="false">CRITICAL PATH</button>
+    </div>
+    <div id="trace-body" class="trace-body"></div>
+  </aside>
 
   <aside class="lab-evidence" id="lab-evidence" hidden aria-live="polite">
     <div class="lab-evidence-head">

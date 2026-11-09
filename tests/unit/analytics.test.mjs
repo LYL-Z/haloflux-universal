@@ -35,6 +35,17 @@ test('tool waterfall pairs by session+run+call and marks the rest UNCORRELATED',
   assert.equal(result.rows.find((row) => row.toolCallId === 'c3').correlated, false);
 });
 
+test('host-reported durations without a call id stay HOST_REPORTED, not MATCHED', () => {
+  const result = toolWaterfall([
+    { ...base, eventType: 'tool.end', timestamp: 1500, metadata: { toolName: 'pwsh', durationMs: 9517 } },
+    { ...base, eventType: 'tool.fail', timestamp: 1800, metadata: { toolName: 'edit', errorCode: 'E' } },
+  ]);
+  assert.equal(result.rows[0].status, 'HOST_REPORTED');
+  assert.equal(result.rows[0].durationMs, 9517);
+  assert.equal(result.rows[0].correlated, false);
+  assert.equal(result.rows[1].status, 'UNCORRELATED');
+});
+
 test('critical path follows dependencies and refuses cycles', () => {
   const result = criticalPath([
     { id: 'a', durationMs: 100 },

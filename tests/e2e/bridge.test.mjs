@@ -241,6 +241,31 @@ describe('bridge e2e: real process on a random port', { skip: skipReason }, () =
     }
   });
 
+  test('GET /v1/history persists accepted events and keeps event provenance', async () => {
+    const sessionId = newSession('history');
+    const start = event('deepseek-harness', sessionId, 'tool.start', {
+      source: 'host-native', confidence: 'confirmed',
+      metadata: { toolName: 'Bash', toolCallId: 'call-history', runId: 'run-history' },
+    });
+    const first = await bridge.post('/v1/events', start);
+    assert.equal(first.status, 202, first.text);
+    assert.equal(first.json.stored, 1);
+    const history = await bridge.get(`/v1/history?sessionId=${sessionId}`);
+    assert.equal(history.status, 200, history.text);
+    assert.equal(history.json.total, 1);
+    assert.equal(history.json.events[0].eventId, start.eventId);
+    assert.equal(history.json.events[0].source, 'host-native');
+    assert.equal(history.json.events[0].confidence, 'confirmed');
+    assert.equal(history.json.events[0].metadata.toolCallId, 'call-history');
+
+    const duplicate = await bridge.post('/v1/events', start);
+    assert.equal(duplicate.status, 202);
+    assert.equal(duplicate.json.duplicates, 1);
+    assert.equal(duplicate.json.stored, 0);
+    const again = await bridge.get(`/v1/history?sessionId=${sessionId}`);
+    assert.equal(again.json.total, 1, 'duplicate eventId must not be stored twice');
+  });
+
   test('GET /v1/settings returns a settings object (defaults)', async () => {
     const res = await bridge.get('/v1/settings');
     assert.equal(res.status, 200, `GET /v1/settings failed: ${res.status} ${res.text}`);

@@ -1352,6 +1352,90 @@ body.is-simulated .topbar::after {
   }
 }
 
+.trace-btn {
+  width: auto !important;
+  padding: 0 6px !important;
+  font: 8px var(--font-mono) !important;
+  letter-spacing: .08em;
+}
+
+.trace-panel {
+  position: fixed;
+  top: 42px;
+  right: 12px;
+  bottom: calc(var(--lab-h, 288px) + 18px);
+  z-index: 70;
+  width: min(520px, calc(100vw - 24px));
+  padding: 10px 12px;
+  border: 1px solid #5a5a66;
+  background: #050507;
+  color: #d8d8e0;
+  font: 9px/1.55 var(--font-mono);
+  overflow: auto;
+}
+
+.trace-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #33333d;
+  padding-bottom: 6px;
+}
+
+.trace-head h3 { margin: 0; color: #fff; font: 700 10px var(--font-mono); letter-spacing: .1em; }
+.trace-head button { border: 1px solid #4a4a55; background: #08080c; color: #dddde6; font: 12px var(--font-mono); padding: 0 6px; }
+
+.trace-tabs { display: flex; gap: 4px; margin: 8px 0; }
+.trace-tabs button {
+  border: 1px solid #3f3f49; background: #08080c; color: #9a9aa6;
+  font: 8px var(--font-mono); padding: 2px 5px;
+}
+.trace-tabs button[aria-selected="true"] { color: #fff; border-color: #b9b9c5; }
+
+.trace-waterfall { display: grid; gap: 4px; }
+.trace-row {
+  display: grid;
+  grid-template-columns: 96px 1fr 58px;
+  gap: 6px;
+  align-items: center;
+  cursor: pointer;
+}
+.trace-row:hover { background: #121218; }
+.trace-row .trace-bar { height: 7px; background: #bcbcc8; }
+.trace-row[data-status="FAILED"] .trace-bar { background: #c98383; }
+.trace-row[data-status="UNCORRELATED"] .trace-bar { background: #5a5a66; }
+.trace-row small { color: #8f8f9d; font: 8px var(--font-mono); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.trace-note { color: #8f8f9d; border-top: 1px solid #2c2c35; padding-top: 6px; margin-top: 8px; }
+.trace-body h4 { margin: 8px 0 4px; color: #f4f4f8; font: 700 9px var(--font-mono); }
+
+.replay-bar {
+  position: fixed;
+  top: 42px;
+  left: 50%;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 10px;
+  border: 1px solid #b9b9c5;
+  background: #050507;
+  color: #e8e8ee;
+  font: 9px var(--font-mono);
+  letter-spacing: .06em;
+  transform: translateX(-50%);
+}
+
+.replay-bar strong { color: #fff; letter-spacing: .16em; }
+.replay-bar span { color: #b9b9c5; }
+.replay-bar button, .replay-bar select {
+  border: 1px solid #4a4a55;
+  border-radius: 0;
+  background: #08080c;
+  color: #dddde6;
+  font: 9px var(--font-mono);
+  padding: 1px 5px;
+}
+
 /* 1280-class screens: keep the console at ~36% of the frame, not 40%. */
 @media (min-width: 1080px) and (max-width: 1399px) and (min-height: 690px) {
   body[data-preset="agent-monitor"] {

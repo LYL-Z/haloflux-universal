@@ -35,7 +35,8 @@ import {
 import { createMockStream } from './mock-session.js';
 import { projectMonitor } from './monitor-projection.mjs';
 import { parseObsidianMetadata } from './obsidian-metadata.mjs';
-import { eventRate, METRIC_REGISTRY } from '../../../packages/analytics/src/index.mjs';
+import { eventRate, METRIC_REGISTRY, toolWaterfall, criticalPath } from '../../../packages/analytics/src/index.mjs';
+import { sortEvents, sessionAt, frameIndexAt, replayDurationMs } from './replay-engine.mjs';
 
 /* ------------------------------------------------------------------ *
  * environment / query
@@ -126,6 +127,9 @@ const initialReducedMotion = query.get('motion') === 'reduce'
 
 const BRIDGE_URL = normalizeBridgeUrl(query.get('bridge') || config.bridgeUrl || 'http://127.0.0.1:17817');
 const TOKEN = String(query.get('token') || config.token || '').trim();
+const REPLAY_SESSION = String(query.get('replay') || '').trim();
+const REPLAY_AT = Number(query.get('at'));
+const TRACE_OPEN = query.get('trace') === '1';
 const QUERY_STATE = query.get('state');
 const PINNED_STATE = (QUERY_STATE && STATE_META[QUERY_STATE]) ? QUERY_STATE : null;
 /** Electron shell mode: window | overlay | compact. Overlay keeps the normal
@@ -193,6 +197,20 @@ const els = {
   labEvidenceTitle: $('lab-evidence-title'),
   labEvidenceBody: $('lab-evidence-body'),
   labEvidenceClose: $('lab-evidence-close'),
+  replayBar: $('replay-bar'),
+  replaySession: $('replay-session'),
+  replayClock: $('replay-clock'),
+  replayPlay: $('replay-play'),
+  replayStep: $('replay-step'),
+  replaySpeed: $('replay-speed'),
+  replayClose: $('replay-close'),
+  tracePanel: $('trace-panel'),
+  traceBody: $('trace-body'),
+  traceClose: $('trace-close'),
+  traceWaterfallTab: $('trace-tab-waterfall'),
+  traceDagTab: $('trace-tab-dag'),
+  traceCriticalTab: $('trace-tab-critical'),
+  btnTrace: $('btn-trace'),
   feedMode: $('feed-mode'),
   linkStatus: $('link-status'),
   linkText: $('link-text'),
@@ -269,6 +287,7 @@ const state = {
   feedPaused: false,
   feedFilter: 'all',
   feedSelectedKey: null,
+  replay: null,
 };
 
 let saveTimer = null;
@@ -825,6 +844,7 @@ function canvasContext(canvas) {
 /** Tool event arrival rate over the last 120 s, bucketed by the analytics engine. */
 let lastRate = null;
 let lastFailureCount = 0;
+let traceTab = 'waterfall';
 function drawRateCanvas(events) {
   const surface = canvasContext(els.labRateCanvas);
   if (!surface) return;
@@ -958,6 +978,84 @@ function showEvidence(kind) {
 
 function projectionHostCount() {
   return new Set(state.sessions.map((session) => session.host)).size;
+}
+
+function showTraceEvidence(row) {
+  if (!els.labEvidence || !els.labEvidenceBody) return;
+  els.labEvidenceTitle.textContent = 'TOOL CALL · EVIDENCE';
+  clearNode(els.labEvidenceBody);
+  const entries = [
+    ['EVENT ID', row.eventId || '—'],
+    ['SESSION', row.sessionId || '—'],
+    ['RUN', row.runId || '—'],
+    ['TOOL CALL', row.toolCallId || '—'],
+    ['SOURCE', `${row.source || 'unknown'} / ${row.confidence || 'unknown'}`],
+    ['STATUS', row.status || '—'],
+    ['DURATION', row.durationMs == null ? '—' : `${row.durationMs} ms`],
+    ['LIMITATION', 'cache/replay events only; duration is derived from matched start/end'],
+  ];
+  for (const [label, value] of entries) {
+    const line = make('div');
+    line.append(make('span', '', label), make('strong', '', String(value)));
+    els.labEvidenceBody.appendChild(line);
+  }
+  els.labEvidence.hidden = false;
+}
+
+function setTraceTab(tab) {
+  traceTab = tab;
+  for (const [key, button] of [['waterfall', els.traceWaterfallTab], ['dag', els.traceDagTab], ['critical', els.traceCriticalTab]]) {
+    if (button) button.setAttribute('aria-selected', String(key === tab));
+  }
+  clearNode(els.traceBody);
+  if (tab === 'waterfall') {
+    const result = toolWaterfall(state.events);
+    els.traceBody.appendChild(make('h4', '', `TOOL WATERFALL · ${result.rows.length} PAIRS · ${result.uncorrelated} UNCORRELATED`));
+    for (const row of [...result.rows].reverse()) {
+      const line = make('div', 'trace-row', `${formatClock(row.timestamp)} · ${row.toolName || '—'} · ${row.status} · ${row.durationMs == null ? '—' : `${row.durationMs} ms`} · ${row.source || 'unknown'} · ${row.eventId || 'no eventId'}`);
+      line.dataset.status = row.status;
+      line.tabIndex = 0;
+      line.setAttribute('role', 'button');
+      line.title = `${row.eventId || 'no eventId'} · ${row.toolCallId || 'no callId'} · ${row.source || 'unknown'}`;
+      const open = () => showTraceEvidence(row);
+      line.addEventListener('click', open);
+      line.addEventListener('keydown', (domEvent) => { if (domEvent.key === 'Enter') open(); });
+      els.traceBody.appendChild(line);
+    }
+    if (result.rows.length === 0) els.traceBody.appendChild(make('div', 'trace-note', 'NO CORRELATED TOOL CALLS IN CACHE · TIMELINE ONLY'));
+    els.traceBody.appendChild(make('div', 'trace-note', 'Every row maps to a stored/cached eventId; unpaired calls stay UNCORRELATED.'));
+  } else if (tab === 'dag') {
+    const spans = state.events.filter((event) => event.spanId || event.parentSpanId || event.traceId);
+    els.traceBody.appendChild(make('h4', '', `EXECUTION DAG · ${spans.length} SPAN-TAGGED EVENTS`));
+    if (spans.length === 0) {
+      els.traceBody.appendChild(make('div', 'trace-note', 'NO TRUSTED DEPENDENCY EDGES · TIMELINE ONLY'));
+      for (const event of state.events.slice(-20).reverse()) {
+        els.traceBody.appendChild(make('div', 'trace-row', `${formatClock(event.timestamp)} · ${event.eventType} · ${event.source || 'unknown'} · ${event.eventId || 'no eventId'}`));
+      }
+    } else {
+      for (const event of spans.slice(-30)) {
+        const parent = event.parentSpanId ? state.events.find((candidate) => candidate.spanId === event.parentSpanId) : null;
+        els.traceBody.appendChild(make('div', 'trace-row', `${event.spanId || '—'} ← ${parent ? `${parent.spanId} (${parent.eventId || 'no id'})` : 'UNKNOWN PARENT'}`));
+      }
+    }
+    els.traceBody.appendChild(make('div', 'trace-note', 'Edges are shown only when parentSpanId matches an observed spanId; otherwise UNKNOWN.'));
+  } else {
+    const tasks = state.events
+      .filter((event) => event.taskId && event.dependsOn)
+      .map((event) => ({ id: event.taskId, dependsOn: event.dependsOn, durationMs: event.durationMs }));
+    const result = criticalPath(tasks);
+    els.traceBody.appendChild(make('h4', 'CRITICAL PATH'));
+    els.traceBody.appendChild(make('div', 'trace-note', result.durationMs == null
+      ? 'UNKNOWN · no trusted task dependency graph in the observed events. Formula available, data absent.'
+      : `${result.durationMs} ms · path ${result.path.join(' → ')}`));
+    els.traceBody.appendChild(make('div', 'trace-note', 'T = max_path Σ duration_i; requires explicit dependsOn edges.'));
+  }
+}
+
+function openTrace() {
+  if (!els.tracePanel) return;
+  els.tracePanel.hidden = false;
+  setTraceTab('waterfall');
 }
 function renderLabMonitor() {
   if (!els.labFeedRows) return;
@@ -1291,6 +1389,7 @@ function ingestEvents(sessions) {
       existing.add(key);
       state.events.push({
         key,
+        eventId: event.eventId || '',
         sessionId: session.sessionId,
         host: session.host,
         // Per-event provenance. Never fall back to the session aggregate.
@@ -1527,6 +1626,36 @@ function bindEvents() {
   els.labFailCanvas?.addEventListener('click', () => showEvidence('failure'));
   els.labMatrixCanvas?.addEventListener('click', () => showEvidence('matrix'));
   els.labEvidenceClose?.addEventListener('click', () => { if (els.labEvidence) els.labEvidence.hidden = true; });
+  els.replayPlay?.addEventListener('click', () => {
+    const replay = state.replay;
+    if (!replay) return;
+    if (replay.playing) {
+      replay.playing = false;
+      els.replayPlay.textContent = 'RESUME';
+    } else {
+      if (replay.elapsedMs >= replayDurationMs(replay.events)) replay.elapsedMs = 0;
+      replay.playing = true;
+      els.replayPlay.textContent = 'PAUSE';
+    }
+  });
+  els.replayStep?.addEventListener('click', () => {
+    const replay = state.replay;
+    if (!replay) return;
+    replay.playing = false;
+    if (els.replayPlay) els.replayPlay.textContent = 'RESUME';
+    const next = Math.min(replay.events.length - 1, replay.index + 1);
+    replay.elapsedMs = Math.max(0, replay.events[next].timestamp - replay.events[0].timestamp);
+    applyReplayFrame(next);
+  });
+  els.replaySpeed?.addEventListener('change', () => {
+    if (state.replay) state.replay.speed = Number(els.replaySpeed.value) || 1;
+  });
+  els.replayClose?.addEventListener('click', stopReplay);
+  els.btnTrace?.addEventListener('click', openTrace);
+  els.traceClose?.addEventListener('click', () => { if (els.tracePanel) els.tracePanel.hidden = true; });
+  els.traceWaterfallTab?.addEventListener('click', () => setTraceTab('waterfall'));
+  els.traceDagTab?.addEventListener('click', () => setTraceTab('dag'));
+  els.traceCriticalTab?.addEventListener('click', () => setTraceTab('critical'));
   els.btnParams?.addEventListener('click', () => openDrawer(els.paramsDrawer));
   els.btnSettings?.addEventListener('click', () => openDrawer(els.settingsDrawer));
   els.btnAbout?.addEventListener('click', openAbout);
@@ -1691,6 +1820,104 @@ function qaSetState(stateName) {
 }
 
 /* ------------------------------------------------------------------ *
+ * replay (P3.2-A)
+ * ------------------------------------------------------------------ */
+
+function replayClock(ms) {
+  const value = Math.max(0, Math.round(ms));
+  const seconds = Math.floor(value / 1000);
+  return `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}.${Math.floor((value % 1000) / 100)}`;
+}
+
+function applyReplayFrame(index) {
+  const replay = state.replay;
+  if (!replay) return;
+  const bounded = Math.max(0, Math.min(replay.events.length - 1, index));
+  replay.index = bounded;
+  const session = sessionAt(replay.events, bounded, { sessionId: replay.sessionId });
+  if (!session) return;
+  state.sessions = [session];
+  state.selectedSessionId = session.sessionId;
+  state.selectedHost = session.host;
+  state.events = replay.events.slice(0, bounded + 1);
+  state.mode = 'replay';
+  state.reason = 'REPLAY · local event store';
+  viz.setSessions([session]);
+  viz.setSession(session);
+  renderAll();
+  if (els.tracePanel && !els.tracePanel.hidden) setTraceTab(traceTab);
+  if (els.replayClock) {
+    els.replayClock.textContent = replayClock((replay.events[bounded].timestamp - replay.events[0].timestamp) || 0);
+  }
+}
+
+function replayTick() {
+  const replay = state.replay;
+  if (!replay || !replay.playing) return;
+  replay.elapsedMs += 200 * replay.speed;
+  const duration = replayDurationMs(replay.events);
+  if (replay.elapsedMs >= duration) {
+    replay.elapsedMs = duration;
+    replay.playing = false;
+    if (els.replayPlay) els.replayPlay.textContent = 'RESUME';
+  }
+  const index = frameIndexAt(replay.events, replay.elapsedMs, 1);
+  if (index !== replay.index) applyReplayFrame(index);
+  else if (els.replayClock) {
+    const offset = Math.min(duration, replay.elapsedMs);
+    els.replayClock.textContent = replayClock(offset);
+  }
+}
+
+async function startReplay(sessionId) {
+  if (!sessionId || !TOKEN) return false;
+  try {
+    const res = await fetch(`${BRIDGE_URL}/v1/history?sessionId=${encodeURIComponent(sessionId)}&limit=1000`, {
+      headers: { authorization: `Bearer ${TOKEN}` },
+    });
+    if (!res.ok) throw new Error(`history HTTP ${res.status}`);
+    const data = await res.json();
+    const events = sortEvents(data.events || []);
+    if (events.length === 0) {
+      toast('该会话没有可回放的历史事件');
+      return false;
+    }
+    if (state.replay?.timer) clearInterval(state.replay.timer);
+    state.replay = {
+      sessionId, events, index: 0, elapsedMs: 0, speed: 1, playing: true,
+      timer: setInterval(replayTick, 200),
+    };
+    if (els.replayBar) els.replayBar.hidden = false;
+    if (els.replaySession) els.replaySession.textContent = `${sessionId.slice(0, 18)} · ${events.length} EVENTS · ${data.total || events.length} STORED`;
+    if (els.replayPlay) els.replayPlay.textContent = 'PAUSE';
+    if (Number.isFinite(REPLAY_AT)) {
+      const index = Math.max(0, Math.min(events.length - 1, Math.floor(REPLAY_AT)));
+      state.replay.elapsedMs = Math.max(0, events[index].timestamp - events[0].timestamp);
+      state.replay.playing = false;
+      state.replay.index = index;
+      if (els.replayPlay) els.replayPlay.textContent = 'RESUME';
+      applyReplayFrame(index);
+    } else {
+      applyReplayFrame(0);
+      replayTick();
+    }
+    return true;
+  } catch (error) {
+    toast(`回放失败：${error && error.message ? error.message : 'unknown'}`);
+    return false;
+  }
+}
+
+function stopReplay() {
+  if (state.replay?.timer) clearInterval(state.replay.timer);
+  state.replay = null;
+  if (els.replayBar) els.replayBar.hidden = true;
+  const url = new URL(window.location.href);
+  url.searchParams.delete('replay');
+  window.location.href = url.toString();
+}
+
+/* ------------------------------------------------------------------ *
  * boot
  * ------------------------------------------------------------------ */
 
@@ -1709,7 +1936,11 @@ function init() {
 
   renderAll();
 
-  if (DEMO) {
+  if (REPLAY_SESSION) {
+    startReplay(REPLAY_SESSION).then((ok) => {
+      if (!ok) connectLive();
+    });
+  } else if (DEMO) {
     enterSimulated('演示模式 · ?demo=1');
   } else if (!BRIDGE_URL) {
     enterSimulated('已拒绝非 loopback 事件桥地址');
@@ -1720,6 +1951,20 @@ function init() {
   }
 
   installQaHook();
+
+  // Deterministic recording/QA hook: seeks the replay cursor without wall-clock
+  // timers, so offscreen capture produces a faithful replay progression.
+  window.__halofluxReplaySeek = (offsetMs) => {
+    const replay = state.replay;
+    if (!replay) return false;
+    replay.elapsedMs = Math.max(0, Number(offsetMs) || 0);
+    replay.playing = false;
+    if (els.replayPlay) els.replayPlay.textContent = 'RESUME';
+    applyReplayFrame(frameIndexAt(replay.events, replay.elapsedMs, 1));
+    return true;
+  };
+
+  if (TRACE_OPEN) openTrace();
 
   if (QA) {
     // QA runs need a stable first frame before screenshots.

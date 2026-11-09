@@ -27,6 +27,7 @@ export function projectMonitor({ hosts = [], sessions = [], events = [], selecte
 
   const timeline = safeEvents.slice(-RECENT_LIMIT).reverse().map((event) => ({
     key: `${clean(event?.sessionId, 64)}|${event?.timestamp ?? ''}|${clean(event?.eventType, 40)}|${clean(event?.toolCallId, 64)}`,
+    eventId: clean(event?.eventId, 128),
     timestamp: numeric(event?.timestamp),
     kind: clean(event?.eventType, 40) || 'unknown',
     tool: clean(event?.toolName, 48),
