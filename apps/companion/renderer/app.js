@@ -859,8 +859,8 @@ function drawRateCanvas(events) {
   });
   ctx.stroke();
   ctx.fillStyle = '#8f8f9d';
-  ctx.fillText(`${toolEvents} CACHED`, width - 48, 1);
-  els.labRateWindow.textContent = `RATE 120s · 10s BUCKET · ${toolEvents} CACHED`;
+  ctx.fillText(`${toolEvents} CACHED`, width - 56, 1);
+  els.labRateWindow.textContent = `RATE 120s · 10s BUCKET · ${toolEvents} CACHED (NOT TOTAL)`;
 }
 
 /** Real failures/errors only; absence is explicitly not a pass. */
@@ -872,7 +872,8 @@ function drawFailureCanvas(events) {
   const windowMs = 120_000;
   const failures = events.filter((event) => typeof event.eventType === 'string'
     && (event.eventType === 'error' || event.eventType === 'tool.fail')
-    && typeof event.timestamp === 'number');
+    && typeof event.timestamp === 'number'
+    && event.timestamp >= now - windowMs);
   ctx.strokeStyle = '#3f3f49';
   ctx.beginPath();
   ctx.moveTo(0, height - 1);
@@ -880,7 +881,7 @@ function drawFailureCanvas(events) {
   ctx.stroke();
   if (failures.length === 0) {
     ctx.fillStyle = '#7d7d8a';
-    ctx.fillText('NO FAILURE EVENTS (NOT A PASS)', 2, Math.max(2, height / 2 - 4));
+    ctx.fillText('NO FAILURE EVENTS IN 120 S (NOT A PASS)', 2, Math.max(2, height / 2 - 4));
     return;
   }
   for (const event of failures) {
@@ -960,7 +961,7 @@ function renderLabMonitor() {
       row.append(make('time', '', event.timestamp === null ? '—' : formatClock(event.timestamp)));
       row.append(make('b', '', event.kind));
       row.append(make('span', '', event.tool || '—'));
-      row.append(make('i', '', event.source === 'simulated' ? 'SIM' : event.source === 'host-native' ? 'NAT' : event.source === 'derived' ? 'DRV' : '?'));
+      row.append(make('i', '', event.source === 'simulated' ? 'SIM' : event.source === 'host-native' ? 'NAT' : event.source === 'derived' ? 'DRV' : 'UNK'));
       const select = () => {
         state.feedSelectedKey = event.key;
         renderFeedDetail(event);
@@ -1019,7 +1020,7 @@ function renderLabMonitor() {
     ['WARNING FLAGS', active ? String(active.warnings.length) : '—'],
     ['HOST VERIFICATION', 'SEE HOST MATRIX'],
     ['PASS / FAIL', '— / —'],
-    ['OBSERVATION', `${projection.eventCount} CACHED EVENTS`],
+    ['OBSERVATION', `120s WINDOW · ${projection.selectedEventCount} CACHED`],
   ]);
   detail(els.labTypeDetails, projection.types.length ? projection.types.map(([key, countValue]) => [key, countValue]) : [['EVENT TYPES', '—']]);
 
@@ -1253,7 +1254,9 @@ function ingestEvents(sessions) {
         key,
         sessionId: session.sessionId,
         host: session.host,
-        source: session.source,
+        // Per-event provenance. Never fall back to the session aggregate.
+        source: typeof event.source === 'string' ? event.source : 'unknown',
+        confidence: typeof event.confidence === 'string' ? event.confidence : 'unknown',
         eventType: event.eventType,
         timestamp: event.timestamp,
         toolName: event.toolName || '',
@@ -1261,6 +1264,7 @@ function ingestEvents(sessions) {
         durationMs: typeof event.durationMs === 'number' ? event.durationMs : undefined,
         errorCode: event.errorCode || '',
         label: event.label || '',
+        runId: event.runId || '',
       });
     }
   }

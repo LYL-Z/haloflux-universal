@@ -225,7 +225,15 @@ export function normalizeSession(view) {
       .map((event) => ({
         eventType: clampText(event.eventType, 40),
         timestamp: finiteOrUndefined(event.timestamp) ?? 0,
+        // Event-level provenance must survive normalization; the session
+        // aggregate is never a substitute for an event's own source.
+        ...(typeof event.source === 'string' && event.source ? { source: clampText(event.source, 20) } : {}),
+        ...(typeof event.confidence === 'string' && event.confidence ? { confidence: clampText(event.confidence, 32) } : {}),
         ...(typeof event.toolName === 'string' && event.toolName ? { toolName: clampText(event.toolName, 80) } : {}),
+        ...(typeof event.toolCallId === 'string' && event.toolCallId ? { toolCallId: clampText(event.toolCallId, 64) } : {}),
+        ...(finiteOrUndefined(event.durationMs) !== undefined ? { durationMs: finiteOrUndefined(event.durationMs) } : {}),
+        ...(typeof event.errorCode === 'string' && event.errorCode ? { errorCode: clampText(event.errorCode, 64) } : {}),
+        ...(typeof event.runId === 'string' && event.runId ? { runId: clampText(event.runId, 64) } : {}),
         ...(typeof event.label === 'string' && event.label ? { label: clampText(event.label, 120) } : {}),
       }))
     : [];

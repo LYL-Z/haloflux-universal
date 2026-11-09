@@ -1,0 +1,16 @@
+{
+  "mode": "window",
+  "viewport": [
+    320,
+    320
+  ],
+  "dpr": 2.5,
+  "durationSeconds": 12.004099999997765,
+  "frames": 2485,
+  "fps": 207.012604026996,
+  "frameMsMean": 4.830623742453829,
+  "frameMsP95": 8.300000000001091,
+  "frameMsMax": 20.800000000000182,
+  "frameMsMin": -2.2355379769578576e-9,
+  "heapUsedBytes": 10809365
+}

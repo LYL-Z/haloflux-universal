@@ -504,9 +504,14 @@ export class SessionManager {
 
   #pushRecent(session, event) {
     const entry = { eventType: event.eventType, timestamp: event.timestamp };
+    // Event-level provenance, not the session aggregate: a derived heartbeat in
+    // a host-native session must still render as DRV/inferred.
+    entry.source = event.source;
+    entry.confidence = event.confidence;
     if (event.metadata && typeof event.metadata.label === 'string') entry.label = event.metadata.label;
     if (event.metadata && typeof event.metadata.toolName === 'string') entry.toolName = event.metadata.toolName;
     if (event.metadata && typeof event.metadata.toolCallId === 'string') entry.toolCallId = event.metadata.toolCallId;
+    if (event.metadata && typeof event.metadata.runId === 'string') entry.runId = event.metadata.runId;
     if (event.metadata && typeof event.metadata.durationMs === 'number') entry.durationMs = event.metadata.durationMs;
     if (event.metadata && typeof event.metadata.errorCode === 'string') entry.errorCode = event.metadata.errorCode;
     session.recentEvents.push(entry);
@@ -526,20 +531,33 @@ export class SessionManager {
     if (!isPlainObject(meta)) return;
     const callId = typeof meta.toolCallId === 'string' ? meta.toolCallId : '';
     if (!callId) return;
+    const runId = typeof meta.runId === 'string' ? meta.runId : '';
+    // A reused call id across runs must not match: the key carries run context
+    // whenever the host supplies it. A missing runId stays in its own bucket.
+    const key = `${runId}\u0000${callId}`;
     session.metrics.lastToolCallId = callId;
     if (event.eventType === 'tool.start') {
-      session.openTools.set(callId, { at: event.timestamp, name: meta.toolName });
+      // A duplicate start for the same key must not reset the original clock.
+      if (!session.openTools.has(key)) {
+        session.openTools.set(key, { at: event.timestamp, name: meta.toolName, runId });
+      }
       session.metrics.lastToolCorrelated = false;
       return;
     }
     if (event.eventType !== 'tool.end' && event.eventType !== 'tool.fail') return;
-    const open = session.openTools.get(callId);
-    if (open) session.openTools.delete(callId);
+    const open = session.openTools.get(key);
+    if (open) session.openTools.delete(key);
+    // An end older than its start is out-of-order in this cache; never invent a
+    // negative/zero duration from it.
+    if (open && event.timestamp < open.at) {
+      session.metrics.lastToolCorrelated = false;
+      return;
+    }
     session.metrics.lastToolCorrelated = Boolean(open);
     if (open && typeof meta.durationMs !== 'number') {
       event.metadata = { ...meta, durationMs: Math.max(0, event.timestamp - open.at) };
     }
-    if (typeof event.metadata?.durationMs === 'number') {
+    if (open && typeof event.metadata?.durationMs === 'number') {
       session.metrics.lastToolDurationMs = event.metadata.durationMs;
     }
   }

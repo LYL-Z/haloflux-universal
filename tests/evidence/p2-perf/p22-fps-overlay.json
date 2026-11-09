@@ -1,0 +1,16 @@
+{
+  "mode": "overlay",
+  "viewport": [
+    1536,
+    900
+  ],
+  "dpr": 2.5,
+  "durationSeconds": 12.0041,
+  "frames": 342,
+  "fps": 28.49026582584284,
+  "frameMsMean": 35.09970760233918,
+  "frameMsP95": 41.79999999999927,
+  "frameMsMax": 70.80000000000018,
+  "frameMsMin": 8.300000000000182,
+  "heapUsedBytes": 14960195
+}

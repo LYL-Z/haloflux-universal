@@ -222,6 +222,9 @@ export function createMockStream(options = {}) {
     const event = {
       eventType,
       timestamp: at,
+      // Per-event provenance: simulated data never borrows a session label.
+      source: 'simulated',
+      confidence: 'unverified',
       ...(name ? { toolName: name } : {}),
     };
     session.recentEvents.push(event);
