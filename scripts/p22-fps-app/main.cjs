@@ -58,7 +58,13 @@ server.listen(0, '127.0.0.1', async () => {
   if (MODE === 'compact') win.setContentSize(320, 320);
   win.webContents.on('console-message', (_e, _l, message) => console.log('[page]', message));
   await win.loadURL(url);
+  win.webContents.setZoomFactor(Number(process.env.HALOFLUX_FPS_ZOOM) || 1);
   await new Promise((resolve) => setTimeout(resolve, 4000));
+  if (process.env.HALOFLUX_FPS_SHOT) {
+    const shot = path.resolve(process.env.HALOFLUX_FPS_SHOT);
+    mkdirSync(path.dirname(shot), { recursive: true });
+    writeFileSync(shot, (await win.capturePage()).toPNG());
+  }
   const sample = await win.webContents.executeJavaScript(`(async () => {
     const frames = [];
     let last = performance.now();
@@ -98,6 +104,32 @@ server.listen(0, '127.0.0.1', async () => {
   try {
     sample.pagePerf = await win.webContents.executeJavaScript('window.__halofluxPerf || null');
   } catch { /* optional */ }
+  if (process.env.HALOFLUX_FPS_INTERACTION === '1') {
+    try {
+      sample.interaction = await win.webContents.executeJavaScript(`(async () => {
+        const waitFrame = () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+        const traceButton = document.getElementById('btn-trace');
+        const dag = document.getElementById('trace-tab-dag');
+        const waterfall = document.getElementById('trace-tab-waterfall');
+        if (!traceButton) return { error: 'no trace button' };
+        if (traceButton.getAttribute('aria-expanded') !== 'true') traceButton.click();
+        await waitFrame();
+        const values = [];
+        for (let i = 0; i < 30; i += 1) {
+          const target = i % 2 ? waterfall : dag;
+          const start = performance.now();
+          target?.click();
+          await waitFrame();
+          values.push(performance.now() - start);
+        }
+        values.sort((a, b) => a - b);
+        const at = (p) => values[Math.min(values.length - 1, Math.floor(values.length * p))];
+        return { samples: values.length, p50: at(0.5), p95: at(0.95), max: values[values.length - 1], values };
+      })()`);
+    } catch (error) {
+      sample.interaction = { error: String(error && error.message ? error.message : error) };
+    }
+  }
   try {
     sample.appMetrics = app.getAppMetrics().map((metric) => ({
       type: metric.type,

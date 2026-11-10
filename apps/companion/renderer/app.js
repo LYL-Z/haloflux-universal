@@ -37,6 +37,7 @@ import { projectMonitor } from './monitor-projection.mjs';
 import { parseObsidianMetadata } from './obsidian-metadata.mjs';
 import { eventRate, METRIC_REGISTRY, toolWaterfall, criticalPath } from '../../../packages/analytics/src/index.mjs';
 import { prepareReplay } from './replay-engine.mjs';
+import { replayNow } from './replay-clock.mjs';
 import { parseReplayAt, collectReplayPages } from './replay-history.mjs';
 
 /* ------------------------------------------------------------------ *
@@ -853,12 +854,12 @@ function canvasContext(canvas) {
 let lastRate = null;
 let lastFailureCount = 0;
 let traceTab = 'waterfall';
-function drawRateCanvas(events) {
+function drawRateCanvas(events, now = Date.now()) {
   const surface = canvasContext(els.labRateCanvas);
   if (!surface) return;
   const { ctx, width, height } = surface;
   const toolOnly = events.filter((event) => typeof event.eventType === 'string' && event.eventType.startsWith('tool.'));
-  const rate = eventRate(toolOnly, { now: Date.now(), windowMs: 120_000, buckets: 12, cacheLimit: 30 });
+  const rate = eventRate(toolOnly, { now, windowMs: 120_000, buckets: 12, cacheLimit: 30 });
   lastRate = rate;
   ctx.strokeStyle = '#3f3f49';
   ctx.beginPath();
@@ -889,11 +890,10 @@ function drawRateCanvas(events) {
 }
 
 /** Real failures/errors only; absence is explicitly not a pass. */
-function drawFailureCanvas(events) {
+function drawFailureCanvas(events, now = Date.now()) {
   const surface = canvasContext(els.labFailCanvas);
   if (!surface) return;
   const { ctx, width, height } = surface;
-  const now = Date.now();
   const windowMs = 120_000;
   const failures = events.filter((event) => typeof event.eventType === 'string'
     && (event.eventType === 'error' || event.eventType === 'tool.fail')
@@ -1183,12 +1183,16 @@ function renderLabMonitor() {
   }
 
   // Micro canvases: every pixel is derived from cached observed events.
-  const canvasEvents = state.replay ? state.events.slice(-200) : state.events;
+  // F-10: REPLAY statistics follow the replay cursor, not today's wall clock.
+  const canvasEvents = state.events;
   const selectedEvents = canvasEvents.filter((event) => event.sessionId === state.selectedSessionId);
-  drawRateCanvas(selectedEvents);
-  drawFailureCanvas(selectedEvents);
+  const clockNow = replayNow({ replay: state.replay, liveNow: Date.now() });
+  const canvasStart = performance.now();
+  drawRateCanvas(selectedEvents, clockNow);
+  drawFailureCanvas(selectedEvents, clockNow);
   drawMatrixCanvas();
   drawTimeBand();
+  addPerfPhase('canvases', performance.now() - canvasStart);
   els.labToolSummary.textContent = `TOOL ${projection.selectedToolEventCount} / CACHED ${projection.eventCount}`;
 
   const detail = (target, entries) => {
@@ -1923,14 +1927,32 @@ function replayClock(ms) {
   return `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}.${Math.floor((value % 1000) / 100)}`;
 }
 
+function addPerfPhase(name, ms) {
+  if (!window.__halofluxPerf) return;
+  const phases = window.__halofluxPerf.phases || (window.__halofluxPerf.phases = {});
+  const row = phases[name] || (phases[name] = { count: 0, totalMs: 0, maxMs: 0 });
+  row.count += 1;
+  row.totalMs += ms;
+  row.maxMs = Math.max(row.maxMs, ms);
+}
+
 function renderReplayFrame() {
   // Minimal update set: agents/sessions/settings do not change between replay
   // ticks, so do not rebuild the whole page for every event cursor move.
+  const t0 = performance.now();
   renderSession();
+  const t1 = performance.now();
   renderEvents();
+  const t2 = performance.now();
   renderMode();
   renderCompact();
+  const t3 = performance.now();
   renderLabMonitor();
+  const t4 = performance.now();
+  addPerfPhase('renderSession', t1 - t0);
+  addPerfPhase('renderEvents', t2 - t1);
+  addPerfPhase('renderModeCompact', t3 - t2);
+  addPerfPhase('renderLabMonitor', t4 - t3);
 }
 
 function applyReplayFrame(index, { full = false } = {}) {
@@ -1939,15 +1961,19 @@ function applyReplayFrame(index, { full = false } = {}) {
   const frameStart = performance.now();
   const bounded = Math.max(0, Math.min(replay.events.length - 1, index));
   replay.index = bounded;
+  const sessionStart = performance.now();
   const session = replay.prepared.sessionAtIndex(bounded, { sessionId: replay.sessionId });
+  addPerfPhase('sessionAtIndex', performance.now() - sessionStart);
   if (!session) return;
   state.sessions = [session];
   state.selectedSessionId = session.sessionId;
   state.selectedHost = session.host;
   state.mode = 'replay';
   state.reason = 'REPLAY · local event store';
+  const vizStart = performance.now();
   viz.setSessions([session]);
   viz.setSession(session);
+  addPerfPhase('vizSetSession', performance.now() - vizStart);
   if (full || !Array.isArray(state.events) || state.events.length > bounded + 1) {
     state.events = replay.events.slice(0, bounded + 1);
   } else if (state.events.length < bounded + 1) {

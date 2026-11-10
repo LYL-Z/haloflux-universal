@@ -27,7 +27,7 @@
 ```powershell
 npm run build       # tsc，exit 0
 npm run typecheck   # tsc --noEmit，exit 0
-npm test            # 125 / 125 pass，0 fail，0 skipped
+npm test            # 129 / 129 pass，0 fail，0 skipped
 ```
 
 新增测试：

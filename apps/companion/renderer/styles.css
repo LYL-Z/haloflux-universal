@@ -2235,7 +2235,7 @@ body.is-simulated .topbar::after {
   }
 }
 
-@media (max-width: 760px) {
+@media (max-width: 900px) {
   .topbar {
     height: 68px;
     flex-wrap: wrap;
@@ -2266,6 +2266,25 @@ body.is-simulated .topbar::after {
   .sim-watermark {
     bottom: 50px;
     font-size: 8px;
+  }
+
+  /* 200% zoom (768 CSS px) must not push transport controls off-screen. */
+  .replay-bar {
+    top: 74px;
+    left: 12px;
+    right: 12px;
+    transform: none;
+    width: auto;
+    flex-wrap: wrap;
+    row-gap: 4px;
+  }
+
+  .trace-panel {
+    top: 132px;
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    width: auto;
   }
 }
 

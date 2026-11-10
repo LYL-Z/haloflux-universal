@@ -1,0 +1,17 @@
+{
+  "perf": null,
+  "visibility": "visible",
+  "focus": true,
+  "dpr": 2.5,
+  "size": [
+    1524,
+    865
+  ],
+  "replay": null,
+  "url": "http://127.0.0.1:6472/apps/companion/renderer/index.html?qa=1&mock=1&preset=agent-monitor&state=tool",
+  "seconds": 10,
+  "startedAt": 1794305594229,
+  "finishedAt": 1794305609488,
+  "events": 261640,
+  "out": "D:\\HALOFLUX\\tests\\evidence\\p4\\trace-visual-only.json.gz"
+}

@@ -1,0 +1,99 @@
+{
+  "mode": "window",
+  "viewport": [
+    1536,
+    900
+  ],
+  "dpr": 2.5,
+  "durationSeconds": 30.02950000000056,
+  "frames": 1573,
+  "fps": 52.38182453920214,
+  "frameMsMean": 19.09059122695522,
+  "frameMsP50": 25,
+  "frameMsP95": 41.69999999999891,
+  "frameMsMax": 75.09999999999854,
+  "frameMsMin": 3.900000000001455,
+  "heapUsedBytes": 15558391,
+  "pagePerf": {
+    "prepareMs": 8.600000000558794,
+    "events": 1487,
+    "frames": [
+      5.3999999994412065,
+      2.8999999994412065,
+      2.1000000005587935,
+      2.3999999994412065,
+      2.2999999998137355,
+      2.1000000005587935,
+      2.2999999998137355,
+      2.099999999627471,
+      1.7000000001862645,
+      2.5,
+      2.2999999998137355,
+      2.5,
+      2.400000000372529
+    ],
+    "phases": {
+      "sessionAtIndex": {
+        "count": 13,
+        "totalMs": 0.4999999990686774,
+        "maxMs": 0.10000000055879354
+      },
+      "vizSetSession": {
+        "count": 13,
+        "totalMs": 6.8999999994412065,
+        "maxMs": 0.900000000372529
+      },
+      "canvases": {
+        "count": 13,
+        "totalMs": 17.40000000037253,
+        "maxMs": 3.599999999627471
+      },
+      "renderSession": {
+        "count": 12,
+        "totalMs": 1.4999999990686774,
+        "maxMs": 0.20000000018626451
+      },
+      "renderEvents": {
+        "count": 12,
+        "totalMs": 1.0000000009313226,
+        "maxMs": 0.20000000018626451
+      },
+      "renderModeCompact": {
+        "count": 12,
+        "totalMs": 0.10000000055879354,
+        "maxMs": 0.10000000055879354
+      },
+      "renderLabMonitor": {
+        "count": 12,
+        "totalMs": 18.299999999813735,
+        "maxMs": 2.099999999627471
+      }
+    }
+  },
+  "appMetrics": [
+    {
+      "type": "Browser",
+      "pid": 7820,
+      "cpuPercent": 0,
+      "workingSetMb": 91
+    },
+    {
+      "type": "GPU",
+      "pid": 58192,
+      "cpuPercent": 0,
+      "workingSetMb": 431
+    },
+    {
+      "type": "Utility",
+      "pid": 54016,
+      "cpuPercent": 0,
+      "workingSetMb": 45
+    },
+    {
+      "type": "Tab",
+      "pid": 50504,
+      "cpuPercent": 0,
+      "workingSetMb": 173
+    }
+  ]
+}
