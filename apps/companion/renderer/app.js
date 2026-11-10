@@ -182,6 +182,7 @@ const els = {
   labSourceDetails: $('lab-source-details'),
   labValidationDetails: $('lab-validation-details'),
   labTypeDetails: $('lab-type-details'),
+  labWorkspaceCode: $('lab-workspace-code'),
   labDifferenceCanvas: $('lab-difference-canvas'),
   labSourceRoutesCanvas: $('lab-source-routes-canvas'),
   labMethodCanvas: $('lab-method-canvas'),
@@ -1240,7 +1241,7 @@ function drawEventBeams(ctx, info) {
     ctx.fillText(lane.label, xStart, lane.y - 5);
     if (!seen) {
       ctx.fillStyle = 'rgba(120,120,132,.55)';
-      ctx.fillText(lane.type === 'tool.retry' ? 'UNOBSERVED / NO SCHEMA TYPE' : 'UNOBSERVED', xEnd - 76, lane.y - 5);
+      ctx.fillText(lane.type === 'tool.retry' ? 'UNSUPPORTED · NO SCHEMA TYPE' : 'UNOBSERVED', xEnd - 86, lane.y - 5);
     }
   }
   for (let i = 0; i < active.length; i += 1) {
@@ -1710,12 +1711,21 @@ function renderLabMonitor() {
   detail(els.labWorkspaceDetails, [
     ['HOST / STATE', active ? `${active.host} / ${active.state}` : '— / disconnected'],
     ['RUN', latestEvent?.metadata?.runId || latestEvent?.runId || '—'],
-    ['STEP / TURN', active ? `${metric(active.step)} / ${metric(active.turn)}` : '— / —'],
-    ['TOOL / DURATION', toolLine],
     ['PHASE', active?.state || '—'],
-    ['LAST EVENT', latestEvent ? `${formatClock(latestEvent.timestamp)} · ${latestEvent.eventType}` : '—'],
-    ['EVENT ID', latestEvent?.eventId || '—'],
   ]);
+  if (els.labWorkspaceCode) {
+    clearNode(els.labWorkspaceCode);
+    for (const event of state.events.slice(-4)) {
+      const line = make('div', 'ws-line');
+      line.append(
+        make('span', '', formatClock(event.timestamp)),
+        make('span', '', event.eventType || '—'),
+        make('span', '', `${event.metadata?.toolName || '—'} · step ${event.metadata?.step ?? '—'} · ${event.metadata?.durationMs == null ? '—' : `${event.metadata.durationMs}ms`}`),
+        make('span', '', String(event.eventId || '—').slice(-10)),
+      );
+      els.labWorkspaceCode.appendChild(line);
+    }
+  }
   detail(els.labSourceDetails, [
     ['TRANSPORT', projection.mode.toUpperCase()],
     ['SOURCE', unknown(active?.source)],
@@ -1733,18 +1743,25 @@ function renderLabMonitor() {
   ]);
   detail(els.labTypeDetails, projection.types.length ? projection.types.map(([key, countValue]) => [key, countValue]) : [['EVENT TYPES', '—']]);
 
-  const token = buildTokenTelemetry({ events: state.events, sessions: state.sessions, selectedSessionId: state.selectedSessionId, snapshotTimestamp: clockNow, snapshotMode: state.replay ? 'replay' : 'current' });
+  const token = buildTokenTelemetry({
+    events: state.events,
+    sessions: state.sessions,
+    selectedSessionId: state.selectedSessionId,
+    snapshotTimestamp: clockNow,
+    snapshotMode: state.replay ? 'replay' : 'current',
+    visibleEventIds: state.replay ? new Set(state.events.map((event) => event.eventId)) : null,
+  });
   const tokenValue = (field) => field.value === null ? 'UNAVAILABLE' : `${field.value} · ${field.status}`;
   detail(els.labTokenDetails, [
     ['SESSION', token.sessionResolution],
     ['OUTPUT', tokenValue(token.field.outputTokens)],
-    ['COVERAGE', `${token.field.outputTokens.outputEndWithToken}/${token.field.outputTokens.outputEndTotal} output.end`],
+    ['COVERAGE', `${token.field.outputTokens.withToken}/${token.field.outputTokens.outputEnd} host output.end`],
     ['CONTEXT', tokenValue(token.field.contextUsed)],
   ]);
   if (els.labTokenFoot) {
-    const coverage = `${Math.round((token.field.outputTokens.coverage || 0) * 100)}% COVERAGE`;
+    const coverage = `${Math.round((token.field.outputTokens.coverage || 0) * 100)}% HOST COVERAGE`;
     els.labTokenFoot.textContent = token.available
-      ? `${token.simulated ? 'SIMULATED · ' : ''}${token.hostSamples.length} HOST OUTPUT SAMPLES · ${coverage} · input/cache/reasoning/TTFT UNAVAILABLE`
+      ? `${token.simulated ? 'SIMULATED · ' : ''}${token.hostSamples.length} HOST SAMPLES · ${coverage} · input/cache/reasoning/TTFT UNAVAILABLE`
       : 'UNAVAILABLE · no request-level usage fields forwarded';
   }
   const instrumentKey = `${state.selectedSessionId}:${state.events.length}:${Math.floor(clockNow / 500)}:${state.mode}`;

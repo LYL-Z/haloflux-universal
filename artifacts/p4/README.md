@@ -13,6 +13,8 @@ This directory contains binary/video/trace artifacts referenced by the P4.1-P4.3
 | `video/p42-final-35s.webm` | P4.2 final | 858 / 24.5 | `992e4fa78e4fd37ce11389aeb3cf593a23b54a329309982903d7101d02ce955b` |
 | `video/p43-final-35s.webm` | P4.3 final | 842 / 24.1 | `d93d0f1a9d1948e338453d943380eef03852ca9db2db6eb1cd1425ebdfc267df` |
 | `video/p43r1-final-35s.webm` | P4.3-R1 final | 839 / 24.0 | `e4d2ccd8d3b5a49bbadc665e54303c71ce78e4a6a990e5278ad0af03127f87f3` |
+| `video/p43r2-final-35s.webm` | P4.3-R2 final | 799 / 22.8 | `6c403bb86b674941ec3838d6434595b91f99e82388743e9deef6f3e7c923cc67` |
+| `video/p43r1-final-35s.webm` | P4.3-R1 final | 839 / 24.0 | `e4d2ccd8d3b5a49bbadc665e54303c71ce78e4a6a990e5278ad0af03127f87f3` |
 
 Videos are window-only captures (`desktopCapturer` window source), not full-desktop recordings.
 

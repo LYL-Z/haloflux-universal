@@ -66,20 +66,23 @@ server.listen(0, '127.0.0.1', async () => {
   await win.loadURL(url);
   win.webContents.setZoomFactor(Number(process.env.HALOFLUX_FPS_ZOOM) || 1);
   if (MODE === 'window') win.focus();
-  await new Promise((resolve) => setTimeout(resolve, 4000));
-  // Replay paging + first TRACE render can land after the fixed wait. Wait for
-  // readiness and one second of warm-up; cold-start stalls are reported
-  // separately, not mixed into the steady-state sample.
+  const fastShot = process.env.HALOFLUX_FPS_CAPTURE_FAST === '1' && Boolean(process.env.HALOFLUX_FPS_SHOT);
+  await new Promise((resolve) => setTimeout(resolve, fastShot ? 2200 : 4000));
   let warmupMs = 0;
-  for (let i = 0; i < 20; i += 1) {
-    const ready = await win.webContents.executeJavaScript('Boolean(window.__halofluxPerf && window.__halofluxPerf.events)').catch(() => false);
-    if (ready) break;
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    warmupMs += 500;
-  }
-  if (warmupMs > 0) {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    warmupMs += 1000;
+  if (!fastShot) {
+    // Replay paging + first TRACE render can land after the fixed wait. Wait for
+    // readiness and one second of warm-up; cold-start stalls are reported
+    // separately, not mixed into the steady-state sample.
+    for (let i = 0; i < 20; i += 1) {
+      const ready = await win.webContents.executeJavaScript('Boolean(window.__halofluxPerf && window.__halofluxPerf.events)').catch(() => false);
+      if (ready) break;
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      warmupMs += 500;
+    }
+    if (warmupMs > 0) {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      warmupMs += 1000;
+    }
   }
   if (process.env.HALOFLUX_FPS_EVAL) {
     try { await win.webContents.executeJavaScript(process.env.HALOFLUX_FPS_EVAL, true); } catch (error) { console.log('[eval]', String(error)); }
