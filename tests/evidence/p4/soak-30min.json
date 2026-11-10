@@ -1,0 +1,1426 @@
+{
+  "seconds": 1800,
+  "frames": 200,
+  "samples": [
+    {
+      "at": "2026-11-10T10:35:01.359Z",
+      "elapsedSec": 30,
+      "heap": 11362422,
+      "fpsFrames": 141,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 93
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 352
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 181
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T10:35:31.366Z",
+      "elapsedSec": 60,
+      "heap": 19474647,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 90
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 387
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 195
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T10:36:01.372Z",
+      "elapsedSec": 90,
+      "heap": 21948034,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 90
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 296
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 195
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T10:36:31.378Z",
+      "elapsedSec": 120,
+      "heap": 11437398,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 90
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 322
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 207
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 96
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T10:37:01.391Z",
+      "elapsedSec": 150,
+      "heap": 16410893,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 90
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 354
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 44
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 222
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T10:37:31.404Z",
+      "elapsedSec": 180,
+      "heap": 20521079,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 90
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 380
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 44
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 221
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T10:38:01.416Z",
+      "elapsedSec": 210,
+      "heap": 13506394,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 90
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 352
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 44
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 223
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T10:38:31.413Z",
+      "elapsedSec": 240,
+      "heap": 32152790,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 90
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 405
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 44
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 221
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T10:39:01.416Z",
+      "elapsedSec": 270,
+      "heap": 31142154,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 90
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 454
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 44
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 224
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T10:39:31.428Z",
+      "elapsedSec": 300,
+      "heap": 32274275,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 90
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 400
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 226
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T10:40:01.440Z",
+      "elapsedSec": 330,
+      "heap": 13721438,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 90
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 378
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 225
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T10:40:31.444Z",
+      "elapsedSec": 360,
+      "heap": 20631567,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 90
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 409
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 225
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T10:41:01.451Z",
+      "elapsedSec": 390,
+      "heap": 12629176,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 90
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 325
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 224
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T10:41:31.452Z",
+      "elapsedSec": 420,
+      "heap": 10729132,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 90
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 382
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 225
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T10:42:01.466Z",
+      "elapsedSec": 450,
+      "heap": 23280792,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 91
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 405
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 227
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T10:42:31.471Z",
+      "elapsedSec": 480,
+      "heap": 15457223,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 91
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 419
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 225
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T10:43:01.477Z",
+      "elapsedSec": 510,
+      "heap": 10637582,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 91
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 520
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 226
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T10:43:31.479Z",
+      "elapsedSec": 540,
+      "heap": 24615853,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 91
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 489
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 225
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T10:44:01.492Z",
+      "elapsedSec": 570,
+      "heap": 11292434,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 91
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 374
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 226
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T10:44:31.499Z",
+      "elapsedSec": 600,
+      "heap": 34655175,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 91
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 362
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 228
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T10:45:01.510Z",
+      "elapsedSec": 630,
+      "heap": 27820268,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 91
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 408
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 226
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T10:45:31.523Z",
+      "elapsedSec": 660,
+      "heap": 10976276,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 91
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 405
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 226
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T10:46:01.539Z",
+      "elapsedSec": 690,
+      "heap": 14794602,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 91
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 340
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 226
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T10:46:31.549Z",
+      "elapsedSec": 720,
+      "heap": 15006067,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 91
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 418
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 226
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T10:47:01.561Z",
+      "elapsedSec": 750,
+      "heap": 19135725,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 91
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 408
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 227
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T10:47:31.565Z",
+      "elapsedSec": 780,
+      "heap": 28751357,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 91
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 345
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 225
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T10:48:01.574Z",
+      "elapsedSec": 810,
+      "heap": 36002732,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 91
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 473
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 226
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T10:48:31.578Z",
+      "elapsedSec": 840,
+      "heap": 29512054,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 91
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 424
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 225
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T10:49:01.593Z",
+      "elapsedSec": 870,
+      "heap": 25975695,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 91
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 453
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 227
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T10:49:31.603Z",
+      "elapsedSec": 900,
+      "heap": 22064261,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 91
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 412
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 228
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T10:50:01.607Z",
+      "elapsedSec": 930,
+      "heap": 9652783,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 91
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 355
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 226
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T10:50:31.614Z",
+      "elapsedSec": 960,
+      "heap": 37994987,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 91
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 413
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 227
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T10:51:01.621Z",
+      "elapsedSec": 990,
+      "heap": 18345918,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 91
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 429
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 228
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T10:51:31.630Z",
+      "elapsedSec": 1020,
+      "heap": 26111947,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 91
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 447
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 228
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T10:52:01.640Z",
+      "elapsedSec": 1050,
+      "heap": 31604920,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 91
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 341
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 229
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T10:52:31.647Z",
+      "elapsedSec": 1080,
+      "heap": 24746186,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 91
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 474
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 227
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T10:53:01.656Z",
+      "elapsedSec": 1110,
+      "heap": 31141956,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 91
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 371
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 229
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T10:53:31.670Z",
+      "elapsedSec": 1140,
+      "heap": 32487151,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 91
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 355
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 227
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T10:54:01.682Z",
+      "elapsedSec": 1170,
+      "heap": 11634279,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 91
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 385
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 227
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T10:54:31.691Z",
+      "elapsedSec": 1200,
+      "heap": 13004007,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 91
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 477
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 230
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T10:55:01.699Z",
+      "elapsedSec": 1230,
+      "heap": 16506221,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 91
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 414
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 226
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T10:55:31.707Z",
+      "elapsedSec": 1260,
+      "heap": 21972518,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 91
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 438
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 229
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T10:56:01.708Z",
+      "elapsedSec": 1290,
+      "heap": 35102061,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 91
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 458
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 226
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T10:56:31.720Z",
+      "elapsedSec": 1320,
+      "heap": 12117753,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 91
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 440
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 228
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T10:57:01.728Z",
+      "elapsedSec": 1350,
+      "heap": 15477041,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 91
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 447
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 226
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T10:57:31.732Z",
+      "elapsedSec": 1380,
+      "heap": 17054344,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 91
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 427
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 228
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T10:58:01.739Z",
+      "elapsedSec": 1410,
+      "heap": 13380863,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 91
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 479
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 229
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T10:58:31.750Z",
+      "elapsedSec": 1440,
+      "heap": 21491775,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 91
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 374
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 229
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T10:59:01.759Z",
+      "elapsedSec": 1470,
+      "heap": 27063319,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 91
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 399
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 230
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T10:59:31.762Z",
+      "elapsedSec": 1500,
+      "heap": 23940412,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 91
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 425
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 227
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T11:00:01.767Z",
+      "elapsedSec": 1530,
+      "heap": 16946482,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 91
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 343
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 228
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T11:00:31.770Z",
+      "elapsedSec": 1560,
+      "heap": 10827173,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 91
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 340
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 230
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T11:01:01.777Z",
+      "elapsedSec": 1590,
+      "heap": 12002968,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 91
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 501
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 228
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T11:01:31.778Z",
+      "elapsedSec": 1620,
+      "heap": 13332672,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 91
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 438
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 229
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T11:02:01.785Z",
+      "elapsedSec": 1650,
+      "heap": 10850648,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 91
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 418
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 226
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T11:02:31.799Z",
+      "elapsedSec": 1680,
+      "heap": 12860058,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 91
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 452
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 227
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T11:03:01.806Z",
+      "elapsedSec": 1710,
+      "heap": 30479255,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 91
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 431
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 230
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T11:03:31.816Z",
+      "elapsedSec": 1740,
+      "heap": 25974830,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 91
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 344
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 229
+        }
+      ]
+    },
+    {
+      "at": "2026-11-10T11:04:01.817Z",
+      "elapsedSec": 1770,
+      "heap": 13206418,
+      "fpsFrames": 200,
+      "metrics": [
+        {
+          "type": "Browser",
+          "workingSetMb": 91
+        },
+        {
+          "type": "GPU",
+          "workingSetMb": 462
+        },
+        {
+          "type": "Utility",
+          "workingSetMb": 45
+        },
+        {
+          "type": "Tab",
+          "workingSetMb": 230
+        }
+      ]
+    }
+  ]
+}

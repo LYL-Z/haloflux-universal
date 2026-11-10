@@ -1,0 +1,563 @@
+{
+  "input": "D:\\HALOFLUX\\tests\\evidence\\p4\\trace-replay-2500-paused.json.gz",
+  "traceEvents": 254922,
+  "completeEvents": 130891,
+  "completeMs": 96757.753,
+  "windowSeconds": 10,
+  "metadata": {
+    "perf": {
+      "prepareMs": 1.599999999627471,
+      "events": 2500,
+      "frames": [
+        9.399999999441206
+      ]
+    },
+    "visibility": "visible",
+    "focus": true,
+    "dpr": 2.5,
+    "size": [
+      1524,
+      865
+    ],
+    "replay": null,
+    "url": "http://127.0.0.1:11463/apps/companion/renderer/index.html?bridge=http%3A%2F%2F127.0.0.1%3A17817&token=0000000000000000000000000000000000000000000000000000000000000000&replay=trace-replay-2500&at=2400&trace=1",
+    "seconds": 10,
+    "startedAt": 1794305615223,
+    "finishedAt": 1794305631409
+  },
+  "groupRows": [
+    {
+      "group": "JS",
+      "ms": 19734.321,
+      "count": 27792,
+      "maxMs": 45.091,
+      "top": [
+        {
+          "name": "RunTask",
+          "ms": 19481.192,
+          "count": 26388
+        },
+        {
+          "name": "FunctionCall",
+          "ms": 253.129,
+          "count": 1404
+        }
+      ]
+    },
+    {
+      "group": "Layout",
+      "ms": 22.168,
+      "count": 290,
+      "maxMs": 0.271,
+      "top": [
+        {
+          "name": "UpdateLayoutTree",
+          "ms": 18.884,
+          "count": 272
+        },
+        {
+          "name": "Layout",
+          "ms": 3.284,
+          "count": 18
+        }
+      ]
+    },
+    {
+      "group": "Paint",
+      "ms": 14.274,
+      "count": 569,
+      "maxMs": 0.94,
+      "top": [
+        {
+          "name": "PrePaint",
+          "ms": 6.204,
+          "count": 272
+        },
+        {
+          "name": "Paint",
+          "ms": 4.543,
+          "count": 37
+        },
+        {
+          "name": "RasterTask",
+          "ms": 2.127,
+          "count": 33
+        },
+        {
+          "name": "Layerize",
+          "ms": 1.392,
+          "count": 226
+        },
+        {
+          "name": "PaintImage",
+          "ms": 0.008,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "group": "Composite",
+      "ms": 1148.795,
+      "count": 580,
+      "maxMs": 365.495,
+      "top": [
+        {
+          "name": "Commit",
+          "ms": 581.815,
+          "count": 256
+        },
+        {
+          "name": "UpdateLayer",
+          "ms": 566.98,
+          "count": 324
+        }
+      ]
+    },
+    {
+      "group": "GC",
+      "ms": 7.713,
+      "count": 13,
+      "maxMs": 3.776,
+      "top": [
+        {
+          "name": "MinorGC",
+          "ms": 3.937,
+          "count": 12
+        },
+        {
+          "name": "MajorGC",
+          "ms": 3.776,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "group": "GPU",
+      "ms": 7953.291,
+      "count": 1222,
+      "maxMs": 45.08,
+      "top": [
+        {
+          "name": "GPUTask",
+          "ms": 7953.291,
+          "count": 1222
+        }
+      ]
+    }
+  ],
+  "top": [
+    {
+      "name": "RunTask",
+      "cat": "disabled-by-default-devtools.timeline",
+      "ms": 19481.192,
+      "count": 26388,
+      "maxMs": 45.091
+    },
+    {
+      "name": "Scheduler::RunTask",
+      "cat": "gpu,toplevel.flow",
+      "ms": 8340.855,
+      "count": 4798,
+      "maxMs": 45.087
+    },
+    {
+      "name": "GpuChannel::ExecuteDeferredRequest",
+      "cat": "gpu",
+      "ms": 7965.45,
+      "count": 1754,
+      "maxMs": 45.086
+    },
+    {
+      "name": "GPUTask",
+      "cat": "disabled-by-default-devtools.timeline",
+      "ms": 7953.291,
+      "count": 1222,
+      "maxMs": 45.08
+    },
+    {
+      "name": "CommandBuffer::Flush",
+      "cat": "gpu,toplevel.flow",
+      "ms": 7941.122,
+      "count": 1218,
+      "maxMs": 45.072
+    },
+    {
+      "name": "CommandBufferStub::OnAsyncFlush",
+      "cat": "gpu",
+      "ms": 7940.309,
+      "count": 1218,
+      "maxMs": 45.071
+    },
+    {
+      "name": "CommandBufferService:PutChanged",
+      "cat": "gpu",
+      "ms": 7937.342,
+      "count": 1217,
+      "maxMs": 45.069
+    },
+    {
+      "name": "RendererMainThread",
+      "cat": "gpu",
+      "ms": 7935.932,
+      "count": 1183,
+      "maxMs": 45.073
+    },
+    {
+      "name": "RasterDecoderImpl::DoRasterCHROMIUM",
+      "cat": "gpu",
+      "ms": 7250.495,
+      "count": 2344,
+      "maxMs": 43.589
+    },
+    {
+      "name": "RasterDecoderImpl::DoRasterCHROMIUM::Deserializing",
+      "cat": "gpu",
+      "ms": 7244.892,
+      "count": 2344,
+      "maxMs": 43.585
+    },
+    {
+      "name": "ProxyMain::BeginMainFrame",
+      "cat": "cc,benchmark",
+      "ms": 844.241,
+      "count": 253,
+      "maxMs": 368.205
+    },
+    {
+      "name": "RasterDecoderImpl::DoEndRasterCHROMIUM",
+      "cat": "gpu",
+      "ms": 649.314,
+      "count": 2343,
+      "maxMs": 2.974
+    },
+    {
+      "name": "RasterDecoderImpl::DoEndRasterCHROMIUM::Flush",
+      "cat": "gpu",
+      "ms": 620.331,
+      "count": 2342,
+      "maxMs": 2.861
+    },
+    {
+      "name": "Commit",
+      "cat": "disabled-by-default-devtools.timeline",
+      "ms": 581.815,
+      "count": 256,
+      "maxMs": 365.495
+    },
+    {
+      "name": "LayerTreeHost::DoUpdateLayers",
+      "cat": "cc,benchmark",
+      "ms": 573.582,
+      "count": 92,
+      "maxMs": 365.181
+    },
+    {
+      "name": "UpdateLayer",
+      "cat": "disabled-by-default-devtools.timeline",
+      "ms": 566.98,
+      "count": 324,
+      "maxMs": 365.121
+    },
+    {
+      "name": "RecordingSource::FinishDisplayItemListUpdate",
+      "cat": "cc",
+      "ms": 566.527,
+      "count": 4,
+      "maxMs": 365.11
+    },
+    {
+      "name": "FireAnimationFrame",
+      "cat": "devtools.timeline",
+      "ms": 257.866,
+      "count": 1357,
+      "maxMs": 4.116
+    },
+    {
+      "name": "v8.callFunction",
+      "cat": "v8",
+      "ms": 257.159,
+      "count": 1404,
+      "maxMs": 4.092
+    },
+    {
+      "name": "ProxyImpl::ScheduledActionDraw",
+      "cat": "cc",
+      "ms": 254.076,
+      "count": 904,
+      "maxMs": 4.32
+    },
+    {
+      "name": "MainFrame.Draw",
+      "cat": "cc,benchmark",
+      "ms": 253.292,
+      "count": 904,
+      "maxMs": 4.317
+    },
+    {
+      "name": "FunctionCall",
+      "cat": "devtools.timeline",
+      "ms": 253.129,
+      "count": 1404,
+      "maxMs": 4.081
+    },
+    {
+      "name": "DrawLayers.FrameViewerTracing",
+      "cat": "cc",
+      "ms": 118.039,
+      "count": 905,
+      "maxMs": 3.975
+    },
+    {
+      "name": "WinVSyncProvider::GetVSyncIntervalIfAvailable",
+      "cat": "gpu",
+      "ms": 66.904,
+      "count": 2402,
+      "maxMs": 0.745
+    },
+    {
+      "name": "DXGISwapChainImageBacking::Present",
+      "cat": "gpu",
+      "ms": 61.387,
+      "count": 934,
+      "maxMs": 0.509
+    },
+    {
+      "name": "LayerTreeHostImpl::PrepareToDraw",
+      "cat": "cc",
+      "ms": 59.118,
+      "count": 906,
+      "maxMs": 0.259
+    },
+    {
+      "name": "Scheduler::BeginFrame",
+      "cat": "cc,benchmark",
+      "ms": 51.819,
+      "count": 1155,
+      "maxMs": 0.476
+    },
+    {
+      "name": "Scheduler::BeginImplFrame",
+      "cat": "cc,benchmark",
+      "ms": 43.509,
+      "count": 1154,
+      "maxMs": 0.474
+    },
+    {
+      "name": "V8.GC_MC_BACKGROUND_MARKING",
+      "cat": "devtools.timeline,disabled-by-default-v8.gc",
+      "ms": 42.931,
+      "count": 80,
+      "maxMs": 1.623
+    },
+    {
+      "name": "LayerTreeImpl::UpdateDrawProperties",
+      "cat": "cc,benchmark",
+      "ms": 38.103,
+      "count": 1144,
+      "maxMs": 0.152
+    }
+  ],
+  "threads": {
+    "rendererMain": [
+      {
+        "thread": "7428:55840",
+        "label": "CrRendererMain",
+        "events": 14536,
+        "spanMs": 9999.711,
+        "busyMs": 4322.283,
+        "groups": {
+          "JS": 552.344,
+          "Layout": 22.168,
+          "Paint": 12.147,
+          "Composite": 1148.567,
+          "GC": 7.713,
+          "GPU": 0
+        },
+        "top": [
+          {
+            "name": "ProxyMain::BeginMainFrame",
+            "ms": 844.241
+          },
+          {
+            "name": "Commit",
+            "ms": 581.759
+          },
+          {
+            "name": "LayerTreeHost::DoUpdateLayers",
+            "ms": 573.397
+          },
+          {
+            "name": "UpdateLayer",
+            "ms": 566.808
+          },
+          {
+            "name": "RecordingSource::FinishDisplayItemListUpdate",
+            "ms": 566.416
+          },
+          {
+            "name": "RunTask",
+            "ms": 299.215
+          },
+          {
+            "name": "FireAnimationFrame",
+            "ms": 257.866
+          },
+          {
+            "name": "v8.callFunction",
+            "ms": 257.159
+          },
+          {
+            "name": "FunctionCall",
+            "ms": 253.129
+          },
+          {
+            "name": "RasterImplementation::RasterCHROMIUM",
+            "ms": 23.149
+          },
+          {
+            "name": "UpdateLayoutTree",
+            "ms": 18.884
+          },
+          {
+            "name": "PrePaint",
+            "ms": 6.204
+          }
+        ]
+      }
+    ],
+    "gpuMain": [
+      {
+        "thread": "57116:9804",
+        "label": "CrGpuMain",
+        "events": 39520,
+        "spanMs": 10007.703,
+        "busyMs": 80271.314,
+        "groups": {
+          "JS": 8363.571,
+          "Layout": 0,
+          "Paint": 0,
+          "Composite": 0,
+          "GC": 0,
+          "GPU": 7953.291
+        },
+        "top": [
+          {
+            "name": "RunTask",
+            "ms": 8363.571
+          },
+          {
+            "name": "Scheduler::RunTask",
+            "ms": 8340.855
+          },
+          {
+            "name": "GpuChannel::ExecuteDeferredRequest",
+            "ms": 7965.45
+          },
+          {
+            "name": "GPUTask",
+            "ms": 7953.291
+          },
+          {
+            "name": "CommandBuffer::Flush",
+            "ms": 7941.122
+          },
+          {
+            "name": "CommandBufferStub::OnAsyncFlush",
+            "ms": 7940.309
+          },
+          {
+            "name": "CommandBufferService:PutChanged",
+            "ms": 7937.342
+          },
+          {
+            "name": "RendererMainThread",
+            "ms": 7935.932
+          },
+          {
+            "name": "RasterDecoderImpl::DoRasterCHROMIUM",
+            "ms": 7250.495
+          },
+          {
+            "name": "RasterDecoderImpl::DoRasterCHROMIUM::Deserializing",
+            "ms": 7244.892
+          },
+          {
+            "name": "RasterDecoderImpl::DoEndRasterCHROMIUM",
+            "ms": 649.314
+          },
+          {
+            "name": "RasterDecoderImpl::DoEndRasterCHROMIUM::Flush",
+            "ms": 620.331
+          }
+        ]
+      }
+    ],
+    "compositor": [
+      {
+        "thread": "7428:56904",
+        "label": "Compositor",
+        "events": 59067,
+        "spanMs": 9991.645,
+        "busyMs": 1527.434,
+        "groups": {
+          "JS": 345.39,
+          "Layout": 0,
+          "Paint": 0,
+          "Composite": 0,
+          "GC": 0,
+          "GPU": 0
+        },
+        "top": [
+          {
+            "name": "RunTask",
+            "ms": 345.39
+          },
+          {
+            "name": "ProxyImpl::ScheduledActionDraw",
+            "ms": 254.076
+          },
+          {
+            "name": "MainFrame.Draw",
+            "ms": 253.292
+          },
+          {
+            "name": "DrawLayers.FrameViewerTracing",
+            "ms": 117.938
+          },
+          {
+            "name": "LayerTreeHostImpl::PrepareToDraw",
+            "ms": 59.082
+          },
+          {
+            "name": "Scheduler::BeginFrame",
+            "ms": 51.704
+          },
+          {
+            "name": "Scheduler::BeginImplFrame",
+            "ms": 43.434
+          },
+          {
+            "name": "LayerTreeImpl::UpdateDrawProperties",
+            "ms": 38.064
+          },
+          {
+            "name": "ProxyImpl::ReadyToCommit",
+            "ms": 29.985
+          },
+          {
+            "name": "auto cc::LayerTreeHostImpl::PrepareTiles()::(lambda)::operator()()::(lambda)::operator()(uint32_t) const",
+            "ms": 23.026
+          },
+          {
+            "name": "auto cc::TileManager::PrepareTiles(const GlobalStateThatImpactsTilePriority &)::(lambda)::operator()()::(lambda)::operator()(uint32_t) const",
+            "ms": 22.35
+          },
+          {
+            "name": "TileManager::PrepareTiles",
+            "ms": 21.718
+          }
+        ]
+      }
+    ]
+  }
+}
