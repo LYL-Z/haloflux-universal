@@ -1,0 +1,88 @@
+{
+  "mode": "window",
+  "viewport": [
+    768,
+    450
+  ],
+  "dpr": 5,
+  "durationSeconds": 4.000599999999627,
+  "frames": 431,
+  "fps": 107.73383992402144,
+  "frameMsMean": 9.282134570764796,
+  "frameMsP50": 4.200000000000728,
+  "frameMsP95": 20.800000000000182,
+  "frameMsMax": 25,
+  "frameMsMin": 0.6999999996278348,
+  "heapUsedBytes": 10868520,
+  "pagePerf": {
+    "prepareMs": 1.599999999627471,
+    "events": 2500,
+    "frames": [
+      13.700000001117587
+    ],
+    "phases": {
+      "sessionAtIndex": {
+        "count": 1,
+        "totalMs": 0,
+        "maxMs": 0
+      },
+      "vizSetSession": {
+        "count": 1,
+        "totalMs": 0.8000000007450581,
+        "maxMs": 0.8000000007450581
+      },
+      "canvases": {
+        "count": 1,
+        "totalMs": 11.799999998882413,
+        "maxMs": 11.799999998882413
+      }
+    }
+  },
+  "a11y": {
+    "agentsOpen": true,
+    "agentsAria": "true",
+    "focusInsideAgents": true,
+    "agentsClosedByEscape": true,
+    "focusReturnedToAgents": true,
+    "traceOpen": true,
+    "focusOnTraceClose": true,
+    "traceClosed": true,
+    "focusReturnedToTrace": true,
+    "evidenceOpen": true,
+    "evidenceScrollable": true,
+    "evidenceClosed": true,
+    "focusReturnedFromEvidence": true,
+    "replayControlVisible": true,
+    "horizontalOverflow": false,
+    "stepChangedClock": true,
+    "seekWorked": true,
+    "pauseLabel": "RESUME",
+    "replayClock": "00:01.0"
+  },
+  "appMetrics": [
+    {
+      "type": "Browser",
+      "pid": 52632,
+      "cpuPercent": 0,
+      "workingSetMb": 91
+    },
+    {
+      "type": "GPU",
+      "pid": 47060,
+      "cpuPercent": 0,
+      "workingSetMb": 245
+    },
+    {
+      "type": "Utility",
+      "pid": 57724,
+      "cpuPercent": 0,
+      "workingSetMb": 45
+    },
+    {
+      "type": "Tab",
+      "pid": 12532,
+      "cpuPercent": 0,
+      "workingSetMb": 159
+    }
+  ]
+}

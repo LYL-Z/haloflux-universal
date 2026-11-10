@@ -1,0 +1,2312 @@
+{
+  "task": "a11y",
+  "startedAt": "2026-11-09T12:55:35.081Z",
+  "url": "file:///D:/HALOFLUX/apps/companion/renderer/index.html?demo=1&mode=window",
+  "ready": {
+    "href": "file:///D:/HALOFLUX/apps/companion/renderer/index.html?demo=1&mode=window",
+    "mode": "window",
+    "preset": "agent-monitor",
+    "labConsoleDisplay": "grid",
+    "labRows": 8,
+    "sessionCountText": "3",
+    "feedStatus": "SIMULATED",
+    "inner": [
+      1524,
+      878
+    ],
+    "dpr": 2.5
+  },
+  "display": {
+    "size": {
+      "width": 1536,
+      "height": 960
+    },
+    "workAreaSize": {
+      "width": 1536,
+      "height": 912
+    },
+    "scaleFactor": 2.5,
+    "bounds": {
+      "x": 0,
+      "y": 0,
+      "width": 1536,
+      "height": 960
+    },
+    "windowContent": [
+      1524,
+      878
+    ],
+    "windowBounds": {
+      "x": 0,
+      "y": 0,
+      "width": 1536,
+      "height": 940
+    }
+  },
+  "drawerOpened": true,
+  "gpu": {
+    "enabled": true,
+    "status": {
+      "2d_canvas": "disabled_software",
+      "direct_rendering_display_compositor": "disabled_off_ok",
+      "gpu_compositing": "disabled_software",
+      "multiple_raster_threads": "enabled_on",
+      "opengl": "disabled_off",
+      "rasterization": "disabled_software",
+      "raw_draw": "disabled_off_ok",
+      "skia_graphite": "disabled_off",
+      "trees_in_viz": "disabled_off",
+      "video_decode": "disabled_software",
+      "video_encode": "disabled_software",
+      "webgl": "disabled_off",
+      "webgpu": "disabled_off",
+      "webnn": "disabled_off"
+    }
+  },
+  "a11y": {
+    "snapshot": {
+      "viewport": [
+        1524,
+        878
+      ],
+      "dpr": 2.5,
+      "bodyMode": "window",
+      "bodyPreset": "agent-monitor",
+      "labConsoleDisplay": "grid",
+      "documentScrollWidth": 1524,
+      "documentClientWidth": 1524,
+      "horizontalOverflow": false,
+      "focusableCount": 22,
+      "focusables": [
+        {
+          "tag": "BUTTON",
+          "id": null,
+          "cls": "preset-btn",
+          "type": null,
+          "name": "原作",
+          "ariaHidden": null,
+          "tabIndex": 0,
+          "disabled": false,
+          "visible": true,
+          "rect": {
+            "x": 411.3625183105469,
+            "y": 9.100000381469727,
+            "width": 43.962501525878906,
+            "height": 22,
+            "top": 9.100000381469727,
+            "right": 455.3250198364258,
+            "bottom": 31.100000381469727,
+            "left": 411.3625183105469
+          },
+          "hiddenAncestor": null,
+          "opacity": "1"
+        },
+        {
+          "tag": "BUTTON",
+          "id": null,
+          "cls": "preset-btn",
+          "type": null,
+          "name": "极简",
+          "ariaHidden": null,
+          "tabIndex": 0,
+          "disabled": false,
+          "visible": true,
+          "rect": {
+            "x": 458.32501220703125,
+            "y": 9.100000381469727,
+            "width": 43.962501525878906,
+            "height": 22,
+            "top": 9.100000381469727,
+            "right": 502.28751373291016,
+            "bottom": 31.100000381469727,
+            "left": 458.32501220703125
+          },
+          "hiddenAncestor": null,
+          "opacity": "1"
+        },
+        {
+          "tag": "BUTTON",
+          "id": null,
+          "cls": "preset-btn",
+          "type": null,
+          "name": "科幻光场",
+          "ariaHidden": null,
+          "tabIndex": 0,
+          "disabled": false,
+          "visible": true,
+          "rect": {
+            "x": 505.2875061035156,
+            "y": 9.100000381469727,
+            "width": 62.32500076293945,
+            "height": 22,
+            "top": 9.100000381469727,
+            "right": 567.6125068664551,
+            "bottom": 31.100000381469727,
+            "left": 505.2875061035156
+          },
+          "hiddenAncestor": null,
+          "opacity": "1"
+        },
+        {
+          "tag": "BUTTON",
+          "id": null,
+          "cls": "preset-btn",
+          "type": null,
+          "name": "专注",
+          "ariaHidden": null,
+          "tabIndex": 0,
+          "disabled": false,
+          "visible": true,
+          "rect": {
+            "x": 570.6124877929688,
+            "y": 9.100000381469727,
+            "width": 43.962501525878906,
+            "height": 22,
+            "top": 9.100000381469727,
+            "right": 614.5749893188477,
+            "bottom": 31.100000381469727,
+            "left": 570.6124877929688
+          },
+          "hiddenAncestor": null,
+          "opacity": "1"
+        },
+        {
+          "tag": "BUTTON",
+          "id": null,
+          "cls": "preset-btn",
+          "type": null,
+          "name": "环境",
+          "ariaHidden": null,
+          "tabIndex": 0,
+          "disabled": false,
+          "visible": true,
+          "rect": {
+            "x": 617.5750122070312,
+            "y": 9.100000381469727,
+            "width": 43.962501525878906,
+            "height": 22,
+            "top": 9.100000381469727,
+            "right": 661.5375137329102,
+            "bottom": 31.100000381469727,
+            "left": 617.5750122070312
+          },
+          "hiddenAncestor": null,
+          "opacity": "1"
+        },
+        {
+          "tag": "BUTTON",
+          "id": null,
+          "cls": "preset-btn",
+          "type": null,
+          "name": "Agent 监控",
+          "ariaHidden": null,
+          "tabIndex": 0,
+          "disabled": false,
+          "visible": true,
+          "rect": {
+            "x": 664.5375366210938,
+            "y": 9.100000381469727,
+            "width": 76.6812515258789,
+            "height": 22,
+            "top": 9.100000381469727,
+            "right": 741.2187881469727,
+            "bottom": 31.100000381469727,
+            "left": 664.5375366210938
+          },
+          "hiddenAncestor": null,
+          "opacity": "1"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "btn-params",
+          "cls": "icon-btn",
+          "type": null,
+          "name": "视觉参数",
+          "ariaHidden": null,
+          "tabIndex": 0,
+          "disabled": false,
+          "visible": true,
+          "rect": {
+            "x": 1397,
+            "y": 4.099999904632568,
+            "width": 32,
+            "height": 32,
+            "top": 4.099999904632568,
+            "right": 1429,
+            "bottom": 36.09999990463257,
+            "left": 1397
+          },
+          "hiddenAncestor": null,
+          "opacity": "1"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "btn-settings",
+          "cls": "icon-btn",
+          "type": null,
+          "name": "设置",
+          "ariaHidden": null,
+          "tabIndex": 0,
+          "disabled": false,
+          "visible": true,
+          "rect": {
+            "x": 1437,
+            "y": 4.099999904632568,
+            "width": 32,
+            "height": 32,
+            "top": 4.099999904632568,
+            "right": 1469,
+            "bottom": 36.09999990463257,
+            "left": 1437
+          },
+          "hiddenAncestor": null,
+          "opacity": "1"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "btn-about",
+          "cls": "icon-btn",
+          "type": null,
+          "name": "关于与许可证",
+          "ariaHidden": null,
+          "tabIndex": 0,
+          "disabled": false,
+          "visible": true,
+          "rect": {
+            "x": 1477,
+            "y": 4.099999904632568,
+            "width": 32,
+            "height": 32,
+            "top": 4.099999904632568,
+            "right": 1509,
+            "bottom": 36.09999990463257,
+            "left": 1477
+          },
+          "hiddenAncestor": null,
+          "opacity": "1"
+        },
+        {
+          "tag": "BUTTON",
+          "id": null,
+          "cls": "lab-host",
+          "type": null,
+          "name": "DS disconnected",
+          "ariaHidden": null,
+          "tabIndex": 0,
+          "disabled": false,
+          "visible": true,
+          "rect": {
+            "x": 426.98126220703125,
+            "y": 742.2000122070312,
+            "width": 173.2062530517578,
+            "height": 19.200000762939453,
+            "top": 742.2000122070312,
+            "right": 600.1875152587891,
+            "bottom": 761.4000129699707,
+            "left": 426.98126220703125
+          },
+          "hiddenAncestor": null,
+          "opacity": "1"
+        },
+        {
+          "tag": "BUTTON",
+          "id": null,
+          "cls": "lab-host",
+          "type": null,
+          "name": "CX running · 1",
+          "ariaHidden": null,
+          "tabIndex": 0,
+          "disabled": false,
+          "visible": true,
+          "rect": {
+            "x": 608.1875,
+            "y": 742.2000122070312,
+            "width": 173.2062530517578,
+            "height": 19.200000762939453,
+            "top": 742.2000122070312,
+            "right": 781.3937530517578,
+            "bottom": 761.4000129699707,
+            "left": 608.1875
+          },
+          "hiddenAncestor": null,
+          "opacity": "1"
+        },
+        {
+          "tag": "BUTTON",
+          "id": null,
+          "cls": "lab-host",
+          "type": null,
+          "name": "CU waiting_approval · 1",
+          "ariaHidden": null,
+          "tabIndex": 0,
+          "disabled": false,
+          "visible": true,
+          "rect": {
+            "x": 426.98126220703125,
+            "y": 765.4000244140625,
+            "width": 173.2062530517578,
+            "height": 19.200000762939453,
+            "top": 765.4000244140625,
+            "right": 600.1875152587891,
+            "bottom": 784.600025177002,
+            "left": 426.98126220703125
+          },
+          "hiddenAncestor": null,
+          "opacity": "1"
+        },
+        {
+          "tag": "BUTTON",
+          "id": null,
+          "cls": "lab-host",
+          "type": null,
+          "name": "WB disconnected",
+          "ariaHidden": null,
+          "tabIndex": 0,
+          "disabled": false,
+          "visible": true,
+          "rect": {
+            "x": 608.1875,
+            "y": 765.4000244140625,
+            "width": 173.2062530517578,
+            "height": 19.200000762939453,
+            "top": 765.4000244140625,
+            "right": 781.3937530517578,
+            "bottom": 784.600025177002,
+            "left": 608.1875
+          },
+          "hiddenAncestor": null,
+          "opacity": "1"
+        },
+        {
+          "tag": "BUTTON",
+          "id": null,
+          "cls": "lab-host",
+          "type": null,
+          "name": "CC tool · 1",
+          "ariaHidden": null,
+          "tabIndex": 0,
+          "disabled": false,
+          "visible": true,
+          "rect": {
+            "x": 426.98126220703125,
+            "y": 788.6000366210938,
+            "width": 173.2062530517578,
+            "height": 19.200000762939453,
+            "top": 788.6000366210938,
+            "right": 600.1875152587891,
+            "bottom": 807.8000373840332,
+            "left": 426.98126220703125
+          },
+          "hiddenAncestor": null,
+          "opacity": "1"
+        },
+        {
+          "tag": "BUTTON",
+          "id": null,
+          "cls": "lab-host",
+          "type": null,
+          "name": "TR disconnected",
+          "ariaHidden": null,
+          "tabIndex": 0,
+          "disabled": false,
+          "visible": true,
+          "rect": {
+            "x": 608.1875,
+            "y": 788.6000366210938,
+            "width": 173.2062530517578,
+            "height": 19.200000762939453,
+            "top": 788.6000366210938,
+            "right": 781.3937530517578,
+            "bottom": 807.8000373840332,
+            "left": 608.1875
+          },
+          "hiddenAncestor": null,
+          "opacity": "1"
+        },
+        {
+          "tag": "INPUT",
+          "id": "lab-obsidian-file",
+          "cls": "",
+          "type": "file",
+          "name": "导入 Obsidian 本地元数据快照 JSON",
+          "ariaHidden": null,
+          "tabIndex": 0,
+          "disabled": false,
+          "visible": true,
+          "rect": {
+            "x": 1403.7938232421875,
+            "y": 806.4000244140625,
+            "width": 1,
+            "height": 1,
+            "top": 806.4000244140625,
+            "right": 1404.7938232421875,
+            "bottom": 807.4000244140625,
+            "left": 1403.7938232421875
+          },
+          "hiddenAncestor": null,
+          "opacity": "0"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "btn-pause",
+          "cls": "status-btn",
+          "type": null,
+          "name": "暂停渲染",
+          "ariaHidden": null,
+          "tabIndex": 0,
+          "disabled": false,
+          "visible": true,
+          "rect": {
+            "x": 1387.7874755859375,
+            "y": 851.2250366210938,
+            "width": 69.9625015258789,
+            "height": 20.350000381469727,
+            "top": 851.2250366210938,
+            "right": 1457.7499771118164,
+            "bottom": 871.5750370025635,
+            "left": 1387.7874755859375
+          },
+          "hiddenAncestor": null,
+          "opacity": "1"
+        },
+        {
+          "tag": "BUTTON",
+          "id": null,
+          "cls": "icon-btn small",
+          "type": null,
+          "name": "关闭",
+          "ariaHidden": null,
+          "tabIndex": 0,
+          "disabled": false,
+          "visible": true,
+          "rect": {
+            "x": 1472,
+            "y": 24,
+            "width": 28,
+            "height": 28,
+            "top": 24,
+            "right": 1500,
+            "bottom": 52,
+            "left": 1472
+          },
+          "hiddenAncestor": null,
+          "opacity": "1"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "btn-reconnect",
+          "cls": "text-btn",
+          "type": null,
+          "name": "重试真实连接",
+          "ariaHidden": null,
+          "tabIndex": 0,
+          "disabled": false,
+          "visible": true,
+          "rect": {
+            "x": 1156.800048828125,
+            "y": 250.40000915527344,
+            "width": 91.1312484741211,
+            "height": 26.350000381469727,
+            "top": 250.40000915527344,
+            "right": 1247.931297302246,
+            "bottom": 276.75000953674316,
+            "left": 1156.800048828125
+          },
+          "hiddenAncestor": null,
+          "opacity": "1"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "btn-enter-mock",
+          "cls": "text-btn",
+          "type": null,
+          "name": "进入模拟演示",
+          "ariaHidden": null,
+          "tabIndex": 0,
+          "disabled": false,
+          "visible": true,
+          "rect": {
+            "x": 1255.9312744140625,
+            "y": 250.40000915527344,
+            "width": 91.1312484741211,
+            "height": 26.350000381469727,
+            "top": 250.40000915527344,
+            "right": 1347.0625228881836,
+            "bottom": 276.75000953674316,
+            "left": 1255.9312744140625
+          },
+          "hiddenAncestor": null,
+          "opacity": "1"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "toggle-motion-settings",
+          "cls": "switch",
+          "type": null,
+          "name": "",
+          "ariaHidden": null,
+          "tabIndex": 0,
+          "disabled": false,
+          "visible": true,
+          "rect": {
+            "x": 1462,
+            "y": 548.2250366210938,
+            "width": 38,
+            "height": 22,
+            "top": 548.2250366210938,
+            "right": 1500,
+            "bottom": 570.2250366210938,
+            "left": 1462
+          },
+          "hiddenAncestor": null,
+          "opacity": "1"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "btn-reset-local",
+          "cls": "text-btn",
+          "type": null,
+          "name": "恢复「原作」预设",
+          "ariaHidden": null,
+          "tabIndex": 0,
+          "disabled": false,
+          "visible": true,
+          "rect": {
+            "x": 1156.800048828125,
+            "y": 600.1000366210938,
+            "width": 91.64375305175781,
+            "height": 26.350000381469727,
+            "top": 600.1000366210938,
+            "right": 1248.4438018798828,
+            "bottom": 626.4500370025635,
+            "left": 1156.800048828125
+          },
+          "hiddenAncestor": null,
+          "opacity": "1"
+        }
+      ],
+      "tabbableIds": [
+        "preset-btn",
+        "preset-btn",
+        "preset-btn",
+        "preset-btn",
+        "preset-btn",
+        "preset-btn",
+        "btn-params",
+        "btn-settings",
+        "btn-about",
+        "lab-host",
+        "lab-host",
+        "lab-host",
+        "lab-host",
+        "lab-host",
+        "lab-host",
+        "lab-obsidian-file",
+        "btn-pause",
+        "icon-btn small",
+        "btn-reconnect",
+        "btn-enter-mock",
+        "toggle-motion-settings",
+        "btn-reset-local"
+      ],
+      "targeted": {
+        "presetButtons": [
+          {
+            "tag": "BUTTON",
+            "id": null,
+            "cls": "preset-btn",
+            "type": null,
+            "name": "原作",
+            "ariaHidden": null,
+            "tabIndex": 0,
+            "disabled": false,
+            "visible": true,
+            "rect": {
+              "x": 411.3625183105469,
+              "y": 9.100000381469727,
+              "width": 43.962501525878906,
+              "height": 22,
+              "top": 9.100000381469727,
+              "right": 455.3250198364258,
+              "bottom": 31.100000381469727,
+              "left": 411.3625183105469
+            }
+          },
+          {
+            "tag": "BUTTON",
+            "id": null,
+            "cls": "preset-btn",
+            "type": null,
+            "name": "极简",
+            "ariaHidden": null,
+            "tabIndex": 0,
+            "disabled": false,
+            "visible": true,
+            "rect": {
+              "x": 458.32501220703125,
+              "y": 9.100000381469727,
+              "width": 43.962501525878906,
+              "height": 22,
+              "top": 9.100000381469727,
+              "right": 502.28751373291016,
+              "bottom": 31.100000381469727,
+              "left": 458.32501220703125
+            }
+          },
+          {
+            "tag": "BUTTON",
+            "id": null,
+            "cls": "preset-btn",
+            "type": null,
+            "name": "科幻光场",
+            "ariaHidden": null,
+            "tabIndex": 0,
+            "disabled": false,
+            "visible": true,
+            "rect": {
+              "x": 505.2875061035156,
+              "y": 9.100000381469727,
+              "width": 62.32500076293945,
+              "height": 22,
+              "top": 9.100000381469727,
+              "right": 567.6125068664551,
+              "bottom": 31.100000381469727,
+              "left": 505.2875061035156
+            }
+          },
+          {
+            "tag": "BUTTON",
+            "id": null,
+            "cls": "preset-btn",
+            "type": null,
+            "name": "专注",
+            "ariaHidden": null,
+            "tabIndex": 0,
+            "disabled": false,
+            "visible": true,
+            "rect": {
+              "x": 570.6124877929688,
+              "y": 9.100000381469727,
+              "width": 43.962501525878906,
+              "height": 22,
+              "top": 9.100000381469727,
+              "right": 614.5749893188477,
+              "bottom": 31.100000381469727,
+              "left": 570.6124877929688
+            }
+          },
+          {
+            "tag": "BUTTON",
+            "id": null,
+            "cls": "preset-btn",
+            "type": null,
+            "name": "环境",
+            "ariaHidden": null,
+            "tabIndex": 0,
+            "disabled": false,
+            "visible": true,
+            "rect": {
+              "x": 617.5750122070312,
+              "y": 9.100000381469727,
+              "width": 43.962501525878906,
+              "height": 22,
+              "top": 9.100000381469727,
+              "right": 661.5375137329102,
+              "bottom": 31.100000381469727,
+              "left": 617.5750122070312
+            }
+          },
+          {
+            "tag": "BUTTON",
+            "id": null,
+            "cls": "preset-btn",
+            "type": null,
+            "name": "Agent 监控",
+            "ariaHidden": null,
+            "tabIndex": 0,
+            "disabled": false,
+            "visible": true,
+            "rect": {
+              "x": 664.5375366210938,
+              "y": 9.100000381469727,
+              "width": 76.6812515258789,
+              "height": 22,
+              "top": 9.100000381469727,
+              "right": 741.2187881469727,
+              "bottom": 31.100000381469727,
+              "left": 664.5375366210938
+            }
+          }
+        ],
+        "hostButtons": [
+          {
+            "tag": "BUTTON",
+            "id": null,
+            "cls": "lab-host",
+            "type": null,
+            "name": "DS disconnected",
+            "ariaHidden": null,
+            "tabIndex": 0,
+            "disabled": false,
+            "visible": true,
+            "rect": {
+              "x": 426.98126220703125,
+              "y": 742.2000122070312,
+              "width": 173.2062530517578,
+              "height": 19.200000762939453,
+              "top": 742.2000122070312,
+              "right": 600.1875152587891,
+              "bottom": 761.4000129699707,
+              "left": 426.98126220703125
+            }
+          },
+          {
+            "tag": "BUTTON",
+            "id": null,
+            "cls": "lab-host",
+            "type": null,
+            "name": "CX running · 1",
+            "ariaHidden": null,
+            "tabIndex": 0,
+            "disabled": false,
+            "visible": true,
+            "rect": {
+              "x": 608.1875,
+              "y": 742.2000122070312,
+              "width": 173.2062530517578,
+              "height": 19.200000762939453,
+              "top": 742.2000122070312,
+              "right": 781.3937530517578,
+              "bottom": 761.4000129699707,
+              "left": 608.1875
+            }
+          },
+          {
+            "tag": "BUTTON",
+            "id": null,
+            "cls": "lab-host",
+            "type": null,
+            "name": "CU waiting_approval · 1",
+            "ariaHidden": null,
+            "tabIndex": 0,
+            "disabled": false,
+            "visible": true,
+            "rect": {
+              "x": 426.98126220703125,
+              "y": 765.4000244140625,
+              "width": 173.2062530517578,
+              "height": 19.200000762939453,
+              "top": 765.4000244140625,
+              "right": 600.1875152587891,
+              "bottom": 784.600025177002,
+              "left": 426.98126220703125
+            }
+          },
+          {
+            "tag": "BUTTON",
+            "id": null,
+            "cls": "lab-host",
+            "type": null,
+            "name": "WB disconnected",
+            "ariaHidden": null,
+            "tabIndex": 0,
+            "disabled": false,
+            "visible": true,
+            "rect": {
+              "x": 608.1875,
+              "y": 765.4000244140625,
+              "width": 173.2062530517578,
+              "height": 19.200000762939453,
+              "top": 765.4000244140625,
+              "right": 781.3937530517578,
+              "bottom": 784.600025177002,
+              "left": 608.1875
+            }
+          },
+          {
+            "tag": "BUTTON",
+            "id": null,
+            "cls": "lab-host",
+            "type": null,
+            "name": "CC tool · 1",
+            "ariaHidden": null,
+            "tabIndex": 0,
+            "disabled": false,
+            "visible": true,
+            "rect": {
+              "x": 426.98126220703125,
+              "y": 788.6000366210938,
+              "width": 173.2062530517578,
+              "height": 19.200000762939453,
+              "top": 788.6000366210938,
+              "right": 600.1875152587891,
+              "bottom": 807.8000373840332,
+              "left": 426.98126220703125
+            }
+          },
+          {
+            "tag": "BUTTON",
+            "id": null,
+            "cls": "lab-host",
+            "type": null,
+            "name": "TR disconnected",
+            "ariaHidden": null,
+            "tabIndex": 0,
+            "disabled": false,
+            "visible": true,
+            "rect": {
+              "x": 608.1875,
+              "y": 788.6000366210938,
+              "width": 173.2062530517578,
+              "height": 19.200000762939453,
+              "top": 788.6000366210938,
+              "right": 781.3937530517578,
+              "bottom": 807.8000373840332,
+              "left": 608.1875
+            }
+          }
+        ],
+        "fileInput": {
+          "tag": "INPUT",
+          "id": "lab-obsidian-file",
+          "cls": "",
+          "type": "file",
+          "name": "导入 Obsidian 本地元数据快照 JSON",
+          "ariaHidden": null,
+          "tabIndex": 0,
+          "disabled": false,
+          "visible": true,
+          "rect": {
+            "x": 1403.7938232421875,
+            "y": 806.4000244140625,
+            "width": 1,
+            "height": 1,
+            "top": 806.4000244140625,
+            "right": 1404.7938232421875,
+            "bottom": 807.4000244140625,
+            "left": 1403.7938232421875
+          },
+          "hiddenByDisplay": false,
+          "hiddenByVisibility": false,
+          "opacity": "0",
+          "size": [
+            1,
+            1
+          ],
+          "labelText": "IMPORT LOCAL METADATA JSON",
+          "labelRect": {
+            "x": 1156.7874755859375,
+            "y": 803.6000366210938,
+            "width": 355.2124938964844,
+            "height": 19.100000381469727,
+            "top": 803.6000366210938,
+            "right": 1511.9999694824219,
+            "bottom": 822.7000370025635,
+            "left": 1156.7874755859375
+          },
+          "labelOutline": "rgb(199, 199, 209) none 2.8px"
+        }
+      },
+      "tinyText": [
+        {
+          "tag": "BUTTON",
+          "id": null,
+          "cls": "preset-btn",
+          "text": "原作",
+          "fontSize": 9,
+          "color": "rgb(153, 155, 163)",
+          "background": "rgb(0, 0, 2)",
+          "ratio": 7.57,
+          "passAA": true
+        },
+        {
+          "tag": "BUTTON",
+          "id": null,
+          "cls": "preset-btn",
+          "text": "极简",
+          "fontSize": 9,
+          "color": "rgb(153, 155, 163)",
+          "background": "rgb(0, 0, 2)",
+          "ratio": 7.57,
+          "passAA": true
+        },
+        {
+          "tag": "BUTTON",
+          "id": null,
+          "cls": "preset-btn",
+          "text": "科幻光场",
+          "fontSize": 9,
+          "color": "rgb(153, 155, 163)",
+          "background": "rgb(0, 0, 2)",
+          "ratio": 7.57,
+          "passAA": true
+        },
+        {
+          "tag": "BUTTON",
+          "id": null,
+          "cls": "preset-btn",
+          "text": "专注",
+          "fontSize": 9,
+          "color": "rgb(153, 155, 163)",
+          "background": "rgb(0, 0, 2)",
+          "ratio": 7.57,
+          "passAA": true
+        },
+        {
+          "tag": "BUTTON",
+          "id": null,
+          "cls": "preset-btn",
+          "text": "环境",
+          "fontSize": 9,
+          "color": "rgb(153, 155, 163)",
+          "background": "rgb(0, 0, 2)",
+          "ratio": 7.57,
+          "passAA": true
+        },
+        {
+          "tag": "BUTTON",
+          "id": null,
+          "cls": "preset-btn",
+          "text": "Agent 监控",
+          "fontSize": 9,
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(28, 28, 34)",
+          "ratio": 16.95,
+          "passAA": true
+        },
+        {
+          "tag": "SPAN",
+          "id": "link-text",
+          "cls": "",
+          "text": "模拟演示 · 非真机数据",
+          "fontSize": 9,
+          "color": "rgb(216, 178, 122)",
+          "background": "rgb(7, 7, 10)",
+          "ratio": 10.13,
+          "passAA": true
+        },
+        {
+          "tag": "EM",
+          "id": null,
+          "cls": "",
+          "text": "· 原作视觉致意",
+          "fontSize": 9,
+          "color": "rgb(157, 157, 169)",
+          "background": "rgb(2, 2, 5)",
+          "ratio": 7.73,
+          "passAA": true
+        },
+        {
+          "tag": "SPAN",
+          "id": "lab-feed-status",
+          "cls": "",
+          "text": "SIMULATED",
+          "fontSize": 9,
+          "color": "rgb(157, 182, 190)",
+          "background": "rgb(4, 4, 8)",
+          "ratio": 9.62,
+          "passAA": true
+        },
+        {
+          "tag": "I",
+          "id": null,
+          "cls": "",
+          "text": "SIM",
+          "fontSize": 9,
+          "color": "rgb(175, 175, 194)",
+          "background": "rgb(4, 4, 8)",
+          "ratio": 9.49,
+          "passAA": true
+        },
+        {
+          "tag": "I",
+          "id": null,
+          "cls": "",
+          "text": "SIM",
+          "fontSize": 9,
+          "color": "rgb(175, 175, 194)",
+          "background": "rgb(4, 4, 8)",
+          "ratio": 9.49,
+          "passAA": true
+        },
+        {
+          "tag": "I",
+          "id": null,
+          "cls": "",
+          "text": "SIM",
+          "fontSize": 9,
+          "color": "rgb(175, 175, 194)",
+          "background": "rgb(4, 4, 8)",
+          "ratio": 9.49,
+          "passAA": true
+        },
+        {
+          "tag": "I",
+          "id": null,
+          "cls": "",
+          "text": "SIM",
+          "fontSize": 9,
+          "color": "rgb(175, 175, 194)",
+          "background": "rgb(4, 4, 8)",
+          "ratio": 9.49,
+          "passAA": true
+        },
+        {
+          "tag": "I",
+          "id": null,
+          "cls": "",
+          "text": "SIM",
+          "fontSize": 9,
+          "color": "rgb(175, 175, 194)",
+          "background": "rgb(4, 4, 8)",
+          "ratio": 9.49,
+          "passAA": true
+        },
+        {
+          "tag": "I",
+          "id": null,
+          "cls": "",
+          "text": "SIM",
+          "fontSize": 9,
+          "color": "rgb(175, 175, 194)",
+          "background": "rgb(4, 4, 8)",
+          "ratio": 9.49,
+          "passAA": true
+        },
+        {
+          "tag": "I",
+          "id": null,
+          "cls": "",
+          "text": "SIM",
+          "fontSize": 9,
+          "color": "rgb(175, 175, 194)",
+          "background": "rgb(4, 4, 8)",
+          "ratio": 9.49,
+          "passAA": true
+        },
+        {
+          "tag": "I",
+          "id": null,
+          "cls": "",
+          "text": "SIM",
+          "fontSize": 9,
+          "color": "rgb(175, 175, 194)",
+          "background": "rgb(4, 4, 8)",
+          "ratio": 9.49,
+          "passAA": true
+        },
+        {
+          "tag": "SMALL",
+          "id": null,
+          "cls": "",
+          "text": "5",
+          "fontSize": 9,
+          "color": "rgb(208, 208, 216)",
+          "background": "rgb(4, 4, 8)",
+          "ratio": 13.35,
+          "passAA": true
+        },
+        {
+          "tag": "SMALL",
+          "id": null,
+          "cls": "",
+          "text": "3",
+          "fontSize": 9,
+          "color": "rgb(208, 208, 216)",
+          "background": "rgb(4, 4, 8)",
+          "ratio": 13.35,
+          "passAA": true
+        },
+        {
+          "tag": "SMALL",
+          "id": null,
+          "cls": "",
+          "text": "2",
+          "fontSize": 9,
+          "color": "rgb(208, 208, 216)",
+          "background": "rgb(4, 4, 8)",
+          "ratio": 13.35,
+          "passAA": true
+        },
+        {
+          "tag": "SMALL",
+          "id": null,
+          "cls": "",
+          "text": "2",
+          "fontSize": 9,
+          "color": "rgb(208, 208, 216)",
+          "background": "rgb(4, 4, 8)",
+          "ratio": 13.35,
+          "passAA": true
+        },
+        {
+          "tag": "DIV",
+          "id": "lab-tool-summary",
+          "cls": "lab-cell-foot",
+          "text": "TOOL EVENTS 2 / CACHED 12",
+          "fontSize": 9,
+          "color": "rgb(159, 159, 172)",
+          "background": "rgb(4, 4, 8)",
+          "ratio": 7.83,
+          "passAA": true
+        },
+        {
+          "tag": "SPAN",
+          "id": null,
+          "cls": "",
+          "text": "SELECT HOST",
+          "fontSize": 9,
+          "color": "rgb(157, 182, 190)",
+          "background": "rgb(4, 4, 8)",
+          "ratio": 9.62,
+          "passAA": true
+        },
+        {
+          "tag": "SPAN",
+          "id": null,
+          "cls": "lab-host-state",
+          "text": "disconnected",
+          "fontSize": 9,
+          "color": "rgb(170, 170, 180)",
+          "background": "rgb(8, 8, 12)",
+          "ratio": 8.68,
+          "passAA": true
+        },
+        {
+          "tag": "SPAN",
+          "id": null,
+          "cls": "lab-host-state",
+          "text": "running · 1",
+          "fontSize": 9,
+          "color": "rgb(170, 170, 180)",
+          "background": "rgb(8, 8, 12)",
+          "ratio": 8.68,
+          "passAA": true
+        },
+        {
+          "tag": "SPAN",
+          "id": null,
+          "cls": "lab-host-state",
+          "text": "waiting_approval · 1",
+          "fontSize": 9,
+          "color": "rgb(170, 170, 180)",
+          "background": "rgb(8, 8, 12)",
+          "ratio": 8.68,
+          "passAA": true
+        },
+        {
+          "tag": "SPAN",
+          "id": null,
+          "cls": "lab-host-state",
+          "text": "disconnected",
+          "fontSize": 9,
+          "color": "rgb(170, 170, 180)",
+          "background": "rgb(8, 8, 12)",
+          "ratio": 8.68,
+          "passAA": true
+        },
+        {
+          "tag": "SPAN",
+          "id": null,
+          "cls": "lab-host-state",
+          "text": "tool · 1",
+          "fontSize": 9,
+          "color": "rgb(250, 250, 255)",
+          "background": "rgb(36, 36, 42)",
+          "ratio": 14.83,
+          "passAA": true
+        },
+        {
+          "tag": "SPAN",
+          "id": null,
+          "cls": "lab-host-state",
+          "text": "disconnected",
+          "fontSize": 9,
+          "color": "rgb(170, 170, 180)",
+          "background": "rgb(8, 8, 12)",
+          "ratio": 8.68,
+          "passAA": true
+        },
+        {
+          "tag": "SPAN",
+          "id": null,
+          "cls": "",
+          "text": "OPT-IN",
+          "fontSize": 9,
+          "color": "rgb(157, 182, 190)",
+          "background": "rgb(4, 4, 8)",
+          "ratio": 9.62,
+          "passAA": true
+        },
+        {
+          "tag": "LABEL",
+          "id": null,
+          "cls": "lab-import",
+          "text": "IMPORT LOCAL METADATA JSON",
+          "fontSize": 9,
+          "color": "rgb(199, 199, 209)",
+          "background": "rgb(4, 4, 8)",
+          "ratio": 12.2,
+          "passAA": true
+        },
+        {
+          "tag": "SPAN",
+          "id": "perf-fps",
+          "cls": "",
+          "text": "25 fps",
+          "fontSize": 8.5,
+          "color": "rgb(173, 173, 185)",
+          "background": "rgb(5, 5, 9)",
+          "ratio": 9.16,
+          "passAA": true
+        },
+        {
+          "tag": "SPAN",
+          "id": null,
+          "cls": "status-sep",
+          "text": "/",
+          "fontSize": 8.5,
+          "color": "rgba(255, 255, 255, 0.12)",
+          "background": "rgb(5, 5, 9)",
+          "ratio": 1.3,
+          "passAA": false
+        },
+        {
+          "tag": "SPAN",
+          "id": "perf-frame",
+          "cls": "status-item",
+          "text": "2.6 ms",
+          "fontSize": 8.5,
+          "color": "rgb(173, 173, 185)",
+          "background": "rgb(5, 5, 9)",
+          "ratio": 9.16,
+          "passAA": true
+        },
+        {
+          "tag": "SPAN",
+          "id": null,
+          "cls": "status-sep",
+          "text": "/",
+          "fontSize": 8.5,
+          "color": "rgba(255, 255, 255, 0.12)",
+          "background": "rgb(5, 5, 9)",
+          "ratio": 1.3,
+          "passAA": false
+        },
+        {
+          "tag": "SPAN",
+          "id": "perf-quality",
+          "cls": "status-item",
+          "text": "画质 中 · 75%",
+          "fontSize": 8.5,
+          "color": "rgb(173, 173, 185)",
+          "background": "rgb(5, 5, 9)",
+          "ratio": 9.16,
+          "passAA": true
+        },
+        {
+          "tag": "SPAN",
+          "id": null,
+          "cls": "status-sep",
+          "text": "/",
+          "fontSize": 8.5,
+          "color": "rgba(255, 255, 255, 0.12)",
+          "background": "rgb(5, 5, 9)",
+          "ratio": 1.3,
+          "passAA": false
+        },
+        {
+          "tag": "SPAN",
+          "id": "perf-particles",
+          "cls": "status-item",
+          "text": "1191 particles",
+          "fontSize": 8.5,
+          "color": "rgb(173, 173, 185)",
+          "background": "rgb(5, 5, 9)",
+          "ratio": 9.16,
+          "passAA": true
+        },
+        {
+          "tag": "SPAN",
+          "id": "pause-label",
+          "cls": "",
+          "text": "暂停渲染",
+          "fontSize": 8.5,
+          "color": "rgb(127, 139, 156)",
+          "background": "rgb(5, 5, 9)",
+          "ratio": 5.89,
+          "passAA": true
+        },
+        {
+          "tag": "SPAN",
+          "id": null,
+          "cls": "status-sep",
+          "text": "/",
+          "fontSize": 8.5,
+          "color": "rgba(255, 255, 255, 0.12)",
+          "background": "rgb(5, 5, 9)",
+          "ratio": 1.3,
+          "passAA": false
+        },
+        {
+          "tag": "SPAN",
+          "id": "status-version",
+          "cls": "status-item",
+          "text": "v0.1.0",
+          "fontSize": 8.5,
+          "color": "rgb(173, 173, 185)",
+          "background": "rgb(5, 5, 9)",
+          "ratio": 9.16,
+          "passAA": true
+        },
+        {
+          "tag": "SPAN",
+          "id": null,
+          "cls": "sim-title",
+          "text": "示例数据 · SIMULATED",
+          "fontSize": 8,
+          "color": "rgb(240, 213, 175)",
+          "background": "rgb(8, 8, 12)",
+          "ratio": 14.13,
+          "passAA": true
+        },
+        {
+          "tag": "SPAN",
+          "id": null,
+          "cls": "sim-sub",
+          "text": "非真机状态",
+          "fontSize": 8,
+          "color": "rgba(230, 204, 150, 0.66)",
+          "background": "rgb(8, 8, 12)",
+          "ratio": 5.87,
+          "passAA": true
+        },
+        {
+          "tag": "SPAN",
+          "id": null,
+          "cls": "eyebrow",
+          "text": "SETTINGS",
+          "fontSize": 8.5,
+          "color": "rgb(90, 101, 117)",
+          "background": "rgb(2, 2, 4)",
+          "ratio": 3.51,
+          "passAA": false
+        },
+        {
+          "tag": "H4",
+          "id": null,
+          "cls": "",
+          "text": "事件桥",
+          "fontSize": 9,
+          "color": "rgb(173, 184, 200)",
+          "background": "rgb(2, 2, 4)",
+          "ratio": 10.33,
+          "passAA": true
+        },
+        {
+          "tag": "SPAN",
+          "id": "settings-mode",
+          "cls": "hint",
+          "text": "模拟",
+          "fontSize": 8,
+          "color": "rgb(90, 101, 117)",
+          "background": "rgb(2, 2, 4)",
+          "ratio": 3.51,
+          "passAA": false
+        },
+        {
+          "tag": "DT",
+          "id": null,
+          "cls": "",
+          "text": "地址",
+          "fontSize": 8.5,
+          "color": "rgb(90, 101, 117)",
+          "background": "rgb(2, 2, 4)",
+          "ratio": 3.51,
+          "passAA": false
+        },
+        {
+          "tag": "DT",
+          "id": null,
+          "cls": "",
+          "text": "Token",
+          "fontSize": 8.5,
+          "color": "rgb(90, 101, 117)",
+          "background": "rgb(2, 2, 4)",
+          "ratio": 3.51,
+          "passAA": false
+        },
+        {
+          "tag": "DT",
+          "id": null,
+          "cls": "",
+          "text": "传输",
+          "fontSize": 8.5,
+          "color": "rgb(90, 101, 117)",
+          "background": "rgb(2, 2, 4)",
+          "ratio": 3.51,
+          "passAA": false
+        },
+        {
+          "tag": "DT",
+          "id": null,
+          "cls": "",
+          "text": "最近快照",
+          "fontSize": 8.5,
+          "color": "rgb(90, 101, 117)",
+          "background": "rgb(2, 2, 4)",
+          "ratio": 3.51,
+          "passAA": false
+        },
+        {
+          "tag": "BUTTON",
+          "id": "btn-reconnect",
+          "cls": "text-btn",
+          "text": "重试真实连接",
+          "fontSize": 8.5,
+          "color": "rgb(127, 139, 156)",
+          "background": "rgb(8, 8, 10)",
+          "ratio": 5.79,
+          "passAA": true
+        },
+        {
+          "tag": "BUTTON",
+          "id": "btn-enter-mock",
+          "cls": "text-btn",
+          "text": "进入模拟演示",
+          "fontSize": 8.5,
+          "color": "rgb(127, 139, 156)",
+          "background": "rgb(8, 8, 10)",
+          "ratio": 5.79,
+          "passAA": true
+        },
+        {
+          "tag": "H4",
+          "id": null,
+          "cls": "",
+          "text": "关于数据边界",
+          "fontSize": 9,
+          "color": "rgb(173, 184, 200)",
+          "background": "rgb(2, 2, 4)",
+          "ratio": 10.33,
+          "passAA": true
+        },
+        {
+          "tag": "H4",
+          "id": null,
+          "cls": "",
+          "text": "本地状态",
+          "fontSize": 9,
+          "color": "rgb(173, 184, 200)",
+          "background": "rgb(2, 2, 4)",
+          "ratio": 10.33,
+          "passAA": true
+        },
+        {
+          "tag": "BUTTON",
+          "id": "btn-reset-local",
+          "cls": "text-btn",
+          "text": "恢复「原作」预设",
+          "fontSize": 8.5,
+          "color": "rgb(127, 139, 156)",
+          "background": "rgb(8, 8, 10)",
+          "ratio": 5.79,
+          "passAA": true
+        }
+      ],
+      "tinyFailures": [
+        {
+          "tag": "SPAN",
+          "id": null,
+          "cls": "status-sep",
+          "text": "/",
+          "fontSize": 8.5,
+          "color": "rgba(255, 255, 255, 0.12)",
+          "background": "rgb(5, 5, 9)",
+          "ratio": 1.3,
+          "passAA": false
+        },
+        {
+          "tag": "SPAN",
+          "id": null,
+          "cls": "status-sep",
+          "text": "/",
+          "fontSize": 8.5,
+          "color": "rgba(255, 255, 255, 0.12)",
+          "background": "rgb(5, 5, 9)",
+          "ratio": 1.3,
+          "passAA": false
+        },
+        {
+          "tag": "SPAN",
+          "id": null,
+          "cls": "status-sep",
+          "text": "/",
+          "fontSize": 8.5,
+          "color": "rgba(255, 255, 255, 0.12)",
+          "background": "rgb(5, 5, 9)",
+          "ratio": 1.3,
+          "passAA": false
+        },
+        {
+          "tag": "SPAN",
+          "id": null,
+          "cls": "status-sep",
+          "text": "/",
+          "fontSize": 8.5,
+          "color": "rgba(255, 255, 255, 0.12)",
+          "background": "rgb(5, 5, 9)",
+          "ratio": 1.3,
+          "passAA": false
+        },
+        {
+          "tag": "SPAN",
+          "id": null,
+          "cls": "eyebrow",
+          "text": "SETTINGS",
+          "fontSize": 8.5,
+          "color": "rgb(90, 101, 117)",
+          "background": "rgb(2, 2, 4)",
+          "ratio": 3.51,
+          "passAA": false
+        },
+        {
+          "tag": "SPAN",
+          "id": "settings-mode",
+          "cls": "hint",
+          "text": "模拟",
+          "fontSize": 8,
+          "color": "rgb(90, 101, 117)",
+          "background": "rgb(2, 2, 4)",
+          "ratio": 3.51,
+          "passAA": false
+        },
+        {
+          "tag": "DT",
+          "id": null,
+          "cls": "",
+          "text": "地址",
+          "fontSize": 8.5,
+          "color": "rgb(90, 101, 117)",
+          "background": "rgb(2, 2, 4)",
+          "ratio": 3.51,
+          "passAA": false
+        },
+        {
+          "tag": "DT",
+          "id": null,
+          "cls": "",
+          "text": "Token",
+          "fontSize": 8.5,
+          "color": "rgb(90, 101, 117)",
+          "background": "rgb(2, 2, 4)",
+          "ratio": 3.51,
+          "passAA": false
+        },
+        {
+          "tag": "DT",
+          "id": null,
+          "cls": "",
+          "text": "传输",
+          "fontSize": 8.5,
+          "color": "rgb(90, 101, 117)",
+          "background": "rgb(2, 2, 4)",
+          "ratio": 3.51,
+          "passAA": false
+        },
+        {
+          "tag": "DT",
+          "id": null,
+          "cls": "",
+          "text": "最近快照",
+          "fontSize": 8.5,
+          "color": "rgb(90, 101, 117)",
+          "background": "rgb(2, 2, 4)",
+          "ratio": 3.51,
+          "passAA": false
+        }
+      ],
+      "fontSizes": {
+        "16px": 1,
+        "13px": 71,
+        "9px": 37,
+        "10px": 120,
+        "11px": 8,
+        "8.5px": 30,
+        "8px": 5,
+        "19px": 1,
+        "10.5px": 4,
+        "11.5px": 1
+      },
+      "motion": {
+        "mediaMatches": false,
+        "statusVersion": "v0.1.0",
+        "animationDuration": {
+          ".sim-pulse": "2.4s",
+          ".state-dot": "0s",
+          ".lab-trace-bar": "0s"
+        },
+        "transitionDuration": {
+          ".sim-pulse": "0s",
+          ".state-dot": "0s",
+          ".lab-trace-bar": "0s",
+          "button": "0.2s, 0.2s, 0.2s"
+        }
+      },
+      "ariaHiddenFocusable": [],
+      "activeElement": {
+        "tag": "BODY",
+        "id": null,
+        "cls": "is-simulated",
+        "type": null,
+        "name": "HALOFLUX 原作 极简 科幻光场 专注 环境 Agent 监控 模拟演示 · 非真机数据 RYDER CODE /",
+        "ariaHidden": null,
+        "tabIndex": -1,
+        "disabled": false,
+        "visible": true,
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 1524,
+          "height": 878,
+          "top": 0,
+          "right": 1524,
+          "bottom": 878,
+          "left": 0
+        }
+      }
+    },
+    "tab": {
+      "method": "sendInputEvent",
+      "before": {
+        "tag": "BODY",
+        "id": null,
+        "cls": "is-simulated",
+        "name": "HALOFLUX 原作 极简 科幻光场 专注 环境 Agent 监控 模拟演示 · 非真机数据 RY",
+        "tabIndex": -1,
+        "matchesFocusVisible": false,
+        "outline": "rgb(233, 238, 245) none 2.8px",
+        "outlineWidth": "2.8px",
+        "outlineStyle": "none",
+        "outlineColor": "rgb(233, 238, 245)",
+        "outlineTarget": "self",
+        "boxShadow": "none",
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "w": 1524,
+          "h": 878
+        },
+        "opacity": "1"
+      },
+      "sequence": [
+        {
+          "tag": "BUTTON",
+          "id": null,
+          "cls": "preset-btn",
+          "name": "原作",
+          "tabIndex": 0,
+          "matchesFocusVisible": true,
+          "outline": "rgba(169, 194, 222, 0.7) solid 0.8px",
+          "outlineWidth": "0.8px",
+          "outlineStyle": "solid",
+          "outlineColor": "rgba(169, 194, 222, 0.7)",
+          "outlineTarget": "self",
+          "boxShadow": "none",
+          "rect": {
+            "x": 411,
+            "y": 9,
+            "w": 44,
+            "h": 22
+          },
+          "opacity": "1"
+        },
+        {
+          "tag": "BUTTON",
+          "id": null,
+          "cls": "preset-btn",
+          "name": "极简",
+          "tabIndex": 0,
+          "matchesFocusVisible": true,
+          "outline": "rgba(169, 194, 222, 0.7) solid 0.8px",
+          "outlineWidth": "0.8px",
+          "outlineStyle": "solid",
+          "outlineColor": "rgba(169, 194, 222, 0.7)",
+          "outlineTarget": "self",
+          "boxShadow": "none",
+          "rect": {
+            "x": 458,
+            "y": 9,
+            "w": 44,
+            "h": 22
+          },
+          "opacity": "1"
+        },
+        {
+          "tag": "BUTTON",
+          "id": null,
+          "cls": "preset-btn",
+          "name": "科幻光场",
+          "tabIndex": 0,
+          "matchesFocusVisible": true,
+          "outline": "rgba(169, 194, 222, 0.7) solid 0.8px",
+          "outlineWidth": "0.8px",
+          "outlineStyle": "solid",
+          "outlineColor": "rgba(169, 194, 222, 0.7)",
+          "outlineTarget": "self",
+          "boxShadow": "none",
+          "rect": {
+            "x": 505,
+            "y": 9,
+            "w": 62,
+            "h": 22
+          },
+          "opacity": "1"
+        },
+        {
+          "tag": "BUTTON",
+          "id": null,
+          "cls": "preset-btn",
+          "name": "专注",
+          "tabIndex": 0,
+          "matchesFocusVisible": true,
+          "outline": "rgba(169, 194, 222, 0.7) solid 0.8px",
+          "outlineWidth": "0.8px",
+          "outlineStyle": "solid",
+          "outlineColor": "rgba(169, 194, 222, 0.7)",
+          "outlineTarget": "self",
+          "boxShadow": "none",
+          "rect": {
+            "x": 571,
+            "y": 9,
+            "w": 44,
+            "h": 22
+          },
+          "opacity": "1"
+        },
+        {
+          "tag": "BUTTON",
+          "id": null,
+          "cls": "preset-btn",
+          "name": "环境",
+          "tabIndex": 0,
+          "matchesFocusVisible": true,
+          "outline": "rgba(169, 194, 222, 0.7) solid 0.8px",
+          "outlineWidth": "0.8px",
+          "outlineStyle": "solid",
+          "outlineColor": "rgba(169, 194, 222, 0.7)",
+          "outlineTarget": "self",
+          "boxShadow": "none",
+          "rect": {
+            "x": 618,
+            "y": 9,
+            "w": 44,
+            "h": 22
+          },
+          "opacity": "1"
+        },
+        {
+          "tag": "BUTTON",
+          "id": null,
+          "cls": "preset-btn",
+          "name": "Agent 监控",
+          "tabIndex": 0,
+          "matchesFocusVisible": true,
+          "outline": "rgba(169, 194, 222, 0.7) solid 0.8px",
+          "outlineWidth": "0.8px",
+          "outlineStyle": "solid",
+          "outlineColor": "rgba(169, 194, 222, 0.7)",
+          "outlineTarget": "self",
+          "boxShadow": "rgba(255, 255, 255, 0.07) 0px 1px 0px 0px inset",
+          "rect": {
+            "x": 665,
+            "y": 9,
+            "w": 77,
+            "h": 22
+          },
+          "opacity": "1"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "btn-params",
+          "cls": "icon-btn",
+          "name": "视觉参数",
+          "tabIndex": 0,
+          "matchesFocusVisible": true,
+          "outline": "rgba(169, 194, 222, 0.7) solid 0.8px",
+          "outlineWidth": "0.8px",
+          "outlineStyle": "solid",
+          "outlineColor": "rgba(169, 194, 222, 0.7)",
+          "outlineTarget": "self",
+          "boxShadow": "none",
+          "rect": {
+            "x": 1397,
+            "y": 4,
+            "w": 32,
+            "h": 32
+          },
+          "opacity": "1"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "btn-settings",
+          "cls": "icon-btn",
+          "name": "设置",
+          "tabIndex": 0,
+          "matchesFocusVisible": true,
+          "outline": "rgba(169, 194, 222, 0.7) solid 0.8px",
+          "outlineWidth": "0.8px",
+          "outlineStyle": "solid",
+          "outlineColor": "rgba(169, 194, 222, 0.7)",
+          "outlineTarget": "self",
+          "boxShadow": "none",
+          "rect": {
+            "x": 1437,
+            "y": 4,
+            "w": 32,
+            "h": 32
+          },
+          "opacity": "1"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "btn-about",
+          "cls": "icon-btn",
+          "name": "关于与许可证",
+          "tabIndex": 0,
+          "matchesFocusVisible": true,
+          "outline": "rgba(169, 194, 222, 0.7) solid 0.8px",
+          "outlineWidth": "0.8px",
+          "outlineStyle": "solid",
+          "outlineColor": "rgba(169, 194, 222, 0.7)",
+          "outlineTarget": "self",
+          "boxShadow": "none",
+          "rect": {
+            "x": 1477,
+            "y": 4,
+            "w": 32,
+            "h": 32
+          },
+          "opacity": "1"
+        },
+        {
+          "tag": "BUTTON",
+          "id": null,
+          "cls": "lab-host",
+          "name": "DS disconnected",
+          "tabIndex": 0,
+          "matchesFocusVisible": true,
+          "outline": "rgb(231, 231, 237) solid 2px",
+          "outlineWidth": "2px",
+          "outlineStyle": "solid",
+          "outlineColor": "rgb(231, 231, 237)",
+          "outlineTarget": "self",
+          "boxShadow": "none",
+          "rect": {
+            "x": 427,
+            "y": 742,
+            "w": 173,
+            "h": 19
+          },
+          "opacity": "1"
+        },
+        {
+          "tag": "BUTTON",
+          "id": null,
+          "cls": "lab-host",
+          "name": "CX running · 1",
+          "tabIndex": 0,
+          "matchesFocusVisible": true,
+          "outline": "rgb(231, 231, 237) solid 2px",
+          "outlineWidth": "2px",
+          "outlineStyle": "solid",
+          "outlineColor": "rgb(231, 231, 237)",
+          "outlineTarget": "self",
+          "boxShadow": "none",
+          "rect": {
+            "x": 608,
+            "y": 742,
+            "w": 173,
+            "h": 19
+          },
+          "opacity": "1"
+        },
+        {
+          "tag": "BUTTON",
+          "id": null,
+          "cls": "lab-host",
+          "name": "CU waiting_approval · 1",
+          "tabIndex": 0,
+          "matchesFocusVisible": true,
+          "outline": "rgb(231, 231, 237) solid 2px",
+          "outlineWidth": "2px",
+          "outlineStyle": "solid",
+          "outlineColor": "rgb(231, 231, 237)",
+          "outlineTarget": "self",
+          "boxShadow": "none",
+          "rect": {
+            "x": 427,
+            "y": 765,
+            "w": 173,
+            "h": 19
+          },
+          "opacity": "1"
+        },
+        {
+          "tag": "BUTTON",
+          "id": null,
+          "cls": "lab-host",
+          "name": "WB disconnected",
+          "tabIndex": 0,
+          "matchesFocusVisible": true,
+          "outline": "rgb(231, 231, 237) solid 2px",
+          "outlineWidth": "2px",
+          "outlineStyle": "solid",
+          "outlineColor": "rgb(231, 231, 237)",
+          "outlineTarget": "self",
+          "boxShadow": "none",
+          "rect": {
+            "x": 608,
+            "y": 765,
+            "w": 173,
+            "h": 19
+          },
+          "opacity": "1"
+        },
+        {
+          "tag": "BUTTON",
+          "id": null,
+          "cls": "lab-host",
+          "name": "CC tool · 1",
+          "tabIndex": 0,
+          "matchesFocusVisible": true,
+          "outline": "rgb(231, 231, 237) solid 2px",
+          "outlineWidth": "2px",
+          "outlineStyle": "solid",
+          "outlineColor": "rgb(231, 231, 237)",
+          "outlineTarget": "self",
+          "boxShadow": "none",
+          "rect": {
+            "x": 427,
+            "y": 789,
+            "w": 173,
+            "h": 19
+          },
+          "opacity": "1"
+        },
+        {
+          "tag": "BUTTON",
+          "id": null,
+          "cls": "lab-host",
+          "name": "TR disconnected",
+          "tabIndex": 0,
+          "matchesFocusVisible": true,
+          "outline": "rgb(231, 231, 237) solid 2px",
+          "outlineWidth": "2px",
+          "outlineStyle": "solid",
+          "outlineColor": "rgb(231, 231, 237)",
+          "outlineTarget": "self",
+          "boxShadow": "none",
+          "rect": {
+            "x": 608,
+            "y": 789,
+            "w": 173,
+            "h": 19
+          },
+          "opacity": "1"
+        },
+        {
+          "tag": "INPUT",
+          "id": "lab-obsidian-file",
+          "cls": "",
+          "name": "导入 Obsidian 本地元数据快照 JSON",
+          "tabIndex": 0,
+          "matchesFocusVisible": true,
+          "outline": "rgb(231, 231, 237) solid 2px",
+          "outlineWidth": "2px",
+          "outlineStyle": "solid",
+          "outlineColor": "rgb(231, 231, 237)",
+          "outlineTarget": "lab-import",
+          "boxShadow": "none",
+          "rect": {
+            "x": 1404,
+            "y": 806,
+            "w": 1,
+            "h": 1
+          },
+          "opacity": "0"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "btn-pause",
+          "cls": "status-btn",
+          "name": "暂停渲染",
+          "tabIndex": 0,
+          "matchesFocusVisible": true,
+          "outline": "rgba(169, 194, 222, 0.7) solid 0.8px",
+          "outlineWidth": "0.8px",
+          "outlineStyle": "solid",
+          "outlineColor": "rgba(169, 194, 222, 0.7)",
+          "outlineTarget": "self",
+          "boxShadow": "none",
+          "rect": {
+            "x": 1388,
+            "y": 851,
+            "w": 70,
+            "h": 20
+          },
+          "opacity": "1"
+        },
+        {
+          "tag": "BUTTON",
+          "id": null,
+          "cls": "icon-btn small",
+          "name": "关闭",
+          "tabIndex": 0,
+          "matchesFocusVisible": true,
+          "outline": "rgba(169, 194, 222, 0.7) solid 0.8px",
+          "outlineWidth": "0.8px",
+          "outlineStyle": "solid",
+          "outlineColor": "rgba(169, 194, 222, 0.7)",
+          "outlineTarget": "self",
+          "boxShadow": "none",
+          "rect": {
+            "x": 1472,
+            "y": 24,
+            "w": 28,
+            "h": 28
+          },
+          "opacity": "1"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "btn-reconnect",
+          "cls": "text-btn",
+          "name": "重试真实连接",
+          "tabIndex": 0,
+          "matchesFocusVisible": true,
+          "outline": "rgba(169, 194, 222, 0.7) solid 0.8px",
+          "outlineWidth": "0.8px",
+          "outlineStyle": "solid",
+          "outlineColor": "rgba(169, 194, 222, 0.7)",
+          "outlineTarget": "self",
+          "boxShadow": "none",
+          "rect": {
+            "x": 1157,
+            "y": 250,
+            "w": 91,
+            "h": 26
+          },
+          "opacity": "1"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "btn-enter-mock",
+          "cls": "text-btn",
+          "name": "进入模拟演示",
+          "tabIndex": 0,
+          "matchesFocusVisible": true,
+          "outline": "rgba(169, 194, 222, 0.7) solid 0.8px",
+          "outlineWidth": "0.8px",
+          "outlineStyle": "solid",
+          "outlineColor": "rgba(169, 194, 222, 0.7)",
+          "outlineTarget": "self",
+          "boxShadow": "none",
+          "rect": {
+            "x": 1256,
+            "y": 250,
+            "w": 91,
+            "h": 26
+          },
+          "opacity": "1"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "toggle-motion-settings",
+          "cls": "switch",
+          "name": "",
+          "tabIndex": 0,
+          "matchesFocusVisible": true,
+          "outline": "rgba(169, 194, 222, 0.7) solid 0.8px",
+          "outlineWidth": "0.8px",
+          "outlineStyle": "solid",
+          "outlineColor": "rgba(169, 194, 222, 0.7)",
+          "outlineTarget": "self",
+          "boxShadow": "none",
+          "rect": {
+            "x": 1462,
+            "y": 548,
+            "w": 38,
+            "h": 22
+          },
+          "opacity": "1"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "btn-reset-local",
+          "cls": "text-btn",
+          "name": "恢复「原作」预设",
+          "tabIndex": 0,
+          "matchesFocusVisible": true,
+          "outline": "rgba(169, 194, 222, 0.7) solid 0.8px",
+          "outlineWidth": "0.8px",
+          "outlineStyle": "solid",
+          "outlineColor": "rgba(169, 194, 222, 0.7)",
+          "outlineTarget": "self",
+          "boxShadow": "none",
+          "rect": {
+            "x": 1157,
+            "y": 600,
+            "w": 92,
+            "h": 26
+          },
+          "opacity": "1"
+        },
+        {
+          "tag": "BUTTON",
+          "id": null,
+          "cls": "preset-btn",
+          "name": "原作",
+          "tabIndex": 0,
+          "matchesFocusVisible": true,
+          "outline": "rgba(169, 194, 222, 0.7) solid 0.8px",
+          "outlineWidth": "0.8px",
+          "outlineStyle": "solid",
+          "outlineColor": "rgba(169, 194, 222, 0.7)",
+          "outlineTarget": "self",
+          "boxShadow": "none",
+          "rect": {
+            "x": 411,
+            "y": 9,
+            "w": 44,
+            "h": 22
+          },
+          "opacity": "1"
+        }
+      ]
+    },
+    "hostKeyboard": {
+      "before": {
+        "count": 6,
+        "pressed": [
+          "false",
+          "false",
+          "false",
+          "false",
+          "true",
+          "false"
+        ],
+        "labels": [
+          "DS disconnected",
+          "CX running · 1",
+          "CU waiting_approval · 1",
+          "WB disconnected",
+          "CC tool · 1",
+          "TR disconnected"
+        ],
+        "selectedIndex": 4
+      },
+      "focus": {
+        "focused": "CX running · 1",
+        "activeIsButton": true
+      },
+      "after": {
+        "count": 6,
+        "pressed": [
+          "false",
+          "true",
+          "false",
+          "false",
+          "false",
+          "false"
+        ],
+        "labels": [
+          "DS disconnected",
+          "CX running · 1",
+          "CU waiting_approval · 1",
+          "WB disconnected",
+          "CC output · 1",
+          "TR disconnected"
+        ],
+        "selectedIndex": 1
+      },
+      "changedSelection": true
+    },
+    "focusReachability": {
+      "presetInTabOrder": true,
+      "presetCount": 6,
+      "presetIds": [
+        "preset-btn",
+        "preset-btn",
+        "preset-btn",
+        "preset-btn",
+        "preset-btn",
+        "preset-btn"
+      ],
+      "hostButtonInTabOrder": true,
+      "hostButtonCount": 6,
+      "fileInputInTabOrder": true,
+      "fileInputName": "导入 Obsidian 本地元数据快照 JSON",
+      "focusWithoutVisibleOutline": [],
+      "focusVisibleMatched": 23,
+      "tabStops": 23
+    },
+    "zoom200": {
+      "viewport": [
+        762,
+        439
+      ],
+      "dpr": 5,
+      "labConsoleDisplay": "none",
+      "labConsoleVisible": false,
+      "labHostButtons": 6,
+      "fileInputVisible": false,
+      "presetButtons": 6,
+      "horizontalOverflow": false,
+      "scrollWidth": 762,
+      "clientWidth": 762,
+      "clippedInteractive": [
+        {
+          "id": "toggle-motion-settings",
+          "rect": {
+            "x": 695,
+            "y": 549,
+            "w": 38,
+            "h": 22
+          }
+        },
+        {
+          "id": "btn-reset-local",
+          "rect": {
+            "x": 395,
+            "y": 601,
+            "w": 92,
+            "h": 27
+          }
+        }
+      ],
+      "statusbarVisible": true,
+      "hudVisible": true,
+      "agentPanelVisible": true
+    },
+    "smallWindow": {
+      "viewport": [
+        1000,
+        640
+      ],
+      "dpr": 2.5,
+      "labConsoleDisplay": "none",
+      "labConsoleVisible": false,
+      "labHostButtons": 6,
+      "fileInputVisible": false,
+      "presetButtons": 6,
+      "horizontalOverflow": false,
+      "scrollWidth": 1000,
+      "clientWidth": 1000,
+      "clippedInteractive": [],
+      "statusbarVisible": true,
+      "hudVisible": true,
+      "agentPanelVisible": true
+    }
+  }
+}

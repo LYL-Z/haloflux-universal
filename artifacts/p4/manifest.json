@@ -1,0 +1,84 @@
+﻿{
+    "generatedAt":  "2026-11-10T16:21:35.3073474Z",
+    "repository":  "LYL-Z/haloflux-universal",
+    "branch":  "feat/paper-lab-p2",
+    "sourceHead":  "744f4dc",
+    "note":  "P4.1/P4.2/P4.3/P4.3-R1/R2 artifacts; reports contain analysis.",
+    "files":  [
+                  {
+                      "path":  "artifacts/p4/P42-INDEX.md",
+                      "bytes":  836,
+                      "sha256":  "6b54394222638cc6514163de259cff8c55cf360b12a4ef0e810da45a434ddb92"
+                  },
+                  {
+                      "path":  "artifacts/p4/P43-INDEX.md",
+                      "bytes":  608,
+                      "sha256":  "76b05d0bde55bd2398bc9c942e5aca0e3a3352cb135bfea15fee34ff8c3ac1f1"
+                  },
+                  {
+                      "path":  "artifacts/p4/P43R1-INDEX.md",
+                      "bytes":  821,
+                      "sha256":  "ec36a25172b47df3c4be2e72bf8da763c419cbc2c3486aab9f7ec06a28e7f037"
+                  },
+                  {
+                      "path":  "artifacts/p4/P43R2-INDEX.md",
+                      "bytes":  794,
+                      "sha256":  "9e9cd04a8281fd1e6c7dc8056c75bc6e08f1ef04d1c41ba0c5e28f8ab598ecd6"
+                  },
+                  {
+                      "path":  "artifacts/p4/R4-INDEX.md",
+                      "bytes":  769,
+                      "sha256":  "5ce4f5ef82827c926675ac1991e40720d47140da74b7a88e43f15584ed5ba459"
+                  },
+                  {
+                      "path":  "artifacts/p4/traces/trace-2500-play-lite-analysis.json",
+                      "bytes":  12987,
+                      "sha256":  "b14d65c79d1c744f6ae0612fa4545ddc499538a5d72115e37664e8cb3771fe0f"
+                  },
+                  {
+                      "path":  "artifacts/p4/traces/trace-2500-play-lite.json.gz",
+                      "bytes":  2715749,
+                      "sha256":  "7fdec640deb8a01a2720539d63c4b5cce513ad3f061926992dba679ba0e0ea53"
+                  },
+                  {
+                      "path":  "artifacts/p4/video/live-replay-35s-p4.webm",
+                      "bytes":  35390071,
+                      "sha256":  "41ab45d6134069acc75388ddd9a8826ecce26c5e8e3fdf0616b1082e29c78246"
+                  },
+                  {
+                      "path":  "artifacts/p4/video/live-replay-35s-r2.webm",
+                      "bytes":  33534806,
+                      "sha256":  "d6fdcd1c59acaa4dc3878120b40ef4c341d5274cc1382ab707cf6bb02d86dd3d"
+                  },
+                  {
+                      "path":  "artifacts/p4/video/live-replay-35s-r3.webm",
+                      "bytes":  34872577,
+                      "sha256":  "9f3468b24e614e195718a45de642565d6bbddd7e30d995bc269ee161b06388aa"
+                  },
+                  {
+                      "path":  "artifacts/p4/video/p42-final-35s.webm",
+                      "bytes":  35136795,
+                      "sha256":  "992e4fa78e4fd37ce11389aeb3cf593a23b54a329309982903d7101d02ce955b"
+                  },
+                  {
+                      "path":  "artifacts/p4/video/p43-final-35s.webm",
+                      "bytes":  36054646,
+                      "sha256":  "d93d0f1a9d1948e338453d943380eef03852ca9db2db6eb1cd1425ebdfc267df"
+                  },
+                  {
+                      "path":  "artifacts/p4/video/p43r1-final-35s.webm",
+                      "bytes":  34372076,
+                      "sha256":  "e4d2ccd8d3b5a49bbadc665e54303c71ce78e4a6a990e5278ad0af03127f87f3"
+                  },
+                  {
+                      "path":  "artifacts/p4/video/p43r2-final-35s.webm",
+                      "bytes":  32957938,
+                      "sha256":  "6c403bb86b674941ec3838d6434595b91f99e82388743e9deef6f3e7c923cc67"
+                  },
+                  {
+                      "path":  "artifacts/p4/video/replay-full-p3.mp4",
+                      "bytes":  6355750,
+                      "sha256":  "9b940b3fa29923ec095dbaef9ebadb55b85b43e17138a973cad6b5f0a4b45d5e"
+                  }
+              ]
+}

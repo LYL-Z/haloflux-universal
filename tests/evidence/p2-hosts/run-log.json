@@ -1,0 +1,78 @@
+{
+  "kind": "haloflux.p2.host-evidence.run-log",
+  "capturedAt": "2026-11-09T12:31:53.299Z",
+  "repo": "<repo>",
+  "branch": "feat/paper-lab-p2",
+  "head": "0a9e389",
+  "node": "v24.16.0",
+  "os": "Windows 11 10.0.26300 x64",
+  "windowLocal": "2026-11-09T04:23:43-08:00 .. 2026-11-09T04:32:00-08:00",
+  "bridge": {
+    "pid": 25008,
+    "port": 17817,
+    "startCommand": "node scripts/haloflux.mjs bridge",
+    "startedLocal": "2026-11-09T04:24:14-08:00",
+    "stopCommand": "node scripts/haloflux.mjs stop or taskkill /PID 25008 /T /F",
+    "state": "running at report time",
+    "tokenPath": "%LOCALAPPDATA%\\HALOFLUX\\token (value never stored)"
+  },
+  "commands": [
+    {
+      "cmd": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts\\doctor.ps1 -Json",
+      "result": "exit 0; 4 installed hosts hashes match manifest; trae UNSUPPORTED; bridge reported offline before start"
+    },
+    {
+      "cmd": "node scripts/haloflux.mjs bridge",
+      "result": "started pid=25008 url=http://127.0.0.1:17817"
+    },
+    {
+      "cmd": "GET /v1/state (Bearer token from %LOCALAPPDATA%\\HALOFLUX\\token)",
+      "result": "eventCount 267 (baseline) -> 676 (final snapshot 12:29:50Z) -> 857 live (12:32:05Z); dropped=0 duplicates=0; host deepseek-harness connected=true"
+    },
+    {
+      "cmd": "claude auth status",
+      "result": "exit 1; loggedIn=false authMethod=none"
+    },
+    {
+      "cmd": "claude -p <fixed one-word reply prompt>",
+      "result": "exit 1; Not logged in · Please run /login; new host-native lifecycle session 5e5ab874 (session.start>task.received>error>session.end)"
+    },
+    {
+      "cmd": "codex login status",
+      "result": "Logged in using ChatGPT"
+    },
+    {
+      "cmd": "codex exec --skip-git-repo-check -s read-only --json <fixed one-word prompt>",
+      "result": "turn.failed model_not_found (gpt-6-luna); no codex hook events in bridge"
+    },
+    {
+      "cmd": "codex exec ... -m gpt-5.1-codex <fixed one-word prompt>",
+      "result": "turn.failed model_not_found (gpt-5.1-codex); no codex hook events in bridge"
+    },
+    {
+      "cmd": "node adapters\\codex\\adapter.mjs --watch --once --tail-bytes 0 --session-file <real rollout>",
+      "result": "events=11 posted=true (202); derived/inferred session 01a178a9"
+    },
+    {
+      "cmd": "node adapters\\workbuddy\\adapter.mjs --watch --once",
+      "result": "events=111 posted=false HTTP 400 (batch > MAX_BATCH=100)"
+    },
+    {
+      "cmd": "node adapters\\workbuddy\\adapter.mjs --watch --once --tail-bytes 0 --trace-file <small trace>",
+      "result": "events=2 posted=true (202); session trace_e2cb19"
+    },
+    {
+      "cmd": "node adapters\\workbuddy\\adapter.mjs --watch --once --tail-bytes 65536 --trace-file <medium trace>",
+      "result": "events=31 posted=true (202); session trace_81f998 (15 tool.start + 15 tool.end + session.end)"
+    }
+  ],
+  "constraints": [
+    "no host config modified",
+    "no adapter install/uninstall",
+    "no branch switch/commit/push",
+    "no user app restart",
+    "no login bypass",
+    "no prompt/credential content read or stored",
+    "only loopback bridge + read-only watchers started"
+  ]
+}

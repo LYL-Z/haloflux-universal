@@ -9,6 +9,20 @@
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
+  <div class="replay-bar" id="replay-bar" hidden role="status" aria-label="历史回放模式">
+    <strong>REPLAY</strong>
+    <span id="replay-session">—</span>
+    <span id="replay-clock">00:00.0</span>
+    <button id="replay-play" type="button">PAUSE</button>
+    <button id="replay-step" type="button">STEP</button>
+    <select id="replay-speed" aria-label="回放倍速">
+      <option value="0.5">0.5×</option>
+      <option value="1" selected>1×</option>
+      <option value="2">2×</option>
+      <option value="4">4×</option>
+    </select>
+    <button id="replay-close" type="button">LIVE</button>
+  </div>
   <canvas id="haloflux-canvas" aria-hidden="true"></canvas>
   <div class="ambient" aria-hidden="true"></div>
   <div class="grain" aria-hidden="true"></div>
@@ -64,6 +78,14 @@
       </div>
     </div>
 
+    <div class="lab-masthead" id="lab-masthead" aria-hidden="true">
+      <div class="lab-kpi"><span>HOSTS</span><strong id="lab-kpi-hosts">—</strong></div>
+      <div class="lab-kpi"><span>SESSIONS</span><strong id="lab-kpi-sessions">—</strong></div>
+      <div class="lab-kpi"><span>EVENTS</span><strong id="lab-kpi-events">—</strong></div>
+      <div class="lab-kpi"><span>TOOLS</span><strong id="lab-kpi-tools">—</strong></div>
+      <div class="lab-kpi"><span>ERRORS</span><strong id="lab-kpi-errors">—</strong></div>
+    </div>
+
     <nav class="preset-switch" id="preset-switch" aria-label="视觉预设"></nav>
 
     <div class="topbar-actions">
@@ -71,6 +93,9 @@
         <span class="link-dot" aria-hidden="true"></span>
         <span id="link-text">连接中</span>
       </div>
+      <button class="icon-btn agent-toggle" id="btn-agents" type="button" aria-controls="agent-panel" aria-expanded="false" title="显示/隐藏 Agent 列表" aria-label="显示或隐藏 Agent 列表"><span class="label-wide">AGENTS</span><span class="label-narrow">AG</span></button>
+      <button class="icon-btn lab-toggle" id="btn-lab" type="button" aria-controls="lab-console" aria-expanded="false" title="显示/隐藏实验仪表" aria-label="显示或隐藏实验仪表"><span class="label-wide">LAB</span><span class="label-narrow">LB</span></button>
+      <button class="icon-btn trace-btn" id="btn-trace" type="button" title="执行链研究面板" aria-label="打开执行链研究面板"><span class="label-wide">TRACE</span><span class="label-narrow">TR</span></button>
       <button class="icon-btn" id="btn-params" type="button" title="视觉参数" aria-label="视觉参数">
         <svg><use href="#i-sliders" /></svg>
       </button>
@@ -84,7 +109,7 @@
   </header>
 
   <main class="hud-layer">
-    <section class="panel agent-panel" aria-label="Agent 列表">
+    <section class="panel agent-panel" id="agent-panel" aria-label="Agent 列表">
       <header class="panel-head">
         <span class="eyebrow">AGENTS</span>
         <span class="panel-note" id="agent-count">6</span>
@@ -144,6 +169,42 @@
       <span id="event-count">0</span>
     </footer>
   </aside>
+
+  <!-- Paper Lab monitor: observable events only, never hidden chain of thought. -->
+  <section class="lab-console" id="lab-console" aria-label="Paper Lab Agent 运行监控台">
+    <div class="lab-ledger">
+      <canvas class="lab-time-canvas" id="lab-time-canvas" aria-label="真实事件时间带"></canvas>
+      <span>RYDER CODE / Ms MAIKEBAIs CAT <em>· 原作视觉致意</em></span>
+      <span>UNIVERSAL / OBSERVED EXECUTION</span>
+      <span id="lab-head-count">— AGENTS · — SESSIONS · — EVENTS</span>
+    </div>
+    <div class="lab-board">
+      <section class="lab-cell lab-feed">
+        <h2>INVESTIGATION FEED
+          <span class="lab-feed-controls">
+            <select id="lab-feed-filter" aria-label="筛选事件类型">
+              <option value="all">ALL</option>
+              <option value="tool">TOOL</option>
+              <option value="error">ERROR</option>
+              <option value="output">OUTPUT</option>
+            </select>
+            <button id="lab-feed-pause" type="button" aria-pressed="false">PAUSE</button>
+            <span id="lab-feed-status">—</span>
+          </span>
+        </h2>
+        <ol id="lab-feed-rows" class="lab-rows"></ol>
+        <div class="lab-feed-detail" id="lab-feed-detail" aria-live="polite">SELECT AN EVENT FOR ALLOWLISTED FIELDS</div>
+      </section>
+      <section class="lab-cell lab-trace"><h2>TOOL / WATERFALL</h2><canvas class="lab-mini-canvas" id="lab-rate-canvas" aria-label="工具事件到达率"></canvas><canvas class="lab-mini-canvas lab-waterfall-canvas" id="lab-waterfall-canvas" aria-label="工具瀑布"></canvas><div class="lab-cell-foot" id="lab-rate-window">—</div><div class="lab-cell-foot" id="lab-tool-summary">—</div></section>
+      <section class="lab-cell lab-workspace"><h2>DIFFERENCE FIELD / RUN</h2><canvas class="lab-mini-canvas lab-difference-canvas" id="lab-difference-canvas" aria-label="事件来源差异场"></canvas><div class="lab-details" id="lab-workspace-details"></div><div class="lab-workspace-code" id="lab-workspace-code" aria-label="观测执行索引"></div></section>
+      <section class="lab-cell lab-sources"><h2>SOURCE / ROUTES</h2><canvas class="lab-mini-canvas lab-source-routes-canvas" id="lab-source-routes-canvas" aria-label="来源路由矩阵"></canvas><div class="lab-details" id="lab-source-details"></div></section>
+      <section class="lab-cell lab-validation"><h2>VALIDATION / CURVES</h2><canvas class="lab-mini-canvas lab-fail-canvas" id="lab-fail-canvas" aria-label="失败与校验曲线"></canvas><div class="lab-details" id="lab-validation-details"></div></section>
+      <section class="lab-cell lab-dispatch"><h2>AGENTS / DISPATCH <span>SELECT HOST</span></h2><canvas class="lab-mini-canvas lab-matrix-canvas" id="lab-matrix-canvas" aria-label="宿主状态矩阵"></canvas><div class="lab-hosts" id="lab-hosts"></div></section>
+      <section class="lab-cell lab-methods"><h2>EVENT / METHOD INDEX</h2><canvas class="lab-mini-canvas lab-method-canvas" id="lab-method-canvas" aria-label="事件方法索引矩阵"></canvas><div class="lab-details" id="lab-type-details"></div></section>
+      <section class="lab-cell lab-particle"><h2>ADVECTION / PARTICLE SOLVER <span>VISUAL SIMULATION</span></h2><canvas class="lab-mini-canvas lab-particle-canvas" id="lab-particle-canvas" aria-label="视觉粒子场"></canvas><div class="lab-cell-foot">VISUAL SIMULATION · event timestamps shape flow, not physics</div></section>
+      <section class="lab-cell lab-knowledge"><h2>TOKEN TELEMETRY <span>HOST-REPORTED</span></h2><canvas class="lab-mini-canvas lab-token-canvas" id="lab-token-canvas" aria-label="Token 遥测曲线"></canvas><div class="lab-details" id="lab-token-details"></div><div class="lab-cell-foot" id="lab-token-foot">UNAVAILABLE · no request-level usage fields forwarded</div></section>
+    </div>
+  </section>
 
   <footer class="statusbar">
     <div class="status-group">
@@ -376,6 +437,28 @@
   </section>
 
   <div class="toast" id="toast" hidden></div>
+
+  <aside class="trace-panel" id="trace-panel" hidden aria-label="执行链研究面板">
+    <div class="trace-head">
+      <h3>EXECUTION TRACE</h3>
+      <button id="trace-close" type="button" aria-label="关闭执行链面板">×</button>
+    </div>
+    <div class="trace-tabs" role="tablist">
+      <button id="trace-tab-waterfall" type="button" role="tab" aria-selected="true">TOOL WATERFALL</button>
+      <button id="trace-tab-dag" type="button" role="tab" aria-selected="false">EXECUTION DAG</button>
+      <button id="trace-tab-network" type="button" role="tab" aria-selected="false">EVIDENCE NETWORK</button>
+      <button id="trace-tab-critical" type="button" role="tab" aria-selected="false">CRITICAL PATH</button>
+    </div>
+    <div id="trace-body" class="trace-body"></div>
+  </aside>
+
+  <aside class="lab-evidence" id="lab-evidence" hidden aria-live="polite">
+    <div class="lab-evidence-head">
+      <h3 id="lab-evidence-title">EVIDENCE INSPECTOR</h3>
+      <button id="lab-evidence-close" type="button" aria-label="关闭证据面板">×</button>
+    </div>
+    <div id="lab-evidence-body" class="lab-evidence-body"></div>
+  </aside>
 
   <!-- QA-only state buttons. Hidden by default; stable [data-state] hooks live here. -->
   <div id="qa-state-controls" class="qa-state-controls" hidden aria-hidden="true"></div>

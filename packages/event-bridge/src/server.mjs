@@ -16,6 +16,7 @@ import { pathToFileURL } from 'node:url';
 
 import { parseBatch, SCHEMA_VERSION } from '../../event-schema/dist/index.js';
 import { SessionManager } from '../../session-manager/src/index.mjs';
+import { EventStore } from '../../event-store/src/index.mjs';
 import {
   MAX_SETTINGS_BYTES,
   loadSettings,
@@ -194,6 +195,18 @@ export function createBridgeServer(options = {}) {
     ? path.resolve(String(options.settingsPath))
     : path.join(home, 'settings.json');
   const clock = typeof options.clock === 'function' ? options.clock : () => Date.now();
+  let eventStore = options.eventStore || null;
+  let eventStoreError = '';
+  if (!eventStore && String(env.HALOFLUX_EVENT_STORE || '1') !== '0') {
+    try {
+      eventStore = new EventStore({ home });
+      const retentionDays = Math.max(1, Number(env.HALOFLUX_EVENT_RETENTION_DAYS) || 30);
+      eventStore.pruneBefore(Date.now() - retentionDays * 86400000);
+    } catch (error) {
+      eventStoreError = error && error.message ? error.message : String(error);
+      logger.warn(`event store disabled: ${redactSecrets(eventStoreError)}`);
+    }
+  }
   const manager =
     options.manager ||
     new SessionManager({
@@ -336,12 +349,24 @@ export function createBridgeServer(options = {}) {
     let accepted = 0;
     let duplicates = 0;
     const affected = new Set();
+    const persisted = [];
     for (const event of events) {
       const result = manager.ingest(event);
       if (result.duplicate) duplicates += 1;
       else {
         accepted += 1;
+        persisted.push(event);
         affected.add(event.sessionId);
+      }
+    }
+    let stored = { inserted: 0, duplicates: 0 };
+    let persistedOk = true;
+    if (eventStore && persisted.length > 0) {
+      try {
+        stored = eventStore.appendMany(persisted);
+      } catch (error) {
+        persistedOk = false;
+        logger.warn(`event store append failed: ${redactSecrets(error && error.message ? error.message : String(error))}`);
       }
     }
     sendJson(res, 202, {
@@ -350,11 +375,44 @@ export function createBridgeServer(options = {}) {
       sessions: affected.size,
       totalSessions: manager.sessionCount,
       events: events.length,
+      stored: stored.inserted,
+      storeDuplicates: stored.duplicates,
+      persisted: persistedOk && Boolean(eventStore),
     });
   }
 
   function handleState(res) {
     sendJson(res, 200, manager.snapshot());
+  }
+
+  function handleHistory(res, url) {
+    if (!eventStore) {
+      sendJson(res, 503, { error: 'event_store_unavailable', detail: eventStoreError || 'disabled' });
+      return;
+    }
+    const q = url.searchParams;
+    const limit = Math.max(1, Math.min(1000, Number(q.get('limit')) || 200));
+    const afterSeqRaw = q.get('afterSeq');
+    const result = eventStore.query({
+      sessionId: q.get('sessionId') || '',
+      runId: q.get('runId') || '',
+      traceId: q.get('traceId') || '',
+      from: Number(q.get('from')) || 0,
+      to: Number(q.get('to')) || 0,
+      limit,
+      offset: Number(q.get('offset')) || 0,
+      snapshotSeq: Number(q.get('snapshotSeq')) || 0,
+      afterSeq: afterSeqRaw === null ? null : Number(afterSeqRaw) || 0,
+    });
+    sendJson(res, 200, { ...result, stats: eventStore.stats() });
+  }
+
+  function handleHistoryStats(res) {
+    if (!eventStore) {
+      sendJson(res, 503, { error: 'event_store_unavailable', detail: eventStoreError || 'disabled' });
+      return;
+    }
+    sendJson(res, 200, { ...eventStore.stats(), integrity: eventStore.integrityCheck() });
   }
 
   function handleSettingsGet(res) {
@@ -617,6 +675,14 @@ export function createBridgeServer(options = {}) {
         if (req.method !== 'GET') return sendMethodNotAllowed(res, 'GET');
         return handleState(res);
       }
+      if (pathname === '/v1/history') {
+        if (req.method !== 'GET') return sendMethodNotAllowed(res, 'GET');
+        return handleHistory(res, url);
+      }
+      if (pathname === '/v1/history/stats') {
+        if (req.method !== 'GET') return sendMethodNotAllowed(res, 'GET');
+        return handleHistoryStats(res);
+      }
       if (pathname === '/v1/settings') {
         if (req.method === 'GET') return handleSettingsGet(res);
         if (req.method === 'PUT') return await handleSettingsPut(req, res);
@@ -691,6 +757,7 @@ export function createBridgeServer(options = {}) {
       if (client.close) client.close();
     }
     manager.stop();
+    try { eventStore?.close(); } catch { /* best effort */ }
     await new Promise((resolve) => {
       if (!server.listening) {
         resolve();

@@ -327,7 +327,8 @@ function fallbackPage(reason) {
 
 function loadRenderer(target) {
   if (fs.existsSync(RENDERER_INDEX)) {
-    const query = { mode, demo: demo ? '1' : '0', bridge: bridgeUrl };
+    const replaySession = String(process.env.HALOFLUX_REPLAY || '').trim();
+    const query = { mode, demo: demo ? '1' : '0', bridge: bridgeUrl, ...(replaySession ? { replay: replaySession } : {}) };
     return target.loadFile(RENDERER_INDEX, { query }).catch((error) => {
       log(`loadFile failed: ${error && error.message ? error.message : error}`);
     });
@@ -721,7 +722,7 @@ function bootstrap() {
   });
 }
 
-const gotLock = app.requestSingleInstanceLock();
+const gotLock = process.env.HALOFLUX_ALLOW_MULTI === '1' ? true : app.requestSingleInstanceLock();
 if (!gotLock) {
   log('another HALOFLUX Companion instance is already running; exiting');
   app.exit(0);

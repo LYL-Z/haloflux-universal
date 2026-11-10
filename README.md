@@ -10,6 +10,10 @@
 
 [English](README.en.md) · [架构契约](docs/architecture.md) · [宿主矩阵](docs/01-host-capability-matrix.md) · [安全与许可证](docs/03-security-and-license.md) · [已知限制](docs/07-known-limitations.md)
 
+**Paper Lab 监控屏（开发中）**：宽屏 `agent-monitor` 预设新增原作风格的黑白光场与 8 个底部仪表，展示真实可观测的事件类型、工具、宿主状态及来源证据（演示数据必须标为 `SIMULATED`）。这是执行事件监控，**不是 AI 隐藏思维链的读取或复现**。还增加了需用户手动选择文件的 [Obsidian 本地元数据快照导入](docs/obsidian-readonly.md)；实时 Vault 插件尚未实现。
+
+本轮改动的 [原版对比、真实性与后续验收清单](docs/PAPER-LAB-AUDIT-2026-11-09.md)；发布新版本之前应进行同分辨率截图对比和真机长时性能验收。当前线上演示在新代码部署前仍显示旧版。
+
 HALOFLUX 把原作那条"会呼吸、会旋转、会向外发射光束"的 Canvas 光环，变成**真实 Agent 会话的实时可视化**：
 会话开始、任务提交、工具调用、输出流、等待审批、结束/出错，都有对应的环形态；并且明确区分
 **宿主原生（confirmed）**、**推断（inferred）** 与 **模拟（simulated）** 三种数据来源，绝不把猜测画成事实。
@@ -82,7 +86,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts\install-adapters.ps1
 | ![GitHub Pages 在线演示](screenshots/pages-landing.png) | **GitHub Pages 在线演示**：`https://lyl-z.github.io/haloflux-universal/`（iframe 内为模拟数据） |
 | ![伴随窗口](screenshots/bridge-window.png) | 伴随窗口模式（window），真实 bridge 17817 的 DSH 会话数据（31 fps） |
 | ![紧凑模式](screenshots/visual-compact.png) | 紧凑模式（320×320） |
-| ![Agent 监控](screenshots/preset-agent-monitor.png) | `agent-monitor` 预设（模拟数据，UI 明确标注 SIMULATED） |
+| ![Agent 监控旧截图](screenshots/preset-agent-monitor.png) | `agent-monitor` **旧版截图基线**（模拟数据）；Paper Lab 新监控屏尚待真实浏览器截图验收与替换 |
 | ![UI 总览](screenshots/ui-overview.png) | 完整 HUD：agent 列表、当前会话指标、事件流、来源/置信度徽章 |
 | ![等待审批](screenshots/state-waiting_approval.png) | `waiting_approval` 状态（强脉冲 + 独立颜色） |
 | ![错误态](screenshots/state-error.png) | `error` 状态（红蓝故障感 + 持续标记） |
@@ -157,7 +161,28 @@ node scripts\haloflux.mjs restore <时间戳>             # 恢复配置备份
 
 项目目录与 `config\backups\` 永不自动删除。详细步骤见 [docs/05-install-uninstall.md](docs/05-install-uninstall.md)。
 
-## 9. 许可证与署名
+## 9. 自动启动（Windows，可选）
+
+HALOFLUX 使用 **当前用户登录触发** 的 Task Scheduler 任务，不需要管理员、不写 SYSTEM：
+
+```powershell
+node scripts\haloflux.mjs autostart install    # 注册 HALOFLUX-Supervisor
+node scripts\haloflux.mjs autostart status     # 查看状态
+node scripts\haloflux.mjs autostart disable    # 暂停自启
+node scripts\haloflux.mjs autostart enable     # 恢复自启
+node scripts\haloflux.mjs autostart uninstall  # 移除任务（不动 DSH 配置）
+node scripts\haloflux.mjs doctor --startup     # 自启动/宿主/进程诊断
+```
+
+登录后 supervisor 会拉起 bridge 与只读 collectors；**先等 bridge 就绪，再打开 DeepSeek Harness**，DSH 插件才会连接。手动开关窗口仍用：
+
+```powershell
+node scripts\haloflux.mjs companion --mode window
+```
+
+完整说明与限制见 [docs/09-autostart.md](docs/09-autostart.md)。
+
+## 10. 许可证与署名
 
 本项目是 **HALOFLUX** 的非商业衍生作品，整体按 **[PolyForm Noncommercial License 1.0.0](LICENSE)** 发布：
 个人学习、研究、教学、私人娱乐可免费使用；**严禁任何商业用途**。
@@ -169,9 +194,12 @@ node scripts\haloflux.mjs restore <时间戳>             # 恢复配置备份
 - 音乐 "Synthwave 421k"（The Cynic Project，CC0）**不随本项目加载**
 
 再分发时必须保留 [`LICENSE`](LICENSE)、[`NOTICE`](NOTICE) 与上述署名；修改版本需标注 "modified from HALOFLUX"。
+
+**2026-11-09 上游许可更新（已同步）**：在任何社交/视频平台发布展示 HALOFLUX 或本衍生作品的视频、录屏、截图、GIF 时，必须在作品本身的文案/标题/简介中注明
+`Source: HALOFLUX by Ryder191 — https://github.com/Ryder191/haloflux`（平台不允许链接时写 `GitHub: Ryder191/haloflux`），不得冒充原创，且商业用途仍被禁止。
 完整合规说明见 [docs/03-security-and-license.md](docs/03-security-and-license.md)。
 
-## 10. 隐私
+## 11. 隐私
 
 - 不读取 prompt、对话正文、文件内容、tool 参数/结果、API Key。
 - 事件元数据走白名单；未知字段在 schema 边界被拒绝。

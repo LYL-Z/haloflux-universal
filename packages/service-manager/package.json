@@ -1,0 +1,8 @@
+{
+  "name": "@haloflux/service-manager",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.mjs",
+  "description": "HALOFLUX current-user supervisor, Windows logon autostart and startup diagnostics"
+}

@@ -1,0 +1,123 @@
+{
+  "task": "fps",
+  "startedAt": "2026-11-09T12:56:44.501Z",
+  "url": "file:///D:/HALOFLUX/apps/companion/renderer/index.html?demo=1&mode=window",
+  "ready": {
+    "href": "file:///D:/HALOFLUX/apps/companion/renderer/index.html?demo=1&mode=window",
+    "mode": "window",
+    "preset": "agent-monitor",
+    "labConsoleDisplay": "grid",
+    "labRows": 8,
+    "sessionCountText": "3",
+    "feedStatus": "SIMULATED",
+    "inner": [
+      1524,
+      878
+    ],
+    "dpr": 2.5
+  },
+  "display": {
+    "size": {
+      "width": 1536,
+      "height": 960
+    },
+    "workAreaSize": {
+      "width": 1536,
+      "height": 912
+    },
+    "scaleFactor": 2.5,
+    "bounds": {
+      "x": 0,
+      "y": 0,
+      "width": 1536,
+      "height": 960
+    },
+    "windowContent": [
+      1524,
+      878
+    ],
+    "windowBounds": {
+      "x": 0,
+      "y": 0,
+      "width": 1536,
+      "height": 940
+    }
+  },
+  "drawerOpened": false,
+  "gpu": {
+    "enabled": true,
+    "status": {
+      "2d_canvas": "disabled_software",
+      "direct_rendering_display_compositor": "disabled_off_ok",
+      "gpu_compositing": "disabled_software",
+      "multiple_raster_threads": "enabled_on",
+      "opengl": "disabled_off",
+      "rasterization": "disabled_software",
+      "raw_draw": "disabled_off_ok",
+      "skia_graphite": "disabled_off",
+      "trees_in_viz": "disabled_off",
+      "video_decode": "disabled_software",
+      "video_encode": "disabled_software",
+      "webgl": "disabled_off",
+      "webgpu": "disabled_off",
+      "webnn": "disabled_off"
+    }
+  },
+  "fps": {
+    "samples": [
+      29.36,
+      25.67,
+      27.89,
+      33.44,
+      31.1,
+      29.63,
+      29.51,
+      32.06,
+      29.63,
+      30.24,
+      36.7
+    ],
+    "sampleCount": 11,
+    "hudFps": "33 fps",
+    "hudFrame": "2.0 ms",
+    "hudQuality": "画质 低 · 50%",
+    "hudParticles": "737 particles",
+    "statusVersion": "v0.1.0",
+    "dpr": 2.5,
+    "viewport": [
+      1524,
+      878
+    ],
+    "heap": {
+      "usedJSHeapSize": 14300000,
+      "totalJSHeapSize": 27600000
+    },
+    "elapsedMs": 12031
+  },
+  "rendererMetrics": {
+    "before": [
+      {
+        "type": "Tab",
+        "pid": 36008,
+        "cpu": {
+          "cumulativeCPUUsage": 0.52401,
+          "percentCPUUsage": 0,
+          "idleWakeupsPerSecond": 0
+        },
+        "workingSetSize": 144668
+      }
+    ],
+    "after": [
+      {
+        "type": "Tab",
+        "pid": 36008,
+        "cpu": {
+          "cumulativeCPUUsage": 1.786481,
+          "percentCPUUsage": 0.4371586777087071,
+          "idleWakeupsPerSecond": 0
+        },
+        "workingSetSize": 176128
+      }
+    ]
+  }
+}

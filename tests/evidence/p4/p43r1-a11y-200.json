@@ -1,0 +1,99 @@
+{
+  "mode": "window",
+  "viewport": [
+    768,
+    450
+  ],
+  "dpr": 5,
+  "durationSeconds": 4.000199999997765,
+  "frames": 379,
+  "fps": 94.74526273691609,
+  "frameMsMean": 10.554617414242124,
+  "frameMsP50": 4.300000000000182,
+  "frameMsP95": 20.899999999999636,
+  "frameMsMax": 25.100000000000364,
+  "frameMsMin": 3.899999999999636,
+  "heapUsedBytes": 21419931,
+  "pagePerf": {
+    "prepareMs": 1.5,
+    "events": 2500,
+    "frames": [
+      71.5
+    ],
+    "phases": {
+      "sessionAtIndex": {
+        "count": 1,
+        "totalMs": 0.10000000149011612,
+        "maxMs": 0.10000000149011612
+      },
+      "vizSetSession": {
+        "count": 1,
+        "totalMs": 0.8999999985098839,
+        "maxMs": 0.8999999985098839
+      },
+      "canvases": {
+        "count": 1,
+        "totalMs": 68.10000000149012,
+        "maxMs": 68.10000000149012
+      }
+    }
+  },
+  "arcTest": null,
+  "visibility": "visible",
+  "hasFocus": true,
+  "bounds": {
+    "x": 0,
+    "y": 6,
+    "width": 1536,
+    "height": 900
+  },
+  "warmupMs": 0,
+  "alwaysOnTop": true,
+  "a11y": {
+    "agentsOpen": true,
+    "agentsAria": "true",
+    "focusInsideAgents": true,
+    "agentsClosedByEscape": true,
+    "focusReturnedToAgents": true,
+    "traceOpen": true,
+    "focusOnTraceClose": true,
+    "traceClosed": true,
+    "focusReturnedToTrace": true,
+    "evidenceOpen": true,
+    "evidenceScrollable": true,
+    "evidenceClosed": true,
+    "focusReturnedFromEvidence": true,
+    "replayControlVisible": true,
+    "horizontalOverflow": false,
+    "stepChangedClock": true,
+    "seekWorked": true,
+    "pauseLabel": "RESUME",
+    "replayClock": "00:01.0"
+  },
+  "appMetrics": [
+    {
+      "type": "Browser",
+      "pid": 32172,
+      "cpuPercent": 0,
+      "workingSetMb": 92
+    },
+    {
+      "type": "GPU",
+      "pid": 59512,
+      "cpuPercent": 0,
+      "workingSetMb": 230
+    },
+    {
+      "type": "Utility",
+      "pid": 57544,
+      "cpuPercent": 0,
+      "workingSetMb": 45
+    },
+    {
+      "type": "Tab",
+      "pid": 57796,
+      "cpuPercent": 0,
+      "workingSetMb": 234
+    }
+  ]
+}

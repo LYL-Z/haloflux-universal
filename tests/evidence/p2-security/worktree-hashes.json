@@ -1,0 +1,155 @@
+{
+  "schema": "haloflux.p2.worktree.v1",
+  "snapshots": [
+    {
+      "label": "pre",
+      "generatedAt": "2026-11-09T12:54:41.618Z",
+      "branch": "feat/paper-lab-p2",
+      "head": "2d90b68a645ecc824030743e6c0ec72013fa3417",
+      "modifiedTracked": [],
+      "files": {
+        "apps/companion/renderer/app.js": {
+          "sha256": "7a5abe76346ca86b9b1534aa271110c62db4467bbe9a1ef51e1b05cc33591eee",
+          "bytes": 54362,
+          "mtime": "2026-11-09T12:41:31.765Z"
+        },
+        "apps/companion/renderer/styles.css": {
+          "sha256": "0760b0cb968ae08773491b44163c96058d95cd98e8e08bd83040f57ef8aefd59",
+          "bytes": 47364,
+          "mtime": "2026-11-09T12:27:16.922Z"
+        },
+        "apps/companion/renderer/index.html": {
+          "sha256": "298cfe8329bdcd3ad597d01387a356eda82be43143a67592a59fdf42c9198681",
+          "bytes": 19334,
+          "mtime": "2026-11-09T12:19:43.967Z"
+        },
+        "apps/companion/renderer/monitor-projection.mjs": {
+          "sha256": "5cddf37d772fd862d6dd03819bfc7839a6f765b6d840698342ec94267fc0ca09",
+          "bytes": 3900,
+          "mtime": "2026-11-09T12:39:23.389Z"
+        },
+        "apps/companion/renderer/obsidian-metadata.mjs": {
+          "sha256": "11a86f6ceeaf49f248d1a73e298a479e7b3da5a7abab7057a132144b42ae599f",
+          "bytes": 919,
+          "mtime": "2026-11-09T12:19:43.972Z"
+        },
+        "apps/companion/main/main.js": {
+          "sha256": "a9b5bdea52ac950d656b7d731eedb4e30ffbee3ba37bdf79d555f801fed24817",
+          "bytes": 25945,
+          "mtime": "2026-11-08T16:27:54.548Z"
+        },
+        "packages/visual-core/src/presets.js": {
+          "sha256": "d06676f3d72f83bb96848c3c45910358cd688f7eb6d45374d16967ad7eda935f",
+          "bytes": 12024,
+          "mtime": "2026-11-09T12:25:19.912Z"
+        },
+        "packages/visual-core/src/index.js": {
+          "sha256": "3cc25bf268fa2fee094c5a172eab3520c1476571a19d4c0ad794a20803adf330",
+          "bytes": 29285,
+          "mtime": "2026-11-08T16:21:38.084Z"
+        },
+        "packages/event-bridge/src/server.mjs": {
+          "sha256": "c53b7c33cecccd5e2a2e35236baeb74ce4309fb264ae7ca2ebd67059436b3213",
+          "bytes": 24904,
+          "mtime": "2026-11-08T16:02:54.267Z"
+        },
+        "packages/event-bridge/src/token.mjs": {
+          "sha256": "af23f5c0d342298e833eabd08b8ee2ec66065d0b767a67fb9544a4b302fe8fee",
+          "bytes": 5589,
+          "mtime": "2026-11-08T15:59:35.314Z"
+        },
+        "packages/session-manager/src/index.mjs": {
+          "sha256": "ddd2f053e7e6b97da75a7d3c20a1537c8968a899aeda72c55565816c57175ca1",
+          "bytes": 21076,
+          "mtime": "2026-11-09T12:43:26.795Z"
+        },
+        "packages/event-schema/dist/index.js": {
+          "sha256": "967835d99a3e3e7c2ee6fd8572c4658a59d81edca4b372cec8463373a0af17db",
+          "bytes": 13437,
+          "mtime": "2026-11-09T12:39:41.498Z"
+        }
+      }
+    },
+    {
+      "label": "post",
+      "generatedAt": "2026-11-09T12:56:21.223Z",
+      "branch": "feat/paper-lab-p2",
+      "head": "2d90b68a645ecc824030743e6c0ec72013fa3417",
+      "modifiedTracked": [
+        "tests/evidence/p2-perf/fps-window-12s.json",
+        "tests/evidence/p2-perf/fps-window.png",
+        "tests/evidence/p2-perf/window-status-10s.png",
+        "tests/evidence/p2-security/a11y-drawer-open.json",
+        "tests/evidence/p2-security/a11y-probe.json",
+        "tests/evidence/p2-security/a11y-reduced-motion.json",
+        "tests/evidence/p2-security/a11y-window.png",
+        "tests/evidence/p2-security/security-probe.json",
+        "tests/evidence/p2-security/xss-dom.json",
+        "tests/evidence/p2-security/xss-e2e.json"
+      ],
+      "files": {
+        "apps/companion/renderer/app.js": {
+          "sha256": "7a5abe76346ca86b9b1534aa271110c62db4467bbe9a1ef51e1b05cc33591eee",
+          "bytes": 54362,
+          "mtime": "2026-11-09T12:41:31.765Z"
+        },
+        "apps/companion/renderer/styles.css": {
+          "sha256": "0760b0cb968ae08773491b44163c96058d95cd98e8e08bd83040f57ef8aefd59",
+          "bytes": 47364,
+          "mtime": "2026-11-09T12:27:16.922Z"
+        },
+        "apps/companion/renderer/index.html": {
+          "sha256": "298cfe8329bdcd3ad597d01387a356eda82be43143a67592a59fdf42c9198681",
+          "bytes": 19334,
+          "mtime": "2026-11-09T12:19:43.967Z"
+        },
+        "apps/companion/renderer/monitor-projection.mjs": {
+          "sha256": "5cddf37d772fd862d6dd03819bfc7839a6f765b6d840698342ec94267fc0ca09",
+          "bytes": 3900,
+          "mtime": "2026-11-09T12:39:23.389Z"
+        },
+        "apps/companion/renderer/obsidian-metadata.mjs": {
+          "sha256": "11a86f6ceeaf49f248d1a73e298a479e7b3da5a7abab7057a132144b42ae599f",
+          "bytes": 919,
+          "mtime": "2026-11-09T12:19:43.972Z"
+        },
+        "apps/companion/main/main.js": {
+          "sha256": "a9b5bdea52ac950d656b7d731eedb4e30ffbee3ba37bdf79d555f801fed24817",
+          "bytes": 25945,
+          "mtime": "2026-11-08T16:27:54.548Z"
+        },
+        "packages/visual-core/src/presets.js": {
+          "sha256": "d06676f3d72f83bb96848c3c45910358cd688f7eb6d45374d16967ad7eda935f",
+          "bytes": 12024,
+          "mtime": "2026-11-09T12:25:19.912Z"
+        },
+        "packages/visual-core/src/index.js": {
+          "sha256": "3cc25bf268fa2fee094c5a172eab3520c1476571a19d4c0ad794a20803adf330",
+          "bytes": 29285,
+          "mtime": "2026-11-08T16:21:38.084Z"
+        },
+        "packages/event-bridge/src/server.mjs": {
+          "sha256": "c53b7c33cecccd5e2a2e35236baeb74ce4309fb264ae7ca2ebd67059436b3213",
+          "bytes": 24904,
+          "mtime": "2026-11-08T16:02:54.267Z"
+        },
+        "packages/event-bridge/src/token.mjs": {
+          "sha256": "af23f5c0d342298e833eabd08b8ee2ec66065d0b767a67fb9544a4b302fe8fee",
+          "bytes": 5589,
+          "mtime": "2026-11-08T15:59:35.314Z"
+        },
+        "packages/session-manager/src/index.mjs": {
+          "sha256": "ddd2f053e7e6b97da75a7d3c20a1537c8968a899aeda72c55565816c57175ca1",
+          "bytes": 21076,
+          "mtime": "2026-11-09T12:43:26.795Z"
+        },
+        "packages/event-schema/dist/index.js": {
+          "sha256": "967835d99a3e3e7c2ee6fd8572c4658a59d81edca4b372cec8463373a0af17db",
+          "bytes": 13437,
+          "mtime": "2026-11-09T12:39:41.498Z"
+        }
+      }
+    }
+  ],
+  "changedDuringMeasurement": []
+}

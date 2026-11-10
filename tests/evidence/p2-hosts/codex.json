@@ -1,0 +1,77 @@
+{
+  "kind": "haloflux.p2.host-evidence.codex",
+  "capturedAt": "2026-11-09T12:31:53.299Z",
+  "host": "codex",
+  "hostVersion": "codex-cli 0.154.0",
+  "install": {
+    "status": "INSTALLED",
+    "installedEntries": 8,
+    "events": [
+      "SessionStart",
+      "UserPromptSubmit",
+      "PreToolUse",
+      "PermissionRequest",
+      "PostToolUse",
+      "Stop",
+      "SubagentStart",
+      "SubagentStop"
+    ],
+    "configPath": "%USERPROFILE%\\.codex\\hooks.json",
+    "sha256": "13f8917b2750b806ef8c72f050ea7a52d5090a6f5e3bbb10208efd688cc28ee7",
+    "matchesManifest": true,
+    "backupManifest": "<repo>\\config\\backups\\20261108T161552323Z"
+  },
+  "trust": {
+    "hooksTrustedInConfig": 8,
+    "configPath": "%USERPROFILE%\\.codex\\config.toml",
+    "configMtimeLocal": "2026-11-09T00:51:54-08:00",
+    "note": "hooks.state entries for all 8 events with trusted_hash were present; this is newer than docs/08 (2026-11-08) which recorded untrusted hooks. Config was NOT modified by this verification."
+  },
+  "login": {
+    "command": "codex login status",
+    "result": "Logged in using ChatGPT"
+  },
+  "execAttempts": [
+    {
+      "model": "gpt-6-luna (config default)",
+      "result": "turn.failed: model_not_found (not supported with a ChatGPT account)",
+      "bridgeNativeEvents": 0
+    },
+    {
+      "model": "gpt-5.1-codex (CLI override -m)",
+      "result": "turn.failed: model_not_found (not supported with a ChatGPT account)",
+      "bridgeNativeEvents": 0
+    }
+  ],
+  "nativeDelivery": {
+    "status": "NOT_TESTED",
+    "detail": "No host=codex source=host-native event reached the bridge during either exec attempt; SessionStart/UserPromptSubmit hooks produced no observed POST despite trusted_hash entries. No bypass flag was used in this round."
+  },
+  "derivedWatcher": {
+    "command": "node adapters\\codex\\adapter.mjs --watch --once --tail-bytes 0 --session-file <real rollout>",
+    "sourceFile": "rollout-2026-10-26T07-42-27-01a178a9-abc7-7073-ae46-51ffe3dff276.jsonl (basename only)",
+    "events": 11,
+    "counts": {
+      "session.start": 1,
+      "run.start": 1,
+      "tool.start": 3,
+      "tool.end": 3,
+      "session.heartbeat": 3
+    },
+    "bridgeSession": {
+      "prefix": "01a178a9",
+      "masked": true
+    },
+    "source": "derived",
+    "confidence": "inferred"
+  },
+  "status": "PARTIAL",
+  "confidence": "inferred (derived watcher only)",
+  "gap": "hook delivery unproven; both tested models rejected by account; no SessionEnd capability; watcher is inferred",
+  "retest": [
+    "select a model supported by the ChatGPT account",
+    "run codex exec with no bypass flag",
+    "expect session.start/task.received and tool.* from hooks",
+    "or repeat --watch on the newest rollout (derived only)"
+  ]
+}

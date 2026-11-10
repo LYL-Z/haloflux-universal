@@ -54,14 +54,14 @@ export const EVENT_DEFAULT_STATE = {
 };
 
 export const METADATA_KEYS = [
-  'toolName', 'toolCategory', 'toolStatus', 'step', 'turn', 'label', 'errorCode',
+  'toolName', 'toolCategory', 'toolStatus', 'toolCallId', 'runId', 'step', 'turn', 'label', 'errorCode',
   'durationMs', 'tokenCount', 'tokensPerSecond', 'contextUsed', 'contextLimit', 'model',
   'projectName', 'sessionTitle', 'agentName', 'permissionMode', 'approvalKind',
   'queueDepth', 'latencyMs', 'cwdHint', 'custom',
 ];
 
 const STRING_LIMITS = {
-  toolName: 80, toolCategory: 40, toolStatus: 16, label: 120, errorCode: 64,
+  toolName: 80, toolCategory: 40, toolStatus: 16, toolCallId: 64, runId: 64, label: 120, errorCode: 64,
   model: 80, projectName: 120, sessionTitle: 160, agentName: 80,
   permissionMode: 40, approvalKind: 40, cwdHint: 80,
 };
@@ -91,6 +91,14 @@ export function createEvent(input) {
     source: input.source ?? 'host-native',
     confidence: input.confidence ?? 'confirmed',
     metadata: input.metadata ?? {},
+    ...(input.traceId !== undefined ? { traceId: input.traceId } : {}),
+    ...(input.spanId !== undefined ? { spanId: input.spanId } : {}),
+    ...(input.parentSpanId !== undefined ? { parentSpanId: input.parentSpanId } : {}),
+    ...(input.turnId !== undefined ? { turnId: input.turnId } : {}),
+    ...(input.agentId !== undefined ? { agentId: input.agentId } : {}),
+    ...(input.status !== undefined ? { status: input.status } : {}),
+    ...(input.timestampMonotonic !== undefined ? { timestampMonotonic: input.timestampMonotonic } : {}),
+    ...(input.adapterVersion !== undefined ? { adapterVersion: input.adapterVersion } : {}),
   };
 }
 

@@ -1,0 +1,12 @@
+﻿{
+  "file": "D:\\HALOFLUX-media\\p3\\live-replay-35s.webm",
+  "seconds": 35,
+  "width": 3808,
+  "height": 2162,
+  "frames": 870,
+  "fpsMeasured": 24.857,
+  "bytes": 35390071,
+  "sha256": "41ab45d6134069acc75388ddd9a8826ecce26c5e8e3fdf0616b1082e29c78246",
+  "content": "live -> TRACE opened -> historical REPLAY (652/652) -> back to LIVE",
+  "capture": "window-only desktopCapturer (no desktop capture), GPU compositing, VP9"
+}

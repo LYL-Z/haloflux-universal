@@ -85,14 +85,24 @@ function mapPayload(payload) {
         ...base,
         eventType: 'tool.start',
         state: 'tool',
-        metadata: { ...meta, toolName: safeString(payload.tool_name, 80), toolStatus: 'running' },
+        metadata: {
+          ...meta,
+          toolName: safeString(payload.tool_name, 80),
+          toolStatus: 'running',
+          toolCallId: safeString(payload.tool_use_id, 64),
+        },
       })];
     case 'PostToolUse':
       return [makeEvent({
         ...base,
         eventType: 'tool.end',
         state: 'running',
-        metadata: { ...meta, toolName: safeString(payload.tool_name, 80), toolStatus: 'ok' },
+        metadata: {
+          ...meta,
+          toolName: safeString(payload.tool_name, 80),
+          toolStatus: 'ok',
+          toolCallId: safeString(payload.tool_use_id, 64),
+        },
       })];
     case 'PostToolUseFailure':
       return [makeEvent({
@@ -104,6 +114,7 @@ function mapPayload(payload) {
           toolName: safeString(payload.tool_name, 80),
           toolStatus: 'failed',
           errorCode: errorCodeOf(payload),
+          toolCallId: safeString(payload.tool_use_id, 64),
         },
       })];
     case 'PermissionRequest':

@@ -38,7 +38,7 @@ const SCHEMA_ENTRY = path.join(ROOT, 'packages', 'event-schema', 'dist', 'index.
 const RENDERER_DIR = path.join(ROOT, 'apps', 'companion', 'renderer');
 const RENDERER_INDEX = path.join(RENDERER_DIR, 'index.html');
 const EVIDENCE_DIR = path.join(ROOT, 'tests', 'evidence');
-const ELECTRON = process.env.HALOFLUX_ELECTRON || 'C:\\Users\\Lenovo\\.dsh\\electron\\electron.exe';
+const ELECTRON = process.env.HALOFLUX_ELECTRON || path.join(os.homedir(), '.dsh', 'electron', 'electron.exe');
 const IS_ELECTRON = Boolean(process.versions.electron);
 
 function parseArgs(argv) {

@@ -1,0 +1,6 @@
+{
+  "name": "haloflux-p3-replay-record",
+  "version": "0.1.0",
+  "private": true,
+  "main": "main.cjs"
+}

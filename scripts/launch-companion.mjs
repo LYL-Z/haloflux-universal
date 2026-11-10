@@ -5,7 +5,7 @@
  * Resolves the already-installed Electron (no download, no npm install):
  *   1. $HALOFLUX_ELECTRON
  *   2. node_modules/electron/dist/electron.exe (if a local Electron exists)
- *   3. C:\Users\Lenovo\.dsh\electron\electron.exe (Electron 43.3.0 from DSH)
+ *   3. ~/.dsh/electron/electron.exe (Electron shipped with DeepSeek Harness)
  *   4. `electron` found on PATH
  *
  * Spawns exactly `electron.exe apps/companion/main/main.js` with NO extra argv:
@@ -87,6 +87,9 @@ function parseArgs(argv) {
       case '--token':
         args.token = value();
         break;
+      case '--replay':
+        args.replay = value();
+        break;
       case '--click-through':
         args.clickThrough = true;
         break;
@@ -166,7 +169,7 @@ export function resolveElectron(env = process.env) {
   if (local) return { path: local, source: 'node_modules/electron' };
 
   if (process.platform === 'win32') {
-    const dsh = fileExecutable('C:\\Users\\Lenovo\\.dsh\\electron\\electron.exe');
+    const dsh = fileExecutable(path.join(os.homedir(), '.dsh', 'electron', 'electron.exe'));
     if (dsh) return { path: dsh, source: 'dsh-electron-43.3.0' };
   }
 
@@ -188,6 +191,7 @@ export function buildChildEnv(options, env = process.env) {
   delete childEnv.ELECTRON_RUN_AS_NODE;
   if (options.bridgeUrl) childEnv.HALOFLUX_BRIDGE_URL = options.bridgeUrl;
   if (options.token) childEnv.HALOFLUX_TOKEN = options.token;
+  if (options.replay) childEnv.HALOFLUX_REPLAY = options.replay;
   if (options.opacity !== '') childEnv.HALOFLUX_OPACITY = String(options.opacity);
   if (options.screenshot) childEnv.HALOFLUX_SCREENSHOT = options.screenshot;
   if (options.screenshotDelay !== '') childEnv.HALOFLUX_SCREENSHOT_DELAY = String(options.screenshotDelay);

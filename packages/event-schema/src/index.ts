@@ -77,6 +77,10 @@ export type EventSource = (typeof EVENT_SOURCES)[number];
 export const CONFIDENCE_LEVELS = ['confirmed', 'inferred', 'unverified'] as const;
 export type Confidence = (typeof CONFIDENCE_LEVELS)[number];
 
+/** Optional span status for Trace/OpenTelemetry-style consumers. */
+export const EVENT_STATUSES = ['unknown', 'ok', 'error', 'cancelled'] as const;
+export type EventStatus = (typeof EVENT_STATUSES)[number];
+
 /** Default state carried by each event type (adapters may override). */
 export const EVENT_DEFAULT_STATE: Record<HalofluxEventType, AgentState> = {
   'host.connected': 'connected',
@@ -108,6 +112,8 @@ export const METADATA_KEYS = [
   'toolName',
   'toolCategory',
   'toolStatus',
+  'toolCallId',
+  'runId',
   'step',
   'turn',
   'label',
@@ -138,6 +144,10 @@ export type EventMetadata = {
   toolName?: string;
   toolCategory?: string;
   toolStatus?: 'running' | 'ok' | 'failed' | 'cancelled';
+  /** Host-issued tool invocation id, when the host exposes one. Optional. */
+  toolCallId?: string;
+  /** Host-issued run/turn correlation id, when exposed. Optional. */
+  runId?: string;
   step?: number;
   turn?: number;
   label?: string;
@@ -173,6 +183,20 @@ export interface HalofluxEvent {
   source: EventSource;
   confidence: Confidence;
   metadata: EventMetadata;
+  /** Optional W3C Trace Context (32 lowercase hex) when the host exposes it. */
+  traceId?: string;
+  /** Optional W3C span id (16 lowercase hex) when the host exposes it. */
+  spanId?: string;
+  parentSpanId?: string;
+  /** Optional run/turn/agent identity; never guessed from a session-level value. */
+  turnId?: string;
+  agentId?: string;
+  /** Optional status of the span represented by this event. */
+  status?: EventStatus;
+  /** Optional monotonic timestamp (milliseconds) for same-process durations. */
+  timestampMonotonic?: number;
+  /** Adapter build that produced this event. */
+  adapterVersion?: string;
 }
 
 export const MAX_EVENT_BYTES = 8 * 1024;
@@ -188,6 +212,8 @@ const FORBIDDEN_KEYS = new Set(['__proto__', 'constructor', 'prototype', 'then']
 const STRING_FIELDS: Partial<Record<MetadataKey, number>> = {
   toolName: 80,
   toolCategory: 40,
+  toolCallId: 64,
+  runId: 64,
   label: 120,
   errorCode: 64,
   model: 80,
@@ -290,6 +316,33 @@ export function validateEvent(input: unknown): ValidationResult {
     validateMetadata(input.metadata, errors);
   }
 
+  const hex = (path: string, value: unknown, length: number) => {
+    if (value === undefined) return;
+    if (typeof value !== 'string' || !new RegExp(`^[0-9a-f]{${length}}$`).test(value)) {
+      push(errors, path, 'bad_trace_id', `must be ${length} lowercase hex chars`);
+    }
+  };
+  hex('traceId', input.traceId, 32);
+  hex('spanId', input.spanId, 16);
+  hex('parentSpanId', input.parentSpanId, 16);
+  for (const key of ['turnId', 'agentId']) {
+    const value = input[key];
+    if (value !== undefined && (typeof value !== 'string' || value.length > 64)) {
+      push(errors, key, 'bad_string', 'must be a string <= 64 chars');
+    }
+  }
+  if (input.status !== undefined && !(EVENT_STATUSES as readonly string[]).includes(input.status as string)) {
+    push(errors, 'status', 'bad_status', `status must be one of ${EVENT_STATUSES.join(', ')}`);
+  }
+  if (input.timestampMonotonic !== undefined
+    && (typeof input.timestampMonotonic !== 'number' || !Number.isFinite(input.timestampMonotonic) || input.timestampMonotonic < 0)) {
+    push(errors, 'timestampMonotonic', 'bad_timestamp', 'timestampMonotonic must be a finite number >= 0');
+  }
+  if (input.adapterVersion !== undefined
+    && (typeof input.adapterVersion !== 'string' || input.adapterVersion.length > 40)) {
+    push(errors, 'adapterVersion', 'bad_string', 'must be a string <= 40 chars');
+  }
+
   if (byteLength(input) > MAX_EVENT_BYTES) {
     push(errors, '$', 'event_too_large', `serialized event must be <= ${MAX_EVENT_BYTES} bytes`);
   }
@@ -382,6 +435,14 @@ export interface CreateEventInput {
   timestamp?: number;
   eventId?: string;
   metadata?: EventMetadata;
+  traceId?: string;
+  spanId?: string;
+  parentSpanId?: string;
+  turnId?: string;
+  agentId?: string;
+  status?: EventStatus;
+  timestampMonotonic?: number;
+  adapterVersion?: string;
 }
 
 let counter = 0;
@@ -402,6 +463,14 @@ export function createEvent(input: CreateEventInput): HalofluxEvent {
     source: input.source ?? 'host-native',
     confidence: input.confidence ?? 'confirmed',
     metadata: input.metadata ?? {},
+    ...(input.traceId !== undefined ? { traceId: input.traceId } : {}),
+    ...(input.spanId !== undefined ? { spanId: input.spanId } : {}),
+    ...(input.parentSpanId !== undefined ? { parentSpanId: input.parentSpanId } : {}),
+    ...(input.turnId !== undefined ? { turnId: input.turnId } : {}),
+    ...(input.agentId !== undefined ? { agentId: input.agentId } : {}),
+    ...(input.status !== undefined ? { status: input.status } : {}),
+    ...(input.timestampMonotonic !== undefined ? { timestampMonotonic: input.timestampMonotonic } : {}),
+    ...(input.adapterVersion !== undefined ? { adapterVersion: input.adapterVersion } : {}),
   };
 }
 

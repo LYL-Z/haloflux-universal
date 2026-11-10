@@ -1,0 +1,64 @@
+{
+  "kind": "haloflux.p2.host-evidence.claude-code",
+  "capturedAt": "2026-11-09T12:31:53.299Z",
+  "host": "claude-code",
+  "hostVersion": "2.1.299",
+  "install": {
+    "status": "INSTALLED",
+    "installedEntries": 9,
+    "events": [
+      "PermissionRequest",
+      "PostToolUse",
+      "PostToolUseFailure",
+      "PreToolUse",
+      "SessionEnd",
+      "SessionStart",
+      "Stop",
+      "StopFailure",
+      "UserPromptSubmit"
+    ],
+    "configPath": "%USERPROFILE%\\.claude\\settings.json",
+    "sha256": "1b0930103d49751ca791a2619d7defd3d3c0066a037d620e291cc32c11de9b3b",
+    "matchesManifest": true,
+    "backupManifest": "<repo>\\config\\backups\\20261108T161709355Z"
+  },
+  "auth": {
+    "command": "claude auth status",
+    "exitCode": 1,
+    "loggedIn": false,
+    "authMethod": "none",
+    "apiProvider": "firstParty",
+    "analyticsDisabled": true
+  },
+  "nativeEvidence": {
+    "trigger": "claude -p <fixed one-word reply test prompt; text not stored>",
+    "exitCode": 1,
+    "stdout": "Not logged in · Please run /login",
+    "bridgeSession": {
+      "prefix": "5e5ab874",
+      "masked": true
+    },
+    "chain": [
+      "session.start",
+      "task.received",
+      "error",
+      "session.end"
+    ],
+    "source": "host-native",
+    "confidence": "confirmed",
+    "lastEventAt": 1794227186715
+  },
+  "status": "PARTIAL",
+  "subStatus": {
+    "lifecycle": "PASS",
+    "toolChain": "BLOCKED"
+  },
+  "confidence": "confirmed (lifecycle) / blocked (tools)",
+  "gap": "host not logged in: no model turn, therefore no tool.start/tool.end/run.end; login NOT bypassed",
+  "retest": [
+    "user runs claude login",
+    "rerun fixed one-word prompt",
+    "expect tool.* and run.end in /v1/state",
+    "verify hooks still match manifest"
+  ]
+}

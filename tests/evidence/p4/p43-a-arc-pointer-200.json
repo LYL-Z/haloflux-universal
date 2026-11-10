@@ -1,0 +1,94 @@
+{
+  "mode": "window",
+  "viewport": [
+    768,
+    450
+  ],
+  "dpr": 5,
+  "durationSeconds": 5.008099999999255,
+  "frames": 340,
+  "fps": 67.8900181705738,
+  "frameMsMean": 14.729705882350748,
+  "frameMsP50": 16.699999999999818,
+  "frameMsP95": 25,
+  "frameMsMax": 33.29999999999927,
+  "frameMsMin": 4,
+  "heapUsedBytes": 15317526,
+  "pagePerf": {
+    "prepareMs": 2.099999999627471,
+    "events": 2500,
+    "frames": [
+      69.19999999925494,
+      2.599999999627471
+    ],
+    "phases": {
+      "sessionAtIndex": {
+        "count": 2,
+        "totalMs": 0,
+        "maxMs": 0
+      },
+      "vizSetSession": {
+        "count": 2,
+        "totalMs": 1.4999999981373549,
+        "maxMs": 0.8999999985098839
+      },
+      "canvases": {
+        "count": 2,
+        "totalMs": 67,
+        "maxMs": 66.40000000037253
+      },
+      "renderSession": {
+        "count": 1,
+        "totalMs": 0.09999999962747097,
+        "maxMs": 0.09999999962747097
+      },
+      "renderEvents": {
+        "count": 1,
+        "totalMs": 0.2000000011175871,
+        "maxMs": 0.2000000011175871
+      },
+      "renderModeCompact": {
+        "count": 1,
+        "totalMs": 0,
+        "maxMs": 0
+      },
+      "renderLabMonitor": {
+        "count": 1,
+        "totalMs": 1.699999999254942,
+        "maxMs": 1.699999999254942
+      }
+    }
+  },
+  "arcTest": {
+    "before": "02:00.0",
+    "after": "04:09.8",
+    "index": 2498,
+    "beforeIndex": 1200
+  },
+  "appMetrics": [
+    {
+      "type": "Browser",
+      "pid": 58036,
+      "cpuPercent": 0,
+      "workingSetMb": 92
+    },
+    {
+      "type": "GPU",
+      "pid": 54448,
+      "cpuPercent": 0,
+      "workingSetMb": 289
+    },
+    {
+      "type": "Utility",
+      "pid": 55904,
+      "cpuPercent": 0,
+      "workingSetMb": 45
+    },
+    {
+      "type": "Tab",
+      "pid": 37164,
+      "cpuPercent": 0,
+      "workingSetMb": 167
+    }
+  ]
+}

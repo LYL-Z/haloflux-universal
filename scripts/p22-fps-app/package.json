@@ -1,0 +1,6 @@
+{
+  "name": "haloflux-p22-fps",
+  "version": "0.1.0",
+  "private": true,
+  "main": "main.cjs"
+}

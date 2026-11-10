@@ -1,0 +1,13 @@
+﻿{
+  "file": "D:\\HALOFLUX-media\\p3\\live-replay-35s-r2.webm",
+  "seconds": 35,
+  "width": 3808,
+  "height": 2162,
+  "frames": 551,
+  "fpsMeasured": 15.743,
+  "bytes": 33534806,
+  "sha256": "d6fdcd1c59acaa4dc3878120b40ef4c341d5274cc1382ab707cf6bb02d86dd3d",
+  "content": "LIVE -> TRACE -> historical REPLAY -> LIVE",
+  "capture": "window-only desktopCapturer, GPU compositing, VP9",
+  "note": "latest HEAD before final report edits; 15.7 fps, gate not met"
+}

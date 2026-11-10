@@ -1,0 +1,71 @@
+{
+  "perf": {
+    "prepareMs": 5.2999999998137355,
+    "events": 2500,
+    "frames": [
+      7.7999999998137355,
+      3.2999999998137355,
+      3.2000000001862645,
+      2.5,
+      2.099999999627471,
+      2.2000000001862645,
+      2.1000000005587935,
+      2.099999999627471,
+      2.2999999998137355,
+      1.8999999994412065,
+      1.900000000372529,
+      2
+    ],
+    "phases": {
+      "sessionAtIndex": {
+        "count": 12,
+        "totalMs": 0.5,
+        "maxMs": 0.10000000055879354
+      },
+      "vizSetSession": {
+        "count": 12,
+        "totalMs": 4.400000000372529,
+        "maxMs": 0.5
+      },
+      "canvases": {
+        "count": 12,
+        "totalMs": 21.099999996833503,
+        "maxMs": 6.2999999998137355
+      },
+      "renderSession": {
+        "count": 11,
+        "totalMs": 0.599999999627471,
+        "maxMs": 0.10000000055879354
+      },
+      "renderEvents": {
+        "count": 11,
+        "totalMs": 0.7999999998137355,
+        "maxMs": 0.20000000018626451
+      },
+      "renderModeCompact": {
+        "count": 11,
+        "totalMs": 0.5999999986961484,
+        "maxMs": 0.10000000055879354
+      },
+      "renderLabMonitor": {
+        "count": 11,
+        "totalMs": 19.300000000745058,
+        "maxMs": 2.7000000001862645
+      }
+    }
+  },
+  "visibility": "visible",
+  "focus": true,
+  "dpr": 2.5,
+  "size": [
+    1524,
+    865
+  ],
+  "replay": null,
+  "url": "http://127.0.0.1:27768/apps/companion/renderer/index.html?bridge=http%3A%2F%2F127.0.0.1%3A17817&token=0000000000000000000000000000000000000000000000000000000000000000&replay=trace-replay-2500&trace=1",
+  "seconds": 10,
+  "startedAt": 1794306090901,
+  "finishedAt": 1794306102169,
+  "events": 167774,
+  "out": "D:\\HALOFLUX\\tests\\evidence\\p4\\trace-2500-play-lite.json.gz"
+}

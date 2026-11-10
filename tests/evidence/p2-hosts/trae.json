@@ -1,0 +1,25 @@
+{
+  "kind": "haloflux.p2.host-evidence.trae",
+  "capturedAt": "2026-11-09T12:31:53.299Z",
+  "host": "trae",
+  "hostVersion": "3.4.13 (registry; doctor hostVersion empty)",
+  "install": {
+    "status": "UNSUPPORTED",
+    "installedEntries": 0,
+    "configPath": "%USERPROFILE%\\.trae-cn\\hooks.json",
+    "configExists": false,
+    "detail": "installer intentionally refuses to write an unverified hook format"
+  },
+  "realTrigger": {
+    "status": "NOT_TESTED",
+    "detail": "no reliable public hook interface or headless trigger; adapter synthetic mapping is not host evidence"
+  },
+  "status": "UNSUPPORTED",
+  "confidence": "none (no host-native evidence)",
+  "gap": "no verified hook vocabulary or real trigger; nothing installed",
+  "retest": [
+    "obtain official TRAE hook documentation",
+    "install hooks in an isolated ConfigRoot",
+    "trigger one real GUI session and verify host-native events"
+  ]
+}

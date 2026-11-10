@@ -378,3 +378,26 @@ function createEventBatch(count) {
     createEvent({ host: 'generic', sessionId: 'batch', eventType: 'session.heartbeat', metadata: { step: index } }),
   );
 }
+
+describe('trace context extension', () => {
+  test('accepts optional W3C trace/span fields and rejects malformed values', () => {
+    const ok = createEvent(validInput({
+      traceId: 'a'.repeat(32),
+      spanId: 'b'.repeat(16),
+      parentSpanId: 'c'.repeat(16),
+      turnId: 'turn-1',
+      agentId: 'agent-1',
+      status: 'ok',
+      timestampMonotonic: 1234,
+      adapterVersion: '0.2.1',
+    }));
+    assert.equal(validateEvent(ok).ok, true);
+
+    const badTrace = createEvent(validInput({ traceId: 'XYZ' }));
+    assert.equal(validateEvent(badTrace).ok, false);
+    const badStatus = createEvent(validInput({ status: 'made-up' }));
+    assert.equal(validateEvent(badStatus).ok, false);
+    const badClock = createEvent(validInput({ timestampMonotonic: -1 }));
+    assert.equal(validateEvent(badClock).ok, false);
+  });
+});

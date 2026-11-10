@@ -1,0 +1,64 @@
+{
+  "kind": "haloflux.p2.host-evidence.workbuddy",
+  "capturedAt": "2026-11-09T12:31:53.299Z",
+  "host": "workbuddy",
+  "hostVersion": "5.9.3.0",
+  "install": {
+    "status": "INSTALLED",
+    "installedEntries": 1,
+    "entry": "mcpServers.haloflux-status",
+    "configPath": "%USERPROFILE%\\.workbuddy\\mcp.json",
+    "sha256": "f9140dc720aefa01a97e44beeb99f097aef16d6b85acecac94c0bb677d174cd3",
+    "matchesManifest": true,
+    "backupManifest": "<repo>\\config\\backups\\20261108T161905851Z"
+  },
+  "mcpExercisedByHost": "NOT_TESTED",
+  "processRunning": true,
+  "derivedWatcher": {
+    "command": "node adapters\\workbuddy\\adapter.mjs --watch --once [--trace-file <real trace>] [--tail-bytes N]",
+    "sourceFiles": [
+      "trace_e2cb19929d754db7be1c3a7f3c2f2aa4.jsonl (basename only)",
+      "trace_81f998683df14007b3652bca44e30c83.jsonl (basename only)"
+    ],
+    "sessions": [
+      {
+        "sessionPrefix": "trace_e2",
+        "events": 2,
+        "types": [
+          "session.start",
+          "session.end"
+        ],
+        "source": "derived",
+        "confidence": "inferred"
+      },
+      {
+        "sessionPrefix": "trace_81",
+        "events": 31,
+        "types": [
+          "tool.start",
+          "tool.end",
+          "session.end"
+        ],
+        "source": "derived",
+        "confidence": "inferred"
+      }
+    ],
+    "allEventsDerived": true
+  },
+  "failedBulkRun": {
+    "attemptedEvents": 111,
+    "httpStatus": 400,
+    "hostTrace": "newest active trace (basename withheld)",
+    "causeEvidence": "packages/event-schema/src/index.ts MAX_BATCH=100; adapters/_shared/event-client.mjs posts one batch without chunking",
+    "impact": "a long trace can exceed 100 events and the whole derived batch is rejected; smaller tails (2 and 31 events) were accepted with 202"
+  },
+  "status": "PARTIAL",
+  "confidence": "inferred (derived watcher only)",
+  "gap": "no passive hook: events derived/inferred; MCP server not invoked by host; batch >100 not chunked; no task.received/run.end",
+  "retest": [
+    "use WorkBuddy normally, then run watcher on the newest trace",
+    "verify source=derived/inferred",
+    "exercise haloflux_status MCP tool from WorkBuddy",
+    "re-test a trace with >100 events after batch chunking fix"
+  ]
+}

@@ -1,0 +1,150 @@
+{
+  "schema": "haloflux.review.obsidian-browser-probe.v1",
+  "generatedAt": "2026-11-09T12:29:50.459Z",
+  "target": {
+    "url": "http://127.0.0.1:18583/apps/companion/renderer/index.html?demo=1&qa=1",
+    "origin": "http://127.0.0.1:18583",
+    "repo": "D:\\HALOFLUX",
+    "electron": "43.3.0",
+    "node": "24.18.1"
+  },
+  "fatal": null,
+  "checks": [
+    {
+      "name": "01 initial state is VAULT NOT CONNECTED",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "02 valid import renders NOTES / RESOLVED LINKS / FOLDERS",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "03 sensitive extra fields and the chosen file name never reach the DOM text",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "04 imported snapshot is not written to localStorage",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "05 file input is cleared after import (no file handle retained)",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "06 exactly 65,536-byte JSON is accepted (64 KiB cap is inclusive)",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "07 65,537-byte JSON is rejected with a 64 KiB toast",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "08 wrong schema rejected with format toast",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "09 negative count rejected",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "09 fractional count rejected",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "09 string count rejected",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "10 __proto__/constructor payload does not pollute or inject HTML",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "11 deeply nested invalid JSON is handled without crashing the page",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "12 UTF-8 BOM-prefixed JSON is accepted (File.text strips BOM; Windows-friendly)",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "13 all imported-UI state is rendered as text (no child elements added)",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "14 CSP restricts connect-src to loopback only",
+      "pass": true,
+      "detail": null
+    }
+  ],
+  "observations": {
+    "baseline": "VAULT NOT CONNECTED LINK GRAPH — ACCESS 未授权 · 不读取笔记",
+    "csp": "default-src 'self' file:; script-src 'self' 'unsafe-inline' file:; style-src 'self' 'unsafe-inline' file:; img-src 'self' data: file:; font-src 'self' file:; connect-src http://127.0.0.1:* http://localhost:*; object-src 'none'; base-uri 'none'; form-action 'none'",
+    "afterValidImport": "NOTES 3,392 RESOLVED LINKS 24,636 FOLDERS 9 SOURCE LOCAL JSON SNAPSHOT SYNC STATIC / NO LIVE ACCESS",
+    "localStorageKeys": [],
+    "afterExact64KiB": "NOTES 4,242 RESOLVED LINKS 24,636 FOLDERS 9 SOURCE LOCAL JSON SNAPSHOT SYNC STATIC / NO LIVE ACCESS",
+    "afterOversize": {
+      "toast": "元数据文件超过 64 KiB，已拒绝",
+      "knowledge": "NOTES 4,242 RESOLVED LINKS 24,636 FOLDERS 9 SOURCE LOCAL JSON SNAPSHOT SYNC STATIC / NO LIVE ACCESS"
+    },
+    "oversizeRetainsPreviousSnapshot": true,
+    "afterPollution": {
+      "toast": "仅已加载本地汇总数值 · 不读取笔记正文",
+      "knowledge": "NOTES 7 RESOLVED LINKS 8 FOLDERS 9 SOURCE LOCAL JSON SNAPSHOT SYNC STATIC / NO LIVE ACCESS"
+    },
+    "afterDeepJson": {
+      "toast": "元数据 JSON 无法解析",
+      "knowledge": "NOTES 7 RESOLVED LINKS 8 FOLDERS 9 SOURCE LOCAL JSON SNAPSHOT SYNC STATIC / NO LIVE ACCESS"
+    },
+    "afterBom": {
+      "toast": "仅已加载本地汇总数值 · 不读取笔记正文",
+      "knowledge": "NOTES 5,151 RESOLVED LINKS 0 FOLDERS 0 SOURCE LOCAL JSON SNAPSHOT SYNC STATIC / NO LIVE ACCESS"
+    },
+    "clearControlPresent": false,
+    "generatedAtDisplayed": false,
+    "finalKnowledgeText": "NOTES 5,151 RESOLVED LINKS 0 FOLDERS 0 SOURCE LOCAL JSON SNAPSHOT SYNC STATIC / NO LIVE ACCESS",
+    "resourceOrigins": [
+      "http://127.0.0.1:18583"
+    ]
+  },
+  "network": {
+    "requestCount": 11,
+    "offOrigin": [],
+    "bridgeHits": [],
+    "urls": [
+      "http://127.0.0.1:18583/apps/companion/renderer/index.html?demo=1&qa=1",
+      "http://127.0.0.1:18583/apps/companion/renderer/styles.css",
+      "http://127.0.0.1:18583/apps/companion/renderer/app.js",
+      "http://127.0.0.1:18583/packages/visual-core/src/index.js",
+      "http://127.0.0.1:18583/apps/companion/renderer/mock-session.js",
+      "http://127.0.0.1:18583/apps/companion/renderer/monitor-projection.mjs",
+      "http://127.0.0.1:18583/apps/companion/renderer/obsidian-metadata.mjs",
+      "http://127.0.0.1:18583/packages/visual-core/src/engine.js",
+      "http://127.0.0.1:18583/packages/visual-core/src/presets.js",
+      "http://127.0.0.1:18583/packages/visual-core/src/state-map.js",
+      "http://127.0.0.1:18583/packages/visual-core/src/perf.js"
+    ]
+  },
+  "consoleErrors": [],
+  "consoleMessages": [],
+  "consoleLeaks": [],
+  "summary": {
+    "pass": 16,
+    "fail": 0,
+    "ok": true
+  }
+}

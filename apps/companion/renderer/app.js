@@ -33,6 +33,15 @@ import {
   formatMetric,
 } from '../../../packages/visual-core/src/index.js';
 import { createMockStream } from './mock-session.js';
+import { projectMonitor } from './monitor-projection.mjs';
+import { eventRate, METRIC_REGISTRY, toolWaterfall, criticalPath } from '../../../packages/analytics/src/index.mjs';
+import { prepareReplay } from './replay-engine.mjs';
+import { replayNow } from './replay-clock.mjs';
+import { buildTimeArc, angleForTimestamp, timestampForRatio, eventIndexAtTimestamp } from './time-arc.mjs';
+import { buildEvidenceGraph } from './evidence-network.mjs';
+import { createBeamState, pulseOpacity } from './event-beams.mjs';
+import { buildTokenTelemetry } from './token-telemetry.mjs';
+import { parseReplayAt, collectReplayPages } from './replay-history.mjs';
 
 /* ------------------------------------------------------------------ *
  * environment / query
@@ -123,6 +132,9 @@ const initialReducedMotion = query.get('motion') === 'reduce'
 
 const BRIDGE_URL = normalizeBridgeUrl(query.get('bridge') || config.bridgeUrl || 'http://127.0.0.1:17817');
 const TOKEN = String(query.get('token') || config.token || '').trim();
+const REPLAY_SESSION = String(query.get('replay') || '').trim();
+const REPLAY_AT_INFO = parseReplayAt(query.get('at'));
+const TRACE_OPEN = query.get('trace') === '1';
 const QUERY_STATE = query.get('state');
 const PINNED_STATE = (QUERY_STATE && STATE_META[QUERY_STATE]) ? QUERY_STATE : null;
 /** Electron shell mode: window | overlay | compact. Overlay keeps the normal
@@ -161,6 +173,62 @@ const els = {
   eventList: $('event-list'),
   eventEmpty: $('event-empty'),
   eventCount: $('event-count'),
+  labHeadCount: $('lab-head-count'),
+  labFeedStatus: $('lab-feed-status'),
+  labFeedRows: $('lab-feed-rows'),
+  labTracePlot: $('lab-trace-plot'),
+  labToolSummary: $('lab-tool-summary'),
+  labWorkspaceDetails: $('lab-workspace-details'),
+  labSourceDetails: $('lab-source-details'),
+  labValidationDetails: $('lab-validation-details'),
+  labTypeDetails: $('lab-type-details'),
+  labWorkspaceCode: $('lab-workspace-code'),
+  labDifferenceCanvas: $('lab-difference-canvas'),
+  labSourceRoutesCanvas: $('lab-source-routes-canvas'),
+  labMethodCanvas: $('lab-method-canvas'),
+  labParticleCanvas: $('lab-particle-canvas'),
+  labTokenCanvas: $('lab-token-canvas'),
+  labTokenDetails: $('lab-token-details'),
+  labTokenFoot: $('lab-token-foot'),
+  labHosts: $('lab-hosts'),
+  labMasthead: $('lab-masthead'),
+  labKpiHosts: $('lab-kpi-hosts'),
+  labKpiSessions: $('lab-kpi-sessions'),
+  labKpiEvents: $('lab-kpi-events'),
+  labKpiTools: $('lab-kpi-tools'),
+  labKpiErrors: $('lab-kpi-errors'),
+  labRateCanvas: $('lab-rate-canvas'),
+  labRateWindow: $('lab-rate-window'),
+  labWaterfallCanvas: $('lab-waterfall-canvas'),
+  labTimeCanvas: $('lab-time-canvas'),
+  labFailCanvas: $('lab-fail-canvas'),
+  labMatrixCanvas: $('lab-matrix-canvas'),
+  labFeedFilter: $('lab-feed-filter'),
+  labFeedPause: $('lab-feed-pause'),
+  labFeedDetail: $('lab-feed-detail'),
+  labEvidence: $('lab-evidence'),
+  labEvidenceTitle: $('lab-evidence-title'),
+  labEvidenceBody: $('lab-evidence-body'),
+  labEvidenceClose: $('lab-evidence-close'),
+  replayBar: $('replay-bar'),
+  replaySession: $('replay-session'),
+  replayClock: $('replay-clock'),
+  replayPlay: $('replay-play'),
+  replayStep: $('replay-step'),
+  replaySpeed: $('replay-speed'),
+  replayClose: $('replay-close'),
+  tracePanel: $('trace-panel'),
+  traceBody: $('trace-body'),
+  traceClose: $('trace-close'),
+  traceWaterfallTab: $('trace-tab-waterfall'),
+  traceDagTab: $('trace-tab-dag'),
+  traceNetworkTab: $('trace-tab-network'),
+  traceCriticalTab: $('trace-tab-critical'),
+  btnTrace: $('btn-trace'),
+  btnAgents: $('btn-agents'),
+  agentPanel: $('agent-panel'),
+  btnLab: $('btn-lab'),
+  labConsole: $('lab-console'),
   feedMode: $('feed-mode'),
   linkStatus: $('link-status'),
   linkText: $('link-text'),
@@ -233,6 +301,11 @@ const state = {
   eventSource: null,
   connectTimer: null,
   qaSessions: false,
+  obsidianMetadata: null, // user-selected in-memory aggregate, never persisted or uploaded
+  feedPaused: false,
+  feedFilter: 'all',
+  feedSelectedKey: null,
+  replay: null,
 };
 
 let saveTimer = null;
@@ -252,6 +325,8 @@ const viz = createVisualizer({
   watchdog: true,
 });
 viz.start();
+viz.setExtraOverlay?.((ctx, info) => { drawTimeArc(ctx, info); drawEventBeams(ctx, info); });
+els.canvas?.addEventListener('click', handleTimeArcClick);
 if (Object.keys(initialOverrides).length > 0) {
   viz.setParams(initialOverrides);
 }
@@ -366,8 +441,10 @@ function applyPreset(name, options = {}) {
   state.overrides = {};
   state.uiValues = { ...PRESETS[name] };
   viz.setPreset(name);
+  document.body.dataset.preset = name;
   syncPresetButtons();
   syncParamControls();
+  renderLabMonitor();
   if (persist) persistPreferences();
   if (!silent) toast(`预设 · ${PRESET_META[name].nameZh} / ${PRESET_META[name].nameEn}`);
   return true;
@@ -550,6 +627,28 @@ function openAbout() {
 function closeAllOverlays() {
   closeDrawers();
   closeAbout();
+  const hadPanel = Boolean((els.tracePanel && !els.tracePanel.hidden) || (els.labEvidence && !els.labEvidence.hidden));
+  if (els.tracePanel) els.tracePanel.hidden = true;
+  if (els.labEvidence) els.labEvidence.hidden = true;
+  document.body.classList.remove('lab-open');
+  els.btnLab?.setAttribute('aria-expanded', 'false');
+  setAgentsOpen(false);
+  if (hadPanel) els.btnTrace?.focus();
+}
+
+function setAgentsOpen(open) {
+  const next = Boolean(open);
+  const wasOpen = document.body.classList.contains('agents-open');
+  document.body.classList.toggle('agents-open', next);
+  if (els.btnAgents) els.btnAgents.setAttribute('aria-expanded', String(next));
+  if (!next) {
+    if (wasOpen) els.btnAgents?.focus();
+    return;
+  }
+  // Move focus into the revealed list so keyboard users do not get stranded
+  // behind the overlay.
+  const focusable = els.agentPanel?.querySelector('button, [tabindex="0"], a[href]');
+  focusable?.focus();
 }
 
 /* ------------------------------------------------------------------ *
@@ -747,6 +846,950 @@ function renderEvents() {
   if (els.eventCount) els.eventCount.textContent = String(events.length);
 }
 
+/** Event detail: allowlisted fields only, rendered as text (never innerHTML). */
+function renderFeedDetail(event) {
+  if (!els.labFeedDetail) return;
+  if (!event) {
+    els.labFeedDetail.textContent = 'SELECT AN EVENT FOR ALLOWLISTED FIELDS';
+    return;
+  }
+  const parts = [
+    event.kind,
+    `HOST ${event.host || '—'}`,
+    `SRC ${event.source}`,
+    `CONF ${event.confidence}`,
+    `SESSION ${(event.sessionId || '—').slice(0, 10)}`,
+    `TOOL ${event.tool || '—'}`,
+    `CALL ${event.toolCallId || '—'}`,
+    `DUR ${event.durationMs == null ? '—' : `${event.durationMs} ms`}`,
+    `ERR ${event.errorCode || '—'}`,
+  ];
+  els.labFeedDetail.textContent = parts.join(' · ');
+}
+
+function canvasContext(canvas) {
+  if (!canvas) return null;
+  const width = Math.max(40, Math.round(canvas.clientWidth || 240));
+  const height = Math.max(16, Math.round(canvas.clientHeight || 44));
+  const dpr = Math.max(1, Math.min(3, window.devicePixelRatio || 1));
+  const pixelWidth = Math.round(width * dpr);
+  const pixelHeight = Math.round(height * dpr);
+  // Reallocating the backing store resets the canvas context and forces GPU
+  // uploads; only do it when CSS size or DPR actually changed.
+  if (canvas.width !== pixelWidth || canvas.height !== pixelHeight) {
+    canvas.width = pixelWidth;
+    canvas.height = pixelHeight;
+  }
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return null;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, width, height);
+  ctx.font = '8px "Cascadia Code", Consolas, monospace';
+  ctx.textBaseline = 'top';
+  return { ctx, width, height };
+}
+
+/** Tool event arrival rate over the last 120 s, bucketed by the analytics engine. */
+let lastRate = null;
+let lastFailureCount = 0;
+let traceTab = 'waterfall';
+let lastWaterfallRows = [];
+
+function drawToolWaterfallCanvas(events) {
+  const surface = canvasContext(els.labWaterfallCanvas);
+  if (!surface) return;
+  const { ctx, width, height } = surface;
+  const result = toolWaterfall(events.slice(-500));
+  lastWaterfallRows = result.rows.slice(-12).reverse();
+  ctx.strokeStyle = '#34343f';
+  ctx.beginPath();
+  ctx.moveTo(0, height - 2);
+  ctx.lineTo(width, height - 2);
+  ctx.stroke();
+  if (!lastWaterfallRows.length) {
+    ctx.fillStyle = '#7d7d8a';
+    ctx.fillText('NO CORRELATED TOOL ROWS · EVENT STORE INTACT', 2, height / 2 - 3);
+    return;
+  }
+  const rowH = (height - 6) / lastWaterfallRows.length;
+  const maxDuration = Math.max(1, ...lastWaterfallRows.map((row) => Number(row.durationMs) || 0));
+  lastWaterfallRows.forEach((row, index) => {
+    const y = 3 + index * rowH;
+    const label = String(row.toolName || row.eventType || 'tool').slice(0, 11).toUpperCase();
+    ctx.fillStyle = row.status === 'FAILED' ? '#c98383' : row.status === 'UNCORRELATED' ? '#7d7d8a' : '#d7d7e2';
+    ctx.font = '7px "Cascadia Code", Consolas, monospace';
+    ctx.fillText(label, 2, y);
+    const duration = Number(row.durationMs);
+    const x = 68;
+    const barW = Number.isFinite(duration) ? Math.max(2, Math.min(width - x - 9, (duration / maxDuration) * (width - x - 9))) : 2;
+    ctx.fillRect(x, y + 1, barW, Math.max(1, rowH - 3));
+    ctx.fillStyle = '#8f8f9d';
+    ctx.fillText(Number.isFinite(duration) ? `${Math.round(duration)}ms` : (row.status === 'UNCORRELATED' ? 'UNK' : '—'), width - 34, y);
+  });
+}
+
+function drawRateCanvas(events, now = Date.now()) {
+  const surface = canvasContext(els.labRateCanvas);
+  if (!surface) return;
+  const { ctx, width, height } = surface;
+  const toolOnly = events.filter((event) => typeof event.eventType === 'string' && event.eventType.startsWith('tool.'));
+  const rate = eventRate(toolOnly, { now, windowMs: 120_000, buckets: 12, cacheLimit: 30 });
+  lastRate = rate;
+  ctx.strokeStyle = '#3f3f49';
+  ctx.beginPath();
+  ctx.moveTo(0, height - 1);
+  ctx.lineTo(width, height - 1);
+  ctx.stroke();
+  if (rate.count === 0) {
+    ctx.fillStyle = '#7d7d8a';
+    ctx.fillText('NO TOOL EVENTS IN 120 S WINDOW', 2, Math.max(2, height / 2 - 4));
+    els.labRateWindow.textContent = 'RATE 120s · 10s BUCKET · 0 CACHED (NOT TOTAL)';
+    return;
+  }
+  const max = Math.max(1, ...rate.buckets);
+  const stepX = width / rate.buckets.length;
+  ctx.strokeStyle = '#d7d7df';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  rate.buckets.forEach((count, index) => {
+    const x = stepX * index + stepX / 2;
+    const y = height - 3 - (count / max) * (height - 8);
+    if (index === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+  ctx.fillStyle = '#8f8f9d';
+  ctx.fillText(`${rate.count} CACHED`, width - 56, 1);
+  els.labRateWindow.textContent = `RATE 120s · 10s BUCKET · ${rate.count} CACHED (NOT TOTAL) · λ=${rate.lambdaPerSecond.toFixed(3)}/s`;
+}
+
+/** Real failures/errors only; absence is explicitly not a pass. */
+function drawMatrixGrid(canvas, rowLabels, colLabels, counts) {
+  const surface = canvasContext(canvas);
+  if (!surface) return;
+  const { ctx, width, height } = surface;
+  const left = 26;
+  const top = 8;
+  const cw = (width - left - 2) / Math.max(1, colLabels.length);
+  const ch = Math.max(2, (height - top - 2) / Math.max(1, rowLabels.length));
+  const max = Math.max(1, ...counts.flat());
+  for (let row = 0; row < rowLabels.length; row += 1) {
+    ctx.fillStyle = '#8f8f9d';
+    ctx.font = '7px "Cascadia Code", Consolas, monospace';
+    ctx.fillText(String(rowLabels[row]).slice(0, 3), 1, top + row * ch + 4);
+    for (let col = 0; col < colLabels.length; col += 1) {
+      const value = counts[row]?.[col] || 0;
+      const alpha = value ? 0.18 + 0.82 * (value / max) : 0.04;
+      ctx.fillStyle = `rgba(225,225,235,${alpha})`;
+      ctx.fillRect(left + col * cw + 1, top + row * ch, Math.max(1, cw - 2), Math.max(1, ch - 2));
+    }
+  }
+  ctx.fillStyle = '#8f8f9d';
+  ctx.font = '7px "Cascadia Code", Consolas, monospace';
+  for (let col = 0; col < colLabels.length; col += 1) {
+    ctx.fillText(String(colLabels[col]).slice(0, 5), left + col * cw, height - 1);
+  }
+}
+
+function drawDifferenceField(events) {
+  if (!els.labDifferenceCanvas) return;
+  const samples = events.slice(-500);
+  const hosts = HOSTS.map((host) => host.id);
+  const sources = ['native', 'derived', 'simulated', 'unknown'];
+  const counts = hosts.map(() => sources.map(() => 0));
+  for (const event of samples) {
+    const row = hosts.indexOf(event.host);
+    if (row < 0) continue;
+    const source = event.source === 'host-native' ? 'native' : event.source === 'derived' ? 'derived' : event.source === 'simulated' ? 'simulated' : 'unknown';
+    counts[row][sources.indexOf(source)] += 1;
+  }
+  drawMatrixGrid(els.labDifferenceCanvas, hosts, sources, counts);
+}
+
+function drawSourceRoutes(events) {
+  if (!els.labSourceRoutesCanvas) return;
+  const samples = events.slice(-500);
+  const hosts = HOSTS.map((host) => host.id);
+  const sources = ['NAT', 'DRV', 'SIM', 'UNK'];
+  const counts = hosts.map(() => sources.map(() => 0));
+  for (const event of samples) {
+    const row = hosts.indexOf(event.host);
+    if (row < 0) continue;
+    const idx = event.source === 'host-native' ? 0 : event.source === 'derived' ? 1 : event.source === 'simulated' ? 2 : 3;
+    counts[row][idx] += 1;
+  }
+  drawMatrixGrid(els.labSourceRoutesCanvas, hosts, sources, counts);
+}
+
+function drawMethodMatrix(events) {
+  if (!els.labMethodCanvas) return;
+  const samples = events.slice(-500);
+  const types = [...new Set(samples.map((event) => event.eventType).filter(Boolean))].slice(-7);
+  const hosts = HOSTS.map((host) => host.id);
+  const counts = types.map(() => hosts.map(() => 0));
+  for (const event of samples) {
+    const row = types.indexOf(event.eventType);
+    const col = hosts.indexOf(event.host);
+    if (row >= 0 && col >= 0) counts[row][col] += 1;
+  }
+  drawMatrixGrid(els.labMethodCanvas, types.length ? types : ['—'], hosts, counts);
+}
+
+function drawParticleField(events, now) {
+  const surface = canvasContext(els.labParticleCanvas);
+  if (!surface) return;
+  const { ctx, width, height } = surface;
+  const latest = events[events.length - 1]?.timestamp || 0;
+  const seed = (latest % 100000) / 100000;
+  const t = now / 1800;
+  for (let i = 0; i < 86; i += 1) {
+    const a = i * 12.9898 + seed * 78.233;
+    const b = i * 4.1414 + seed * 37.719;
+    const x = ((Math.sin(a + t) * 43758.5453) % 1 + 1) % 1 * width;
+    const y = ((Math.cos(b - t * 0.7) * 24634.6345) % 1 + 1) % 1 * height;
+    const prevX = ((Math.sin(a + t - 0.2) * 43758.5453) % 1 + 1) % 1 * width;
+    const prevY = ((Math.cos(b - (t - 0.2) * 0.7) * 24634.6345) % 1 + 1) % 1 * height;
+    ctx.strokeStyle = `rgba(225,225,235,${0.12 + (i % 7) * 0.04})`;
+    ctx.beginPath(); ctx.moveTo(prevX, prevY); ctx.lineTo(x, y); ctx.stroke();
+    ctx.fillStyle = i % 9 === 0 ? '#ffffff' : '#b9b9c5';
+    ctx.fillRect(x, y, 1.3, 1.3);
+  }
+  ctx.fillStyle = '#7d7d8a';
+  ctx.font = '7px "Cascadia Code", Consolas, monospace';
+  ctx.fillText('VISUAL SIMULATION · NOT AGENT DYNAMICS', 2, height - 2);
+}
+
+function drawValidationCurves(events, now) {
+  const surface = canvasContext(els.labFailCanvas);
+  if (!surface) return;
+  const { ctx, width, height } = surface;
+  const samples = events.filter((event) => Number.isFinite(event.timestamp) && event.timestamp >= now - 120_000);
+  const buckets = 12;
+  const bucketMs = 10_000;
+  const series = [
+    { key: 'tool.start', color: '#e5e5ee', label: 'START' },
+    { key: 'tool.end', color: '#8f9bab', label: 'END' },
+    { key: 'fail', color: '#c98383', label: 'FAIL' },
+  ];
+  ctx.strokeStyle = '#34343f';
+  ctx.beginPath(); ctx.moveTo(0, height - 1); ctx.lineTo(width, height - 1); ctx.stroke();
+  for (const item of series) {
+    const values = Array(buckets).fill(0);
+    for (const event of samples) {
+      const age = now - event.timestamp;
+      if (age < 0 || age >= 120_000) continue;
+      const bucket = buckets - 1 - Math.floor(age / bucketMs);
+      if (bucket < 0 || bucket >= buckets) continue;
+      if (item.key === 'fail' ? /error|fail/i.test(event.eventType || '') : event.eventType === item.key) values[bucket] += 1;
+    }
+    const max = Math.max(1, ...values);
+    ctx.strokeStyle = item.color;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    values.forEach((value, index) => {
+      const x = (index / (buckets - 1)) * width;
+      const y = height - 3 - (value / max) * (height - 7);
+      if (index === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+    ctx.fillStyle = '#8f8f9d';
+    ctx.font = '7px "Cascadia Code", Consolas, monospace';
+    ctx.fillText(item.label, 2, 7 + series.indexOf(item) * 8);
+  }
+  lastFailureCount = samples.filter((event) => /error|fail/i.test(event.eventType || '')).length;
+}
+
+function drawTokenTelemetry(token) {
+  const surface = canvasContext(els.labTokenCanvas);
+  if (!surface) return;
+  const { ctx, width, height } = surface;
+  const hostSamples = token.hostSamples || [];
+  const simulatedSamples = token.simulatedSamples || [];
+  const samples = hostSamples.length ? hostSamples : simulatedSamples;
+  if (!samples.length) {
+    const used = token.field.contextUsed?.value;
+    const limit = token.field.contextLimit?.value;
+    if (Number.isFinite(used)) {
+      const ratio = Number.isFinite(limit) && limit > 0 ? Math.min(1, used / limit) : 0;
+      ctx.fillStyle = '#34343f';
+      ctx.fillRect(4, height - 12, width - 8, 6);
+      ctx.fillStyle = '#e5e5ee';
+      ctx.fillRect(4, height - 12, Math.max(1, (width - 8) * ratio), 6);
+      ctx.fillStyle = '#8f8f9d';
+      ctx.font = '7px "Cascadia Code", Consolas, monospace';
+      ctx.fillText(`CONTEXT ${used}${Number.isFinite(limit) ? ` / ${limit}` : ''} · OUTPUT UNAVAILABLE`, 2, 7);
+      return;
+    }
+    ctx.fillStyle = '#7d7d8a';
+    ctx.font = '8px "Cascadia Code", Consolas, monospace';
+    ctx.fillText('TOKEN USAGE · UNAVAILABLE', 2, height / 2 - 3);
+    return;
+  }
+  const max = Math.max(1, ...samples.map((sample) => sample.value));
+  const barW = Math.max(2, (width - 12) / samples.length - 1);
+  samples.slice(-40).forEach((sample, index) => {
+    const heightPx = Math.max(1, (sample.value / max) * (height - 12));
+    ctx.fillStyle = sample.source === 'simulated' ? '#b7b28a' : '#e5e5ee';
+    ctx.fillRect(6 + index * (barW + 1), height - 4 - heightPx, barW, heightPx);
+  });
+  ctx.fillStyle = '#8f8f9d';
+  ctx.font = '7px "Cascadia Code", Consolas, monospace';
+  ctx.fillText(hostSamples.length ? 'HOST-REPORTED output.end tokenCount' : 'SIMULATED tokenCount', 2, 7);
+}
+
+function drawFailureCanvas(events, now = Date.now()) {
+  const surface = canvasContext(els.labFailCanvas);
+  if (!surface) return;
+  const { ctx, width, height } = surface;
+  const windowMs = 120_000;
+  const failures = events.filter((event) => typeof event.eventType === 'string'
+    && (event.eventType === 'error' || event.eventType === 'tool.fail')
+    && typeof event.timestamp === 'number'
+    && event.timestamp >= now - windowMs);
+  ctx.strokeStyle = '#3f3f49';
+  ctx.beginPath();
+  ctx.moveTo(0, height - 1);
+  ctx.lineTo(width, height - 1);
+  ctx.stroke();
+  if (failures.length === 0) {
+    lastFailureCount = 0;
+    ctx.fillStyle = '#7d7d8a';
+    ctx.fillText('NO FAILURE EVENTS IN 120 S (NOT A PASS)', 2, Math.max(2, height / 2 - 4));
+    return;
+  }
+  lastFailureCount = failures.length;
+  for (const event of failures) {
+    const ratio = Math.max(0, Math.min(1, (now - event.timestamp) / windowMs));
+    const x = width - ratio * width;
+    ctx.fillStyle = '#c98383';
+    ctx.fillRect(Math.max(0, Math.min(width - 1, x)), 2, 1, height - 4);
+  }
+  ctx.fillStyle = '#9b9ba8';
+  ctx.fillText(`${failures.length} CACHED`, width - 48, 1);
+}
+
+/** Host x state matrix from real sessions (no synthetic population). */
+function drawMatrixCanvas() {
+  const surface = canvasContext(els.labMatrixCanvas);
+  if (!surface) return;
+  const { ctx, width, height } = surface;
+  const states = ['running', 'tool', 'waiting_approval', 'done', 'error', 'disconnected'];
+  const labelHeight = 9;
+  const cellW = width / HOSTS.length;
+  const cellH = (height - labelHeight) / states.length;
+  ctx.fillStyle = '#9a9aa6';
+  HOSTS.forEach((host, index) => {
+    ctx.fillText(host.short, index * cellW + 2, 0);
+  });
+  for (let row = 0; row < states.length; row += 1) {
+    for (let col = 0; col < HOSTS.length; col += 1) {
+      const count = state.sessions.filter((session) => session.host === HOSTS[col].id && session.state === states[row]).length;
+      const intensity = count === 0 ? 0 : Math.min(1, 0.3 + count * 0.3);
+      ctx.fillStyle = count === 0 ? '#0c0c10' : `rgba(214,214,222,${intensity})`;
+      ctx.fillRect(col * cellW + 1, labelHeight + row * cellH + 1, Math.max(1, cellW - 2), Math.max(1, cellH - 1));
+    }
+  }
+  ctx.strokeStyle = '#2c2c35';
+  ctx.strokeRect(0.5, labelHeight + 0.5, width - 1, height - labelHeight - 1);
+}
+
+/** P4.0 history time band: real event timestamps as ticks; replay cursor. */
+let arcCache = { key: '', arc: null };
+const beamState = createBeamState({ max: 36, minGapMs: 40 });
+let beamReplayCursor = 0;
+let beamLiveCursor = 0;
+
+function drawEventBeams(ctx, info) {
+  const geom = info?.geometry;
+  if (!geom || !(geom.W > 0 && geom.H > 0)) return;
+  const replay = state.replay;
+  const now = performance.now();
+  if (state.reducedMotion || (replay && !replay.playing)) return;
+  if (replay) {
+    if (replay.index < beamReplayCursor) {
+      beamState.seen.clear();
+      beamState.pulses.length = 0;
+      beamReplayCursor = 0;
+    }
+    if (replay.index >= beamReplayCursor) {
+      beamState.ingest(replay.events.slice(beamReplayCursor, replay.index + 1), now);
+      beamReplayCursor = replay.index + 1;
+    }
+  } else if (state.events.length > beamLiveCursor) {
+    // LIVE keeps its own event-id set; REPLAY never mixes into it.
+    beamState.ingest(state.events.slice(beamLiveCursor), now);
+    beamLiveCursor = state.events.length;
+  }
+  const active = beamState.active(now, 2200).slice(-8);
+  const xStart = geom.W * 0.62;
+  const xEnd = geom.W * 0.93;
+  const lanes = [
+    { type: 'tool.start', label: 'START →', y: geom.H * 0.22 },
+    { type: 'tool.end', label: '← END', y: geom.H * 0.34 },
+    { type: 'tool.fail', label: 'FAIL', y: geom.H * 0.46 },
+    { type: 'tool.retry', label: 'RETRY', y: geom.H * 0.58 },
+  ];
+  ctx.save();
+  ctx.font = '7px "Cascadia Code", Consolas, monospace';
+  for (const lane of lanes) {
+    const seen = active.some((pulse) => pulse.type === lane.type);
+    ctx.strokeStyle = 'rgba(180,180,192,.20)';
+    ctx.setLineDash([2, 4]);
+    ctx.beginPath(); ctx.moveTo(xStart, lane.y); ctx.lineTo(xEnd, lane.y); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = lane.type === 'tool.retry' ? 'rgba(150,150,162,.55)' : 'rgba(225,225,235,.65)';
+    ctx.fillText(lane.label, xStart, lane.y - 5);
+    if (!seen) {
+      ctx.fillStyle = 'rgba(120,120,132,.55)';
+      ctx.fillText(lane.type === 'tool.retry' ? 'UNSUPPORTED · NO SCHEMA TYPE' : 'UNOBSERVED', xEnd - 86, lane.y - 5);
+    }
+  }
+  for (let i = 0; i < active.length; i += 1) {
+    const pulse = active[i];
+    const alpha = pulseOpacity(pulse, now, 2200);
+    const lane = lanes.find((item) => item.type === pulse.type) || lanes[0];
+    const y = lane.y;
+    const width = (xEnd - xStart) * (0.45 + ((i * 37) % 10) / 20);
+    ctx.globalAlpha = Math.min(0.95, alpha) * (pulse.confidence === 'confirmed' ? 1 : 0.6);
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 1.6;
+    ctx.setLineDash(pulse.type === 'tool.retry' ? [3, 3] : []);
+    ctx.beginPath();
+    if (pulse.direction === 'in') {
+      ctx.moveTo(xStart + width, y);
+      ctx.lineTo(xStart + width * 0.25, y);
+      ctx.lineTo(xStart + width * 0.25 + 5, y - 3);
+      ctx.moveTo(xStart + width * 0.25, y);
+      ctx.lineTo(xStart + width * 0.25 + 5, y + 3);
+    } else if (pulse.direction === 'fail') {
+      ctx.moveTo(xStart, y);
+      ctx.lineTo(xStart + width * 0.55, y);
+      ctx.lineTo(xStart + width * 0.62, y - 5);
+      ctx.lineTo(xStart + width * 0.70, y + 5);
+      ctx.lineTo(xStart + width * 0.78, y);
+    } else {
+      ctx.moveTo(xStart, y);
+      ctx.lineTo(xStart + width, y);
+      ctx.lineTo(xStart + width - 5, y - 3);
+      ctx.moveTo(xStart + width, y);
+      ctx.lineTo(xStart + width - 5, y + 3);
+    }
+    ctx.stroke();
+    ctx.globalAlpha = Math.min(0.9, alpha);
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath(); ctx.arc(xStart + width, y, 1.8, 0, Math.PI * 2); ctx.fill();
+    if (i === active.length - 1) {
+      ctx.fillStyle = 'rgba(225,225,235,.7)';
+      ctx.fillText(`${pulse.type} · ${pulse.eventId.slice(0, 14)}`, xStart, y + 8);
+    }
+  }
+  ctx.setLineDash([]);
+  ctx.globalAlpha = 1;
+  ctx.restore();
+  window.__halofluxBeams = active.map((pulse) => ({ eventId: pulse.eventId, type: pulse.type, source: pulse.source, confidence: pulse.confidence }));
+}
+
+function arcRadius(geom) {
+  return Math.max(80, Math.min(geom.RO || geom.R || 120, Math.min(geom.W, geom.H) * 0.45)) + 6;
+}
+
+function drawTimeArc(ctx, info) {
+  const geom = info?.geometry;
+  if (!geom || !(geom.W > 0 && geom.H > 0)) return;
+  const replay = state.replay;
+  const list = replay ? replay.events : state.events;
+  if (!Array.isArray(list) || list.length === 0) return;
+  const key = replay
+    ? `r:${replay.sessionId}:${list.length}:${list[0]?.timestamp}:${list[list.length - 1]?.timestamp}`
+    : `l:${list.length}:${list[list.length - 1]?.timestamp || 0}`;
+  if (arcCache.key !== key) {
+    arcCache = {
+      key,
+      arc: replay ? buildTimeArc(list, { bins: 256 }) : buildTimeArc(list, { bins: 256, windowMs: 120_000, now: Date.now() }),
+    };
+  }
+  const arc = arcCache.arc;
+  if (!arc || arc.visible === 0) return;
+  const cx = geom.cx;
+  const cy = geom.cy;
+  const radius = arcRadius(geom);
+  const max = Math.max(1, ...arc.counts);
+  ctx.save();
+  // Faint full-circle axis; event ticks are the only bright marks.
+  ctx.strokeStyle = 'rgba(225,225,235,.16)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+  ctx.stroke();
+  for (let i = 0; i < arc.counts.length; i += 1) {
+    const count = arc.counts[i];
+    if (!count) continue;
+    const ratio = i / Math.max(1, arc.counts.length - 1);
+    const angle = ratio * Math.PI * 2;
+    const x1 = cx + Math.sin(angle) * radius;
+    const y1 = cy - Math.cos(angle) * radius;
+    const len = 3 + Math.min(20, (count / max) * 20);
+    const x2 = cx + Math.sin(angle) * (radius + len);
+    const y2 = cy - Math.cos(angle) * (radius + len);
+    ctx.strokeStyle = arc.simulated[i] >= count * 0.5 ? '#b7b28a'
+      : arc.derived[i] >= count * 0.5 ? '#8997a6' : '#e5e5ee';
+    ctx.globalAlpha = 0.4 + Math.min(0.6, count / max);
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+  const cursorEvent = replay ? replay.events[replay.index] : list[list.length - 1];
+  if (cursorEvent && Number.isFinite(cursorEvent.timestamp)) {    const ratio = replay ? angleForTimestamp(cursorEvent.timestamp, arc) / (Math.PI * 2) : 1;
+    const angle = ratio * Math.PI * 2;
+    const x1 = cx + Math.sin(angle) * (radius - 8);
+    const y1 = cy - Math.cos(angle) * (radius - 8);
+    const x2 = cx + Math.sin(angle) * (radius + 28);
+    const y2 = cy - Math.cos(angle) * (radius + 28);
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(x2, y2, 2.2, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.fillStyle = 'rgba(232,232,240,.72)';
+  ctx.font = '8px "Cascadia Code", Consolas, monospace';
+  ctx.fillText(`TIME ARC · ${arc.visible} EVENTS`, cx + radius * 0.55, cy - radius - 18);
+  window.__halofluxArc = {
+    cx, cy, radius, index: replay?.index ?? -1,
+    clock: els.replayClock?.textContent || '',
+    arc: { start: arc.start, end: arc.end, visible: arc.visible },
+  };
+  ctx.restore();
+}
+
+function handleTimeArcClick(event) {
+  const replay = state.replay;
+  if (!replay || !arcCache.arc) return;
+  const geom = viz.getGeometry?.();
+  if (!geom) return;
+  const rect = els.canvas.getBoundingClientRect();
+  const x = event.clientX - rect.left;
+  const y = event.clientY - rect.top;
+  const dx = x - geom.cx;
+  const dy = y - geom.cy;
+  const distance = Math.hypot(dx, dy);
+  const radius = arcRadius(geom);
+  if (Math.abs(distance - radius) > 30) return;
+  let angle = Math.atan2(dx, -dy);
+  if (angle < 0) angle += Math.PI * 2;
+  const timestamp = timestampForRatio(angle / (Math.PI * 2), arcCache.arc);
+  const index = eventIndexAtTimestamp(arcCache.arc, timestamp);
+  if (index < 0) return;
+  const target = replay.events[index];
+  if (!target) return;
+  replay.index = index;
+  replay.elapsedMs = Math.max(0, target.timestamp - replay.events[0].timestamp);
+  replay.elapsedBase = replay.elapsedMs;
+  replay.anchor = performance.now();
+  replay.playing = false;
+  if (els.replayPlay) els.replayPlay.textContent = 'RESUME';
+  applyReplayFrame(index);
+}
+
+function drawTimeBand() {
+  const surface = canvasContext(els.labTimeCanvas);
+  if (!surface) return;
+  const { ctx, width, height } = surface;
+  const replay = state.replay;
+  const list = replay ? replay.events : state.events;
+  const now = Date.now();
+  const start = replay && list.length ? list[0].timestamp : now - 120_000;
+  const end = replay && list.length ? list[list.length - 1].timestamp : now;
+  const span = Math.max(1, end - start);
+  ctx.strokeStyle = '#3a3a44';
+  ctx.beginPath();
+  ctx.moveTo(0, height - 4);
+  ctx.lineTo(width, height - 4);
+  ctx.stroke();
+  if (replay?.prepared?.density) {
+    // Pixel-column aggregation: never draw 20k overlapping ticks per frame.
+    const bins = replay.prepared.density;
+    const max = Math.max(1, ...bins);
+    for (let x = 0; x < width; x += 1) {
+      const bin = Math.min(bins.length - 1, Math.floor((x / Math.max(1, width - 1)) * (bins.length - 1)));
+      if (!bins[bin]) continue;
+      ctx.fillStyle = bins[bin] > max * 0.5 ? '#e4e4ec' : '#7f8f9f';
+      const h = Math.max(1, Math.min(height - 8, Math.round((bins[bin] / max) * (height - 8))));
+      ctx.fillRect(x, height - 4 - h, 1, h);
+    }
+  } else {
+    for (const event of list) {
+      if (typeof event.timestamp !== 'number' || event.timestamp < start || event.timestamp > end) continue;
+      const x = ((event.timestamp - start) / span) * width;
+      ctx.fillStyle = event.source === 'simulated' ? '#8f8f66' : event.source === 'derived' ? '#7f8f9f' : '#e4e4ec';
+      ctx.fillRect(Math.max(0, Math.min(width - 1, x)), 5, 1, height - 10);
+    }
+  }
+  if (replay && list.length) {
+    const cursorTime = list[replay.index]?.timestamp ?? start;
+    const x = ((cursorTime - start) / span) * width;
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(Math.max(0, Math.min(width - 1, x)), 2, 2, height - 5);
+  }
+}
+
+/** Evidence Inspector: formula, inputs, sample size and limitation for a panel. */
+function showEvidence(kind) {
+  if (!els.labEvidence || !els.labEvidenceBody) return;
+  const rows = [];
+  const add = (label, value) => rows.push([label, value == null || value === '' ? '—' : String(value)]);
+  if (kind === 'rate') {
+    const meta = METRIC_REGISTRY.eventRate;
+    els.labEvidenceTitle.textContent = 'TOOL EVENT RATE · EVIDENCE';
+    add('FORMULA', meta.formula);
+    add('WINDOW', lastRate ? `${lastRate.windowMs / 1000}s · ${lastRate.bucketMs / 1000}s buckets` : '120s');
+    add('SAMPLES', lastRate ? lastRate.count : 0);
+    add('λ', lastRate ? `${lastRate.lambdaPerSecond.toFixed(3)} events/s` : '—');
+    add('EVIDENCE', lastRate ? lastRate.evidence : 'UNKNOWN');
+    add('LIMITATION', meta.limitation);
+  } else if (kind === 'failure') {
+    els.labEvidenceTitle.textContent = 'FAILURE TRACE · EVIDENCE';
+    add('FORMULA', 'count of error / tool.fail timestamps inside the 120 s window');
+    add('WINDOW', '120 s');
+    add('SAMPLES', lastFailureCount);
+    add('EVIDENCE', 'OBSERVED_NATIVE if source=host-native; otherwise DERIVED/SIMULATED');
+    add('LIMITATION', 'no failure events is NOT a validation pass; PASS/FAIL stays unknown');
+  } else {
+    els.labEvidenceTitle.textContent = 'AGENT ACTIVITY MATRIX · EVIDENCE';
+    add('FORMULA', 'count of sessions per host × observed state');
+    add('SAMPLES', state.sessions.length);
+    add('HOSTS', projectionHostCount());
+    add('EVIDENCE', 'OBSERVED_NATIVE / DERIVED / SIMULATED per event');
+    add('LIMITATION', 'empty cells mean no session in that state, not a healthy state');
+  }
+  clearNode(els.labEvidenceBody);
+  for (const [label, value] of rows) {
+    const row = make('div');
+    row.append(make('span', '', label), make('strong', '', value));
+    els.labEvidenceBody.appendChild(row);
+  }
+  els.labEvidence.hidden = false;
+}
+
+function projectionHostCount() {
+  return new Set(state.sessions.map((session) => session.host)).size;
+}
+
+function showTraceEvidence(row) {
+  if (!els.labEvidence || !els.labEvidenceBody) return;
+  els.labEvidenceTitle.textContent = 'TOOL CALL · EVIDENCE';
+  clearNode(els.labEvidenceBody);
+  const entries = [
+    ['EVENT ID', row.eventId || '—'],
+    ['SESSION', row.sessionId || '—'],
+    ['RUN', row.runId || '—'],
+    ['TOOL CALL', row.toolCallId || '—'],
+    ['SOURCE', `${row.source || 'unknown'} / ${row.confidence || 'unknown'}`],
+    ['STATUS', row.status || '—'],
+    ['DURATION', row.durationMs == null ? '—' : `${row.durationMs} ms`],
+    ['LIMITATION', 'cache/replay events only; duration is derived from matched start/end'],
+  ];
+  for (const [label, value] of entries) {
+    const line = make('div');
+    line.append(make('span', '', label), make('strong', '', String(value)));
+    els.labEvidenceBody.appendChild(line);
+  }
+  els.labEvidence.hidden = false;
+}
+
+function renderEvidenceNetwork() {
+  const graph = buildEvidenceGraph({
+    sessions: state.sessions,
+    events: state.events,
+    selectedSessionId: state.selectedSessionId,
+    maxEvents: 40,
+  });
+  els.traceBody.appendChild(make('h4', '', `EVIDENCE NETWORK · ${graph.sampledEvents}/${graph.eventCount} EVENTS · ${graph.runCount} RUNS`));
+  els.traceBody.appendChild(make('div', 'trace-note', 'OWNERSHIP = sessionId/runId fields · CAUSAL = parentSpanId matching an observed spanId. No timestamp proximity is used as causality.'));
+  if (!graph.sessionId) {
+    els.traceBody.appendChild(make('div', 'trace-note', 'UNKNOWN · no selected session.'));
+    return;
+  }
+  const cluster = make('div', 'evidence-network');
+  const sessionNode = graph.nodes.find((node) => node.kind === 'session');
+  if (sessionNode) {
+    const line = make('div', 'network-node network-session', `SESSION · ${sessionNode.label} · ${sessionNode.eventCount} events`);
+    cluster.appendChild(line);
+  }
+  for (const node of graph.nodes.filter((item) => item.kind === 'run')) {
+    cluster.appendChild(make('div', 'network-node network-run', `RUN · ${node.label} · ${node.count} events · ${node.sources.join('/')}`));
+  }
+  for (const edge of graph.edges.filter((item) => item.kind === 'causal' || item.kind === 'unknown').slice(-24)) {
+    cluster.appendChild(make('div', edge.kind === 'causal' ? 'network-edge causal' : 'network-edge unknown',
+      `${edge.kind === 'causal' ? 'CAUSAL' : 'UNKNOWN'} · ${edge.from} → ${edge.to} · ${edge.evidence}`));
+  }
+  for (const node of graph.nodes.filter((item) => item.kind === 'event')) {
+    const line = make('div', 'network-node network-event', `EVENT · ${node.label} · ${node.event?.eventId || 'no id'} · ${node.source}/${node.confidence} · ${formatClock(node.timestamp)}`);
+    line.tabIndex = 0;
+    line.setAttribute('role', 'button');
+    line.title = node.evidence || 'observed event';
+    const open = () => showTraceEvidence(node.event);
+    line.addEventListener('click', open);
+    line.addEventListener('keydown', (domEvent) => { if (domEvent.key === 'Enter' || domEvent.key === ' ') { domEvent.preventDefault(); open(); } });
+    cluster.appendChild(line);
+  }
+  els.traceBody.appendChild(cluster);
+  if (graph.unknownParents) els.traceBody.appendChild(make('div', 'trace-note', `${graph.unknownParents} UNKNOWN PARENT EDGE(S) · shown, never repaired by guessing.`));
+  if (graph.unassignedEvents) els.traceBody.appendChild(make('div', 'trace-note', `${graph.unassignedEvents} EVENT(S) WITHOUT runId · ownership UNKNOWN.`));
+  els.traceBody.appendChild(make('div', 'trace-note', graph.limitation));
+}
+
+function setTraceTab(tab) {
+  traceTab = tab;
+  for (const [key, button] of [['waterfall', els.traceWaterfallTab], ['dag', els.traceDagTab], ['network', els.traceNetworkTab], ['critical', els.traceCriticalTab]]) {
+    if (button) button.setAttribute('aria-selected', String(key === tab));
+  }
+  clearNode(els.traceBody);
+  if (tab === 'waterfall') {
+    const result = toolWaterfall(state.events);
+    const visibleRows = result.rows.slice(-300);
+    els.traceBody.appendChild(make('h4', '', `TOOL WATERFALL · ${result.rows.length} PAIRS · ${result.uncorrelated} UNCORRELATED`));
+    for (const row of [...visibleRows].reverse()) {
+      const line = make('div', 'trace-row', `${formatClock(row.timestamp)} · ${row.toolName || '—'} · ${row.status} · ${row.durationMs == null ? '—' : `${row.durationMs} ms`} · ${row.source || 'unknown'} · ${row.eventId || 'no eventId'}`);
+      line.dataset.status = row.status;
+      line.tabIndex = 0;
+      line.setAttribute('role', 'button');
+      line.title = `${row.eventId || 'no eventId'} · ${row.toolCallId || 'no callId'} · ${row.source || 'unknown'}`;
+      const open = () => showTraceEvidence(row);
+      line.addEventListener('click', open);
+      line.addEventListener('keydown', (domEvent) => { if (domEvent.key === 'Enter') open(); });
+      els.traceBody.appendChild(line);
+    }
+    if (result.rows.length === 0) els.traceBody.appendChild(make('div', 'trace-note', 'NO CORRELATED TOOL CALLS IN CACHE · TIMELINE ONLY'));
+    if (result.rows.length > visibleRows.length) {
+      els.traceBody.appendChild(make('div', 'trace-note', `SHOWING LAST ${visibleRows.length}/${result.rows.length} ROWS · FULL DATA REMAINS IN EVENT STORE`));
+    }
+    els.traceBody.appendChild(make('div', 'trace-note', 'Every row maps to a stored/cached eventId; unpaired calls stay UNCORRELATED.'));
+  } else if (tab === 'dag') {
+    const spans = state.events.filter((event) => event.spanId || event.parentSpanId || event.traceId);
+    els.traceBody.appendChild(make('h4', '', `EXECUTION DAG · ${spans.length} SPAN-TAGGED EVENTS`));
+    if (spans.length === 0) {
+      els.traceBody.appendChild(make('div', 'trace-note', 'NO TRUSTED DEPENDENCY EDGES · TIMELINE ONLY'));
+      for (const event of state.events.slice(-20).reverse()) {
+        els.traceBody.appendChild(make('div', 'trace-row', `${formatClock(event.timestamp)} · ${event.eventType} · ${event.source || 'unknown'} · ${event.eventId || 'no eventId'}`));
+      }
+    } else {
+      for (const event of spans.slice(-30)) {
+        const parent = event.parentSpanId ? state.events.find((candidate) => candidate.spanId === event.parentSpanId) : null;
+        els.traceBody.appendChild(make('div', 'trace-row', `${event.spanId || '—'} ← ${parent ? `${parent.spanId} (${parent.eventId || 'no id'})` : 'UNKNOWN PARENT'}`));
+      }
+    }
+    els.traceBody.appendChild(make('div', 'trace-note', 'Edges are shown only when parentSpanId matches an observed spanId; otherwise UNKNOWN.'));
+  } else if (tab === 'network') {
+    renderEvidenceNetwork();
+  } else {
+    const tasks = state.events
+      .filter((event) => event.taskId && event.dependsOn)
+      .map((event) => ({ id: event.taskId, dependsOn: event.dependsOn, durationMs: event.durationMs }));
+    const result = criticalPath(tasks);
+    els.traceBody.appendChild(make('h4', 'CRITICAL PATH'));
+    els.traceBody.appendChild(make('div', 'trace-note', result.durationMs == null
+      ? 'UNKNOWN · no trusted task dependency graph in the observed events. Formula available, data absent.'
+      : `${result.durationMs} ms · path ${result.path.join(' → ')}`));
+    els.traceBody.appendChild(make('div', 'trace-note', 'T = max_path Σ duration_i; requires explicit dependsOn edges.'));
+  }
+}
+
+function openTrace() {
+  if (!els.tracePanel) return;
+  els.tracePanel.hidden = false;
+  setTraceTab('waterfall');
+  els.traceClose?.focus();
+}
+let lastInstrumentAt = 0;
+let lastInstrumentKey = '';
+
+function renderLabMonitor() {
+  if (!els.labFeedRows) return;
+  const projection = projectMonitor({
+    hosts: HOSTS,
+    sessions: state.sessions,
+    events: state.replay ? state.events.slice(-200) : state.events,
+    selectedSessionId: state.selectedSessionId,
+    mode: state.mode,
+  });
+  if (state.replay) {
+    // The replay view keeps at most the visible prefix in state.events; the
+    // full count/tool/error totals come from prepared prefix counters.
+    projection.eventCount = state.replay.index + 1;
+    projection.selectedEventCount = state.replay.index + 1;
+    projection.toolEventCount = state.replay.prepared.toolCountAt(state.replay.index);
+    projection.errorEventCount = state.replay.prepared.errorCountAt(state.replay.index);
+    projection.selectedToolEventCount = projection.toolEventCount;
+  }
+  const active = projection.selected;
+  els.labHeadCount.textContent = `${projection.observedHostCount}/${projection.hostCount} HOSTS · ${projection.sessionCount} SESSIONS · ${projection.eventCount} EVENTS`;
+  els.labFeedStatus.textContent = projection.mode === 'simulated' ? 'SIMULATED' : projection.mode.toUpperCase();
+  if (els.labMasthead) {
+    els.labKpiHosts.textContent = `${projection.observedHostCount}/${projection.hostCount}`;
+    els.labKpiSessions.textContent = String(projection.sessionCount);
+    els.labKpiEvents.textContent = String(projection.eventCount);
+    els.labKpiTools.textContent = String(projection.toolEventCount);
+    els.labKpiErrors.textContent = String(projection.errorEventCount);
+  }
+
+  const feedEvents = projection.recent.filter((event) => {
+    if (state.feedFilter === 'tool') return typeof event.kind === 'string' && event.kind.startsWith('tool.');
+    if (state.feedFilter === 'error') return typeof event.kind === 'string' && /error|fail/i.test(event.kind);
+    if (state.feedFilter === 'output') return typeof event.kind === 'string' && event.kind.startsWith('output.');
+    return true;
+  });
+  if (!state.feedPaused) {
+    clearNode(els.labFeedRows);
+    if (feedEvents.length === 0) {
+      els.labFeedRows.appendChild(make('li', 'lab-empty', '— 等待事件桥提供可观测事件'));
+    }
+    for (const event of feedEvents) {
+      const row = make('li', 'lab-feed-row');
+      row.tabIndex = 0;
+      row.setAttribute('role', 'button');
+      row.dataset.key = event.key;
+      row.setAttribute('aria-selected', String(state.feedSelectedKey === event.key));
+      row.title = `${event.host || 'unknown host'} · ${event.source}`;
+      row.append(make('time', '', event.timestamp === null ? '—' : formatClock(event.timestamp)));
+      row.append(make('b', '', event.kind));
+      row.append(make('span', '', event.tool || '—'));
+      row.append(make('i', '', event.source === 'simulated' ? 'SIM' : event.source === 'host-native' ? 'NAT' : event.source === 'derived' ? 'DRV' : 'UNK'));
+      const select = () => {
+        state.feedSelectedKey = event.key;
+        renderFeedDetail(event);
+        for (const other of els.labFeedRows.querySelectorAll('.lab-feed-row')) {
+          other.setAttribute('aria-selected', String(other.dataset.key === event.key));
+        }
+      };
+      row.addEventListener('click', select);
+      row.addEventListener('keydown', (domEvent) => {
+        if (domEvent.key === 'Enter' || domEvent.key === ' ') { domEvent.preventDefault(); select(); }
+      });
+      els.labFeedRows.appendChild(row);
+    }
+    if (state.feedSelectedKey && !projection.recent.some((event) => event.key === state.feedSelectedKey)) {
+      state.feedSelectedKey = null;
+      renderFeedDetail(null);
+    }
+  }
+
+  // Micro canvases: every pixel is derived from cached observed events.
+  // F-10: REPLAY statistics follow the replay cursor, not today's wall clock.
+  const canvasEvents = state.events;
+  const selectedEvents = canvasEvents.filter((event) => event.sessionId === state.selectedSessionId);
+  const clockNow = replayNow({ replay: state.replay, liveNow: Date.now() });
+  const canvasStart = performance.now();
+  drawRateCanvas(selectedEvents, clockNow);
+  drawToolWaterfallCanvas(selectedEvents);
+  drawMatrixCanvas();
+  drawTimeBand();
+  addPerfPhase('canvases', performance.now() - canvasStart);
+  els.labToolSummary.textContent = `TOOL ${projection.selectedToolEventCount} / CACHED ${projection.eventCount}`;
+
+  const detail = (target, entries) => {
+    clearNode(target);
+    for (const [label, value] of entries) {
+      const row = make('div', 'lab-detail');
+      row.append(make('span', '', label), make('strong', '', String(value)));
+      target.appendChild(row);
+    }
+  };
+  const unknown = (value) => value == null || value === '' ? '—' : value;
+  const metric = (value) => value == null ? '—' : String(value);
+  const toolLine = active?.toolName
+    ? `${active.toolName} · ${active.lastToolDurationMs == null ? '—' : `${active.lastToolDurationMs} ms`} · ${active.lastToolCorrelated ? 'CORRELATED' : (active.selectedToolEventCount ? 'UNCORRELATED' : '—')}`
+    : '—';
+  const latestEvent = state.events[state.events.length - 1] || null;
+  detail(els.labWorkspaceDetails, [
+    ['HOST / STATE', active ? `${active.host} / ${active.state}` : '— / disconnected'],
+    ['RUN', latestEvent?.metadata?.runId || latestEvent?.runId || '—'],
+    ['PHASE', active?.state || '—'],
+  ]);
+  if (els.labWorkspaceCode) {
+    clearNode(els.labWorkspaceCode);
+    for (const event of state.events.slice(-4)) {
+      const line = make('div', 'ws-line');
+      line.append(
+        make('span', '', formatClock(event.timestamp)),
+        make('span', '', event.eventType || '—'),
+        make('span', '', `${event.metadata?.toolName || '—'} · step ${event.metadata?.step ?? '—'} · ${event.metadata?.durationMs == null ? '—' : `${event.metadata.durationMs}ms`}`),
+        make('span', '', String(event.eventId || '—').slice(-10)),
+      );
+      els.labWorkspaceCode.appendChild(line);
+    }
+  }
+  detail(els.labSourceDetails, [
+    ['TRANSPORT', projection.mode.toUpperCase()],
+    ['SOURCE', unknown(active?.source)],
+    ['CONFIDENCE', unknown(active?.confidence)],
+    ['MODEL', unknown(active?.model)],
+    ['CONTEXT USED', metric(active?.contextUsed)],
+    ['CONTEXT LIMIT', metric(active?.contextLimit)],
+  ]);
+  detail(els.labValidationDetails, [
+    ['ERROR EVENTS / CACHE', String(projection.errorEventCount)],
+    ['WARNING FLAGS', active ? String(active.warnings.length) : '—'],
+    ['HOST VERIFICATION', 'SEE HOST MATRIX'],
+    ['PASS / FAIL', '— / —'],
+    ['OBSERVATION', `120s WINDOW · ${projection.selectedEventCount} CACHED`],
+  ]);
+  detail(els.labTypeDetails, projection.types.length ? projection.types.map(([key, countValue]) => [key, countValue]) : [['EVENT TYPES', '—']]);
+
+  const token = buildTokenTelemetry({
+    events: state.events,
+    sessions: state.sessions,
+    selectedSessionId: state.selectedSessionId,
+    snapshotTimestamp: clockNow,
+    snapshotMode: state.replay ? 'replay' : 'current',
+    visibleEventIds: state.replay ? new Set(state.events.map((event) => event.eventId)) : null,
+  });
+  const tokenValue = (field) => field.value === null ? 'UNAVAILABLE' : `${field.value} · ${field.status}`;
+  detail(els.labTokenDetails, [
+    ['SESSION', token.sessionResolution],
+    ['OUTPUT', tokenValue(token.field.outputTokens)],
+    ['COVERAGE', `${token.field.outputTokens.withToken}/${token.field.outputTokens.outputEnd} host output.end`],
+    ['CONTEXT', tokenValue(token.field.contextUsed)],
+  ]);
+  if (els.labTokenFoot) {
+    const coverage = `${Math.round((token.field.outputTokens.coverage || 0) * 100)}% HOST COVERAGE`;
+    els.labTokenFoot.textContent = token.available
+      ? `${token.simulated ? 'SIMULATED · ' : ''}${token.hostSamples.length} HOST SAMPLES · ${coverage} · input/cache/reasoning/TTFT UNAVAILABLE`
+      : 'UNAVAILABLE · no request-level usage fields forwarded';
+  }
+  const instrumentKey = `${state.selectedSessionId}:${state.events.length}:${Math.floor(clockNow / 500)}:${state.mode}`;
+  if (instrumentKey !== lastInstrumentKey || performance.now() - lastInstrumentAt > 500) {
+    lastInstrumentKey = instrumentKey;
+    lastInstrumentAt = performance.now();
+    drawDifferenceField(selectedEvents);
+    drawSourceRoutes(selectedEvents);
+    drawMethodMatrix(selectedEvents);
+    drawParticleField(selectedEvents, clockNow);
+    drawValidationCurves(selectedEvents, clockNow);
+    drawTokenTelemetry(token);
+  }
+  clearNode(els.labHosts);
+  for (const host of projection.hosts) {
+    const row = make('button', 'lab-host');
+    row.type = 'button';
+    row.dataset.host = host.id;
+    row.dataset.state = host.state;
+    row.setAttribute('aria-pressed', String(host.selected));
+    row.append(make('span', 'lab-host-short', host.short));
+    row.append(make('span', 'lab-host-state', `${host.state}${host.count ? ` · ${host.count}` : ''}`));
+    row.title = `${host.id} — ${host.source || 'no session'}`;
+    row.addEventListener('click', () => selectHost(host.id));
+    els.labHosts.appendChild(row);
+  }
+}
+
 function renderMode() {
   const session = selectedSession();
   const simulated = state.mode === 'simulated' || !!(session && session.source === 'simulated');
@@ -823,7 +1866,14 @@ function setAppMode(mode) {
 
 function applyResponsiveMode() {
   document.body.dataset.mode = appMode;
+  document.body.dataset.preset = state.preset;
   renderCompact();
+  // The engine scales the ring with the viewport height; at 1280x720 the arc
+  // reads ~6% larger than upstream. Only the Agent Monitor preset compensates,
+  // other presets keep their authored composition.
+  if (state.preset === 'agent-monitor' && typeof viz?.setParams === 'function') {
+    viz.setParams({ scale: window.innerWidth < 1400 ? 0.78 : 0.86 });
+  }
 }
 
 function renderSettings() {
@@ -855,6 +1905,7 @@ function renderAll() {
   renderMode();
   renderSettings();
   renderCompact();
+  renderLabMonitor();
 }
 
 /* ------------------------------------------------------------------ *
@@ -934,17 +1985,25 @@ function ingestEvents(sessions) {
   const existing = new Set(state.events.map((event) => event.key));
   for (const session of sessions) {
     for (const event of session.recentEvents || []) {
-      const key = `${session.sessionId}|${event.timestamp}|${event.eventType}|${event.toolName || ''}`;
+      const key = `${session.sessionId}|${event.timestamp}|${event.eventType}|${event.toolCallId || event.toolName || ''}`;
       if (existing.has(key)) continue;
       existing.add(key);
       state.events.push({
         key,
+        eventId: event.eventId || '',
         sessionId: session.sessionId,
         host: session.host,
-        source: session.source,
+        // Per-event provenance. Never fall back to the session aggregate.
+        source: typeof event.source === 'string' ? event.source : 'unknown',
+        confidence: typeof event.confidence === 'string' ? event.confidence : 'unknown',
         eventType: event.eventType,
         timestamp: event.timestamp,
         toolName: event.toolName || '',
+        toolCallId: event.toolCallId || '',
+        durationMs: typeof event.durationMs === 'number' ? event.durationMs : undefined,
+        errorCode: event.errorCode || '',
+        label: event.label || '',
+        runId: event.runId || '',
       });
     }
   }
@@ -1133,6 +2192,110 @@ function updateStats(stats) {
  * ------------------------------------------------------------------ */
 
 function bindEvents() {
+  els.labFeedFilter?.addEventListener('change', () => {
+    state.feedFilter = els.labFeedFilter.value;
+    renderLabMonitor();
+  });
+  els.labFeedPause?.addEventListener('click', () => {
+    state.feedPaused = !state.feedPaused;
+    els.labFeedPause.setAttribute('aria-pressed', String(state.feedPaused));
+    els.labFeedPause.textContent = state.feedPaused ? 'RESUME' : 'PAUSE';
+    if (!state.feedPaused) renderLabMonitor();
+  });
+  els.labRateCanvas?.addEventListener('click', () => showEvidence('rate'));
+  els.labTimeCanvas?.addEventListener('click', (event) => {
+    const replay = state.replay;
+    if (!replay || replay.events.length === 0) return;
+    const rect = els.labTimeCanvas.getBoundingClientRect();
+    const ratio = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+    const start = replay.events[0].timestamp;
+    const end = replay.events[replay.events.length - 1].timestamp;
+    const target = start + (end - start) * ratio;
+    let nearest = 0;
+    for (let i = 0; i < replay.events.length; i += 1) {
+      if (Math.abs(replay.events[i].timestamp - target) < Math.abs(replay.events[nearest].timestamp - target)) nearest = i;
+    }
+    replay.playing = false;
+    replay.elapsedMs = replay.events[nearest].timestamp - start;
+    replay.index = nearest;
+    if (els.replayPlay) els.replayPlay.textContent = 'RESUME';
+    applyReplayFrame(nearest);
+  });
+  els.labFailCanvas?.addEventListener('click', () => showEvidence('failure'));
+  els.labMatrixCanvas?.addEventListener('click', () => showEvidence('matrix'));
+  els.labEvidenceClose?.addEventListener('click', () => {
+    if (els.labEvidence) els.labEvidence.hidden = true;
+    els.btnTrace?.focus();
+  });
+  els.replayPlay?.addEventListener('click', () => {
+    const replay = state.replay;
+    if (!replay) return;
+    if (replay.playing) {
+      replay.playing = false;
+      replay.elapsedBase = Math.max(0, Math.min(replay.durationMs, replay.elapsedBase + (performance.now() - replay.anchor) * replay.speed));
+      replay.elapsedMs = replay.elapsedBase;
+      els.replayPlay.textContent = 'RESUME';
+    } else {
+      if (replay.elapsedMs >= replay.durationMs) replay.elapsedMs = 0;
+      replay.elapsedBase = replay.elapsedMs;
+      replay.anchor = performance.now();
+      replay.playing = true;
+      els.replayPlay.textContent = 'PAUSE';
+    }
+  });
+  els.replayStep?.addEventListener('click', () => {
+    const replay = state.replay;
+    if (!replay) return;
+    replay.playing = false;
+    if (els.replayPlay) els.replayPlay.textContent = 'RESUME';
+    const next = Math.min(replay.events.length - 1, replay.index + 1);
+    replay.elapsedMs = Math.max(0, replay.events[next].timestamp - replay.events[0].timestamp);
+    replay.elapsedBase = replay.elapsedMs;
+    replay.anchor = performance.now();
+    applyReplayFrame(next);
+  });
+  els.replaySpeed?.addEventListener('change', () => {
+    if (!state.replay) return;
+    const replay = state.replay;
+    replay.elapsedBase = replay.elapsedMs;
+    replay.anchor = performance.now();
+    replay.speed = Number(els.replaySpeed.value) || 1;
+  });
+  els.replayClose?.addEventListener('click', stopReplay);
+  els.btnTrace?.addEventListener('click', openTrace);
+  els.labWaterfallCanvas?.addEventListener('click', (event) => {
+    if (!lastWaterfallRows.length) return;
+    const rect = els.labWaterfallCanvas.getBoundingClientRect();
+    const rowH = (rect.height - 6) / lastWaterfallRows.length;
+    const index = Math.max(0, Math.min(lastWaterfallRows.length - 1, Math.floor((event.clientY - rect.top - 3) / rowH)));
+    const row = lastWaterfallRows[index];
+    if (row) showTraceEvidence(row);
+  });
+  els.btnAgents?.addEventListener('click', () => {
+    const open = !document.body.classList.contains('agents-open');
+    if (open && els.tracePanel) els.tracePanel.hidden = true;
+    setAgentsOpen(open);
+  });
+  els.btnLab?.addEventListener('click', () => {
+    const open = !document.body.classList.contains('lab-open');
+    document.body.classList.toggle('lab-open', open);
+    els.btnLab.setAttribute('aria-expanded', String(open));
+    if (open) {
+      if (els.tracePanel) els.tracePanel.hidden = true;
+      setAgentsOpen(false);
+      // The canvas changes CSS size when the lab sheet opens; redraw after the
+      // layout has settled so the backing store matches the new clientWidth.
+      requestAnimationFrame(() => renderLabMonitor());
+    }
+  });
+  els.traceClose?.addEventListener('click', () => {
+    if (els.tracePanel) els.tracePanel.hidden = true;
+    els.btnTrace?.focus();
+  });
+  els.traceWaterfallTab?.addEventListener('click', () => setTraceTab('waterfall'));
+  els.traceDagTab?.addEventListener('click', () => setTraceTab('dag'));
+  els.traceNetworkTab?.addEventListener('click', () => setTraceTab('network'));
+  els.traceCriticalTab?.addEventListener('click', () => setTraceTab('critical'));
   els.btnParams?.addEventListener('click', () => openDrawer(els.paramsDrawer));
   els.btnSettings?.addEventListener('click', () => openDrawer(els.settingsDrawer));
   els.btnAbout?.addEventListener('click', openAbout);
@@ -1297,6 +2460,172 @@ function qaSetState(stateName) {
 }
 
 /* ------------------------------------------------------------------ *
+ * replay (P3.2-A)
+ * ------------------------------------------------------------------ */
+
+function replayClock(ms) {
+  const value = Math.max(0, Math.round(ms));
+  const seconds = Math.floor(value / 1000);
+  return `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}.${Math.floor((value % 1000) / 100)}`;
+}
+
+function addPerfPhase(name, ms) {
+  if (!window.__halofluxPerf) return;
+  const phases = window.__halofluxPerf.phases || (window.__halofluxPerf.phases = {});
+  const row = phases[name] || (phases[name] = { count: 0, totalMs: 0, maxMs: 0 });
+  row.count += 1;
+  row.totalMs += ms;
+  row.maxMs = Math.max(row.maxMs, ms);
+}
+
+function renderReplayFrame() {
+  // Minimal update set: agents/sessions/settings do not change between replay
+  // ticks, so do not rebuild the whole page for every event cursor move.
+  const t0 = performance.now();
+  renderSession();
+  const t1 = performance.now();
+  renderEvents();
+  const t2 = performance.now();
+  renderMode();
+  renderCompact();
+  const t3 = performance.now();
+  renderLabMonitor();
+  const t4 = performance.now();
+  addPerfPhase('renderSession', t1 - t0);
+  addPerfPhase('renderEvents', t2 - t1);
+  addPerfPhase('renderModeCompact', t3 - t2);
+  addPerfPhase('renderLabMonitor', t4 - t3);
+}
+
+function applyReplayFrame(index, { full = false } = {}) {
+  const replay = state.replay;
+  if (!replay) return;
+  const frameStart = performance.now();
+  const bounded = Math.max(0, Math.min(replay.events.length - 1, index));
+  replay.index = bounded;
+  const sessionStart = performance.now();
+  const session = replay.prepared.sessionAtIndex(bounded, { sessionId: replay.sessionId });
+  addPerfPhase('sessionAtIndex', performance.now() - sessionStart);
+  if (!session) return;
+  state.sessions = [session];
+  state.selectedSessionId = session.sessionId;
+  state.selectedHost = session.host;
+  state.mode = 'replay';
+  state.reason = 'REPLAY · local event store';
+  const vizStart = performance.now();
+  viz.setSessions([session]);
+  viz.setSession(session);
+  addPerfPhase('vizSetSession', performance.now() - vizStart);
+  if (full || !Array.isArray(state.events) || state.events.length > bounded + 1) {
+    state.events = replay.events.slice(0, bounded + 1);
+  } else if (state.events.length < bounded + 1) {
+    for (let i = state.events.length; i <= bounded; i += 1) state.events.push(replay.events[i]);
+  }
+  if (full) renderAll();
+  else renderReplayFrame();
+  // TRACE is a research panel, not a per-frame overlay: re-rendering thousands
+  // of waterfall rows on every replay tick was the dominant F-05 hot spot.
+  // It refreshes when opened or when the user changes tabs.
+  if (els.replayClock) {
+    els.replayClock.textContent = replayClock((replay.events[bounded].timestamp - replay.events[0].timestamp) || 0);
+  }
+  if (window.__halofluxPerf) {
+    window.__halofluxPerf.frames.push(performance.now() - frameStart);
+    if (window.__halofluxPerf.frames.length > 200) window.__halofluxPerf.frames.shift();
+  }
+}
+
+function replayTick() {
+  const replay = state.replay;
+  if (!replay || !replay.playing) return;
+  // Monotonic clock: interval jitter must not change the effective 1x/2x speed.
+  const elapsed = replay.elapsedBase + (performance.now() - replay.anchor) * replay.speed;
+  replay.elapsedMs = elapsed;
+  const duration = replay.durationMs;
+  if (replay.elapsedMs >= duration) {
+    replay.elapsedMs = duration;
+    replay.playing = false;
+    if (els.replayPlay) els.replayPlay.textContent = 'RESUME';
+  }
+  const index = replay.prepared.indexAt(replay.elapsedMs, 1);
+  if (index !== replay.index) applyReplayFrame(index);
+  else if (els.replayClock) {
+    const offset = Math.min(duration, replay.elapsedMs);
+    els.replayClock.textContent = replayClock(offset);
+  }
+}
+
+async function startReplay(sessionId) {
+  if (!sessionId || !TOKEN) return false;
+  try {
+    const history = await collectReplayPages({
+      pageSize: 1000,
+      maxEvents: 20000,
+      fetchPage: async ({ afterSeq, limit, snapshotSeq }) => {
+        const res = await fetch(`${BRIDGE_URL}/v1/history?sessionId=${encodeURIComponent(sessionId)}&limit=${limit}&afterSeq=${afterSeq}${snapshotSeq ? `&snapshotSeq=${snapshotSeq}` : ''}`, {
+          headers: { authorization: `Bearer ${TOKEN}` },
+        });
+        if (!res.ok) throw new Error(`history HTTP ${res.status}`);
+        return res.json();
+      },
+    });
+    const events = history.events || [];
+    if (events.length === 0) {
+      toast('该会话没有可回放的历史事件');
+      return false;
+    }
+    if (state.replay?.timer) clearInterval(state.replay.timer);
+    beamReplayCursor = 0;
+    beamState.seen.clear();
+    beamState.pulses.length = 0;
+    const prepareStart = performance.now();
+    const prepared = prepareReplay(events);
+    const prepareMs = performance.now() - prepareStart;
+    window.__halofluxPerf = { prepareMs, events: prepared.events.length, frames: [] };
+    state.replay = {
+      sessionId, events: prepared.events, prepared, durationMs: prepared.durationMs,
+      index: 0, elapsedMs: 0, elapsedBase: 0, anchor: performance.now(), speed: 1, playing: true,
+      total: history.total, partial: history.partial, loaded: history.loaded,
+      timer: setInterval(replayTick, 200),
+    };
+    if (els.replayBar) els.replayBar.hidden = false;
+    if (els.replaySession) {
+      els.replaySession.textContent = `${sessionId.slice(0, 18)} · ${history.loaded}/${history.total} EVENTS${history.partial ? ' · PARTIAL REPLAY' : ''}`;
+    }
+    if (els.replayPlay) els.replayPlay.textContent = 'PAUSE';
+    if (REPLAY_AT_INFO.present && !REPLAY_AT_INFO.valid) {
+      toast('at 参数无效，已改为正常自动播放');
+    }
+    if (REPLAY_AT_INFO.present && REPLAY_AT_INFO.valid) {
+      const index = Math.max(0, Math.min(events.length - 1, Math.floor(REPLAY_AT_INFO.value)));
+      state.replay.elapsedMs = Math.max(0, events[index].timestamp - events[0].timestamp);
+      state.replay.elapsedBase = state.replay.elapsedMs;
+      state.replay.anchor = performance.now();
+      state.replay.playing = false;
+      state.replay.index = index;
+      if (els.replayPlay) els.replayPlay.textContent = 'RESUME';
+      applyReplayFrame(index, { full: true });
+    } else {
+      applyReplayFrame(0, { full: true });
+      replayTick();
+    }
+    return true;
+  } catch (error) {
+    toast(`回放失败：${error && error.message ? error.message : 'unknown'}`);
+    return false;
+  }
+}
+
+function stopReplay() {
+  if (state.replay?.timer) clearInterval(state.replay.timer);
+  state.replay = null;
+  if (els.replayBar) els.replayBar.hidden = true;
+  const url = new URL(window.location.href);
+  url.searchParams.delete('replay');
+  window.location.href = url.toString();
+}
+
+/* ------------------------------------------------------------------ *
  * boot
  * ------------------------------------------------------------------ */
 
@@ -1315,7 +2644,11 @@ function init() {
 
   renderAll();
 
-  if (DEMO) {
+  if (REPLAY_SESSION) {
+    startReplay(REPLAY_SESSION).then((ok) => {
+      if (!ok) connectLive();
+    });
+  } else if (DEMO) {
     enterSimulated('演示模式 · ?demo=1');
   } else if (!BRIDGE_URL) {
     enterSimulated('已拒绝非 loopback 事件桥地址');
@@ -1326,6 +2659,33 @@ function init() {
   }
 
   installQaHook();
+
+  // Deterministic recording/QA hook: seeks the replay cursor without wall-clock
+  // timers, so offscreen capture produces a faithful replay progression.
+  window.__halofluxReplaySeek = (offsetMs) => {
+    const replay = state.replay;
+    if (!replay) return false;
+    replay.elapsedMs = Math.max(0, Number(offsetMs) || 0);
+    replay.elapsedBase = replay.elapsedMs;
+    replay.anchor = performance.now();
+    replay.playing = false;
+    if (els.replayPlay) els.replayPlay.textContent = 'RESUME';
+    applyReplayFrame(replay.prepared.indexAt(replay.elapsedMs, 1));
+    return true;
+  };
+  window.__halofluxEnterReplay = (sessionId) => startReplay(sessionId);
+  window.__halofluxExitReplay = () => {
+    if (state.replay?.timer) clearInterval(state.replay.timer);
+    state.replay = null;
+    state.events = [];
+    state.sessions = [];
+    if (els.replayBar) els.replayBar.hidden = true;
+    if (els.replaySession) els.replaySession.textContent = '—';
+    connectLive();
+    return true;
+  };
+
+  if (TRACE_OPEN) openTrace();
 
   if (QA) {
     // QA runs need a stable first frame before screenshots.

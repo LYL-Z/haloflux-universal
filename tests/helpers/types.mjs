@@ -55,6 +55,8 @@ export const EXPECTED = {
     'toolName',
     'toolCategory',
     'toolStatus',
+    'toolCallId',
+    'runId',
     'step',
     'turn',
     'label',
