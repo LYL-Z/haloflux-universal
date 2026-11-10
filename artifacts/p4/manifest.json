@@ -1,0 +1,39 @@
+﻿{
+    "generatedAt":  "2026-11-10T11:17:11.0327172Z",
+    "repository":  "LYL-Z/haloflux-universal",
+    "branch":  "feat/paper-lab-p2",
+    "note":  "P4.1-R3 complete artifacts. Videos are binary evidence; reports contain the analysis. Raw Chrome trace is gzip JSON.",
+    "files":  [
+                  {
+                      "path":  "artifacts/p4/traces/trace-2500-play-lite-analysis.json",
+                      "bytes":  12987,
+                      "sha256":  "b14d65c79d1c744f6ae0612fa4545ddc499538a5d72115e37664e8cb3771fe0f"
+                  },
+                  {
+                      "path":  "artifacts/p4/traces/trace-2500-play-lite.json.gz",
+                      "bytes":  2715749,
+                      "sha256":  "7fdec640deb8a01a2720539d63c4b5cce513ad3f061926992dba679ba0e0ea53"
+                  },
+                  {
+                      "path":  "artifacts/p4/video/live-replay-35s-p4.webm",
+                      "bytes":  35390071,
+                      "sha256":  "41ab45d6134069acc75388ddd9a8826ecce26c5e8e3fdf0616b1082e29c78246"
+                  },
+                  {
+                      "path":  "artifacts/p4/video/live-replay-35s-r2.webm",
+                      "bytes":  33534806,
+                      "sha256":  "d6fdcd1c59acaa4dc3878120b40ef4c341d5274cc1382ab707cf6bb02d86dd3d"
+                  },
+                  {
+                      "path":  "artifacts/p4/video/live-replay-35s-r3.webm",
+                      "bytes":  34872577,
+                      "sha256":  "9f3468b24e614e195718a45de642565d6bbddd7e30d995bc269ee161b06388aa"
+                  },
+                  {
+                      "path":  "artifacts/p4/video/replay-full-p3.mp4",
+                      "bytes":  6355750,
+                      "sha256":  "9b940b3fa29923ec095dbaef9ebadb55b85b43e17138a973cad6b5f0a4b45d5e"
+                  }
+              ],
+    "sourceHead":  "a0d55b74756346ebff136dfb19296a9a6beb43ae"
+}
