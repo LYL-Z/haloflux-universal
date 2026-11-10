@@ -214,6 +214,8 @@ const els = {
   traceDagTab: $('trace-tab-dag'),
   traceCriticalTab: $('trace-tab-critical'),
   btnTrace: $('btn-trace'),
+  btnAgents: $('btn-agents'),
+  agentPanel: $('agent-panel'),
   feedMode: $('feed-mode'),
   linkStatus: $('link-status'),
   linkText: $('link-text'),
@@ -610,6 +612,26 @@ function openAbout() {
 function closeAllOverlays() {
   closeDrawers();
   closeAbout();
+  const hadPanel = Boolean((els.tracePanel && !els.tracePanel.hidden) || (els.labEvidence && !els.labEvidence.hidden));
+  if (els.tracePanel) els.tracePanel.hidden = true;
+  if (els.labEvidence) els.labEvidence.hidden = true;
+  setAgentsOpen(false);
+  if (hadPanel) els.btnTrace?.focus();
+}
+
+function setAgentsOpen(open) {
+  const next = Boolean(open);
+  const wasOpen = document.body.classList.contains('agents-open');
+  document.body.classList.toggle('agents-open', next);
+  if (els.btnAgents) els.btnAgents.setAttribute('aria-expanded', String(next));
+  if (!next) {
+    if (wasOpen) els.btnAgents?.focus();
+    return;
+  }
+  // Move focus into the revealed list so keyboard users do not get stranded
+  // behind the overlay.
+  const focusable = els.agentPanel?.querySelector('button, [tabindex="0"], a[href]');
+  focusable?.focus();
 }
 
 /* ------------------------------------------------------------------ *
@@ -1111,6 +1133,7 @@ function openTrace() {
   if (!els.tracePanel) return;
   els.tracePanel.hidden = false;
   setTraceTab('waterfall');
+  els.traceClose?.focus();
 }
 function renderLabMonitor() {
   if (!els.labFeedRows) return;
@@ -1713,7 +1736,10 @@ function bindEvents() {
   });
   els.labFailCanvas?.addEventListener('click', () => showEvidence('failure'));
   els.labMatrixCanvas?.addEventListener('click', () => showEvidence('matrix'));
-  els.labEvidenceClose?.addEventListener('click', () => { if (els.labEvidence) els.labEvidence.hidden = true; });
+  els.labEvidenceClose?.addEventListener('click', () => {
+    if (els.labEvidence) els.labEvidence.hidden = true;
+    els.btnTrace?.focus();
+  });
   els.replayPlay?.addEventListener('click', () => {
     const replay = state.replay;
     if (!replay) return;
@@ -1750,7 +1776,15 @@ function bindEvents() {
   });
   els.replayClose?.addEventListener('click', stopReplay);
   els.btnTrace?.addEventListener('click', openTrace);
-  els.traceClose?.addEventListener('click', () => { if (els.tracePanel) els.tracePanel.hidden = true; });
+  els.btnAgents?.addEventListener('click', () => {
+    const open = !document.body.classList.contains('agents-open');
+    if (open && els.tracePanel) els.tracePanel.hidden = true;
+    setAgentsOpen(open);
+  });
+  els.traceClose?.addEventListener('click', () => {
+    if (els.tracePanel) els.tracePanel.hidden = true;
+    els.btnTrace?.focus();
+  });
   els.traceWaterfallTab?.addEventListener('click', () => setTraceTab('waterfall'));
   els.traceDagTab?.addEventListener('click', () => setTraceTab('dag'));
   els.traceCriticalTab?.addEventListener('click', () => setTraceTab('critical'));

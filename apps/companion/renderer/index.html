@@ -93,7 +93,8 @@
         <span class="link-dot" aria-hidden="true"></span>
         <span id="link-text">连接中</span>
       </div>
-      <button class="icon-btn trace-btn" id="btn-trace" type="button" title="执行链研究面板" aria-label="打开执行链研究面板">TRACE</button>
+      <button class="icon-btn agent-toggle" id="btn-agents" type="button" aria-controls="agent-panel" aria-expanded="false" title="显示/隐藏 Agent 列表" aria-label="显示或隐藏 Agent 列表"><span class="label-wide">AGENTS</span><span class="label-narrow">AG</span></button>
+      <button class="icon-btn trace-btn" id="btn-trace" type="button" title="执行链研究面板" aria-label="打开执行链研究面板"><span class="label-wide">TRACE</span><span class="label-narrow">TR</span></button>
       <button class="icon-btn" id="btn-params" type="button" title="视觉参数" aria-label="视觉参数">
         <svg><use href="#i-sliders" /></svg>
       </button>
@@ -107,7 +108,7 @@
   </header>
 
   <main class="hud-layer">
-    <section class="panel agent-panel" aria-label="Agent 列表">
+    <section class="panel agent-panel" id="agent-panel" aria-label="Agent 列表">
       <header class="panel-head">
         <span class="eyebrow">AGENTS</span>
         <span class="panel-note" id="agent-count">6</span>

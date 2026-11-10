@@ -60,6 +60,10 @@ server.listen(0, '127.0.0.1', async () => {
   await win.loadURL(url);
   win.webContents.setZoomFactor(Number(process.env.HALOFLUX_FPS_ZOOM) || 1);
   await new Promise((resolve) => setTimeout(resolve, 4000));
+  if (process.env.HALOFLUX_FPS_EVAL) {
+    try { await win.webContents.executeJavaScript(process.env.HALOFLUX_FPS_EVAL, true); } catch (error) { console.log('[eval]', String(error)); }
+    await new Promise((resolve) => setTimeout(resolve, 400));
+  }
   if (process.env.HALOFLUX_FPS_SHOT) {
     const shot = path.resolve(process.env.HALOFLUX_FPS_SHOT);
     mkdirSync(path.dirname(shot), { recursive: true });
@@ -104,6 +108,54 @@ server.listen(0, '127.0.0.1', async () => {
   try {
     sample.pagePerf = await win.webContents.executeJavaScript('window.__halofluxPerf || null');
   } catch { /* optional */ }
+  if (process.env.HALOFLUX_FPS_A11Y === '1') {
+    try {
+      sample.a11y = await win.webContents.executeJavaScript(`(async () => {
+        const wait = () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+        const out = {};
+        const agents = document.getElementById('btn-agents');
+        const trace = document.getElementById('btn-trace');
+        const agentPanel = document.getElementById('agent-panel');
+        const tracePanel = document.getElementById('trace-panel');
+        agents?.click(); await wait();
+        out.agentsOpen = !agentPanel?.hidden && getComputedStyle(agentPanel).display !== 'none';
+        out.agentsAria = agents?.getAttribute('aria-expanded');
+        out.focusInsideAgents = Boolean(agentPanel?.contains(document.activeElement));
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })); await wait();
+        out.agentsClosedByEscape = agentPanel ? getComputedStyle(agentPanel).display === 'none' : false;
+        out.focusReturnedToAgents = document.activeElement === agents;
+        trace?.click(); await wait();
+        out.traceOpen = Boolean(tracePanel && !tracePanel.hidden);
+        out.focusOnTraceClose = document.activeElement === document.getElementById('trace-close');
+        document.getElementById('trace-close')?.click(); await wait();
+        out.traceClosed = Boolean(tracePanel?.hidden);
+        out.focusReturnedToTrace = document.activeElement === trace;
+        trace?.click(); await wait();
+        document.querySelector('.trace-row')?.click(); await wait();
+        const evidence = document.getElementById('lab-evidence');
+        out.evidenceOpen = Boolean(evidence && !evidence.hidden);
+        out.evidenceScrollable = evidence ? evidence.scrollHeight >= evidence.clientHeight : false;
+        document.getElementById('lab-evidence-close')?.click(); await wait();
+        out.evidenceClosed = Boolean(evidence?.hidden);
+        out.focusReturnedFromEvidence = document.activeElement === trace;
+        const replayPlay = document.getElementById('replay-play');
+        out.replayControlVisible = Boolean(replayPlay && getComputedStyle(replayPlay).display !== 'none' && replayPlay.getBoundingClientRect().width > 0);
+        out.horizontalOverflow = document.documentElement.scrollWidth > window.innerWidth + 1;
+        const clock = document.getElementById('replay-clock');
+        const beforeStep = clock?.textContent;
+        document.getElementById('replay-step')?.click(); await wait();
+        out.stepChangedClock = Boolean(clock && clock.textContent !== beforeStep);
+        const seeked = window.__halofluxReplaySeek?.(1000);
+        await wait();
+        out.seekWorked = Boolean(seeked);
+        out.pauseLabel = replayPlay?.textContent || '';
+        out.replayClock = clock?.textContent || '';
+        return out;
+      })()`);
+    } catch (error) {
+      sample.a11y = { error: String(error && error.message ? error.message : error) };
+    }
+  }
   if (process.env.HALOFLUX_FPS_INTERACTION === '1') {
     try {
       sample.interaction = await win.webContents.executeJavaScript(`(async () => {

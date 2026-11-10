@@ -1,9 +1,15 @@
 ﻿{
-    "generatedAt":  "2026-11-10T11:17:11.0327172Z",
+    "generatedAt":  "2026-11-10T11:47:04.2338029Z",
     "repository":  "LYL-Z/haloflux-universal",
     "branch":  "feat/paper-lab-p2",
-    "note":  "P4.1-R3 complete artifacts. Videos are binary evidence; reports contain the analysis. Raw Chrome trace is gzip JSON.",
+    "sourceHead":  "97178fb",
+    "note":  "P4.1-R3+R4 artifacts. Videos are binary evidence; reports contain analysis. Raw Chrome trace is gzip JSON.",
     "files":  [
+                  {
+                      "path":  "artifacts/p4/R4-INDEX.md",
+                      "bytes":  769,
+                      "sha256":  "5ce4f5ef82827c926675ac1991e40720d47140da74b7a88e43f15584ed5ba459"
+                  },
                   {
                       "path":  "artifacts/p4/traces/trace-2500-play-lite-analysis.json",
                       "bytes":  12987,
@@ -34,6 +40,5 @@
                       "bytes":  6355750,
                       "sha256":  "9b940b3fa29923ec095dbaef9ebadb55b85b43e17138a973cad6b5f0a4b45d5e"
                   }
-              ],
-    "sourceHead":  "a0d55b74756346ebff136dfb19296a9a6beb43ae"
+              ]
 }
