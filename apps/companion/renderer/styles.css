@@ -1,8 +1,8 @@
 /* =========================================================================
-   HALOFLUX — Universal Agent Visualizer (companion renderer)
+   HALOFLUX 鈥?Universal Agent Visualizer (companion renderer)
    Restrained dark instrument panel over a Canvas light field.
    No remote fonts, no images, no third-party CSS.
-   License: PolyForm Noncommercial 1.0.0 — HALOFLUX © 2026 Ryder191.
+   License: PolyForm Noncommercial 1.0.0 鈥?HALOFLUX 漏 2026 Ryder191.
    ========================================================================= */
 
 :root {
@@ -941,7 +941,7 @@ body.is-simulated .topbar::after {
 
 @media (min-width: 1080px) and (min-height: 690px) {
   body[data-preset="agent-monitor"] {
-    --lab-h: 288px;
+    --lab-h: 380px;
     background: #020204;
   }
 
@@ -1097,7 +1097,7 @@ body.is-simulated .topbar::after {
   .lab-board {
     display: grid;
     grid-template-columns: 1.16fr 1.06fr .98fr 1.06fr;
-    grid-template-rows: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(3, minmax(0, 1fr));
     min-height: 0;
   }
 
@@ -1144,7 +1144,8 @@ body.is-simulated .topbar::after {
   .lab-difference-canvas,
   .lab-source-routes-canvas,
   .lab-method-canvas,
-  .lab-token-canvas { height: 42px; }
+  .lab-particle-canvas { height: 42px; }
+  .lab-token-canvas { height: 12px; }
   .lab-waterfall-canvas { height: 54px; cursor: pointer; }
 
 .evidence-network { display: grid; gap: 3px; margin: 6px 0; }
@@ -2399,6 +2400,10 @@ body.is-simulated .topbar::after {
     background: #050507;
   }
 
+  body.lab-open .lab-console .lab-token-canvas {
+    height: 70px;
+  }
+
   body.lab-open .lab-console .lab-cell-foot {
     color: #9f9fac;
     font-size: 9px;
@@ -2554,7 +2559,7 @@ body.is-simulated .topbar::after {
 }
 
 /* -------------------------------------------------------------------------
-   Compact HUD (Electron mode=compact, 320×320)
+   Compact HUD (Electron mode=compact, 320脳320)
    ------------------------------------------------------------------------- */
 
 .compact-hud {
@@ -2746,3 +2751,4 @@ body.mode-compact .toast {
 .qa-state-controls {
   display: none !important;
 }
+

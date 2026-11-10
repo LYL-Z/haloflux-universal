@@ -55,11 +55,32 @@ server.listen(0, '127.0.0.1', async () => {
     webPreferences: { backgroundThrottling: false, contextIsolation: true, nodeIntegration: false, sandbox: false },
   });
   if (MODE !== 'window') win.setAlwaysOnTop(true);
+  if (MODE === 'window') {
+    // Keep the probe window foreground/focused: the 2500 anomaly correlates
+    // with hasFocus=false, not with replay data. The flag is recorded below.
+    win.setAlwaysOnTop(true);
+    win.focus();
+  }
   if (MODE === 'compact') win.setContentSize(320, 320);
   win.webContents.on('console-message', (_e, _l, message) => console.log('[page]', message));
   await win.loadURL(url);
   win.webContents.setZoomFactor(Number(process.env.HALOFLUX_FPS_ZOOM) || 1);
+  if (MODE === 'window') win.focus();
   await new Promise((resolve) => setTimeout(resolve, 4000));
+  // Replay paging + first TRACE render can land after the fixed wait. Wait for
+  // readiness and one second of warm-up; cold-start stalls are reported
+  // separately, not mixed into the steady-state sample.
+  let warmupMs = 0;
+  for (let i = 0; i < 20; i += 1) {
+    const ready = await win.webContents.executeJavaScript('Boolean(window.__halofluxPerf && window.__halofluxPerf.events)').catch(() => false);
+    if (ready) break;
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    warmupMs += 500;
+  }
+  if (warmupMs > 0) {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    warmupMs += 1000;
+  }
   if (process.env.HALOFLUX_FPS_EVAL) {
     try { await win.webContents.executeJavaScript(process.env.HALOFLUX_FPS_EVAL, true); } catch (error) { console.log('[eval]', String(error)); }
     await new Promise((resolve) => setTimeout(resolve, 400));
@@ -110,6 +131,13 @@ server.listen(0, '127.0.0.1', async () => {
   } catch { /* optional */ }
   try {
     sample.arcTest = await win.webContents.executeJavaScript('window.__halofluxArcTest || null');
+  } catch { /* optional */ }
+  try {
+    sample.visibility = await win.webContents.executeJavaScript('document.visibilityState');
+    sample.hasFocus = await win.webContents.executeJavaScript('document.hasFocus()');
+    sample.bounds = win.getBounds();
+    sample.warmupMs = warmupMs;
+    sample.alwaysOnTop = win.isAlwaysOnTop();
   } catch { /* optional */ }
   if (process.env.HALOFLUX_FPS_A11Y === '1') {
     try {

@@ -185,6 +185,7 @@ const els = {
   labDifferenceCanvas: $('lab-difference-canvas'),
   labSourceRoutesCanvas: $('lab-source-routes-canvas'),
   labMethodCanvas: $('lab-method-canvas'),
+  labParticleCanvas: $('lab-particle-canvas'),
   labTokenCanvas: $('lab-token-canvas'),
   labTokenDetails: $('lab-token-details'),
   labTokenFoot: $('lab-token-foot'),
@@ -1033,6 +1034,30 @@ function drawMethodMatrix(events) {
   drawMatrixGrid(els.labMethodCanvas, types.length ? types : ['—'], hosts, counts);
 }
 
+function drawParticleField(events, now) {
+  const surface = canvasContext(els.labParticleCanvas);
+  if (!surface) return;
+  const { ctx, width, height } = surface;
+  const latest = events[events.length - 1]?.timestamp || 0;
+  const seed = (latest % 100000) / 100000;
+  const t = now / 1800;
+  for (let i = 0; i < 86; i += 1) {
+    const a = i * 12.9898 + seed * 78.233;
+    const b = i * 4.1414 + seed * 37.719;
+    const x = ((Math.sin(a + t) * 43758.5453) % 1 + 1) % 1 * width;
+    const y = ((Math.cos(b - t * 0.7) * 24634.6345) % 1 + 1) % 1 * height;
+    const prevX = ((Math.sin(a + t - 0.2) * 43758.5453) % 1 + 1) % 1 * width;
+    const prevY = ((Math.cos(b - (t - 0.2) * 0.7) * 24634.6345) % 1 + 1) % 1 * height;
+    ctx.strokeStyle = `rgba(225,225,235,${0.12 + (i % 7) * 0.04})`;
+    ctx.beginPath(); ctx.moveTo(prevX, prevY); ctx.lineTo(x, y); ctx.stroke();
+    ctx.fillStyle = i % 9 === 0 ? '#ffffff' : '#b9b9c5';
+    ctx.fillRect(x, y, 1.3, 1.3);
+  }
+  ctx.fillStyle = '#7d7d8a';
+  ctx.font = '7px "Cascadia Code", Consolas, monospace';
+  ctx.fillText('VISUAL SIMULATION · NOT AGENT DYNAMICS', 2, height - 2);
+}
+
 function drawValidationCurves(events, now) {
   const surface = canvasContext(els.labFailCanvas);
   if (!surface) return;
@@ -1077,7 +1102,10 @@ function drawTokenTelemetry(token) {
   const surface = canvasContext(els.labTokenCanvas);
   if (!surface) return;
   const { ctx, width, height } = surface;
-  if (!token.samples.length) {
+  const hostSamples = token.hostSamples || [];
+  const simulatedSamples = token.simulatedSamples || [];
+  const samples = hostSamples.length ? hostSamples : simulatedSamples;
+  if (!samples.length) {
     const used = token.field.contextUsed?.value;
     const limit = token.field.contextLimit?.value;
     if (Number.isFinite(used)) {
@@ -1096,16 +1124,16 @@ function drawTokenTelemetry(token) {
     ctx.fillText('TOKEN USAGE · UNAVAILABLE', 2, height / 2 - 3);
     return;
   }
-  const max = Math.max(1, ...token.samples.map((sample) => sample.value));
-  const barW = Math.max(2, (width - 12) / token.samples.length - 1);
-  token.samples.slice(-40).forEach((sample, index) => {
+  const max = Math.max(1, ...samples.map((sample) => sample.value));
+  const barW = Math.max(2, (width - 12) / samples.length - 1);
+  samples.slice(-40).forEach((sample, index) => {
     const heightPx = Math.max(1, (sample.value / max) * (height - 12));
     ctx.fillStyle = sample.source === 'simulated' ? '#b7b28a' : '#e5e5ee';
     ctx.fillRect(6 + index * (barW + 1), height - 4 - heightPx, barW, heightPx);
   });
   ctx.fillStyle = '#8f8f9d';
   ctx.font = '7px "Cascadia Code", Consolas, monospace';
-  ctx.fillText('HOST-REPORTED tokenCount', 2, 7);
+  ctx.fillText(hostSamples.length ? 'HOST-REPORTED output.end tokenCount' : 'SIMULATED tokenCount', 2, 7);
 }
 
 function drawFailureCanvas(events, now = Date.now()) {
@@ -1192,44 +1220,72 @@ function drawEventBeams(ctx, info) {
     beamLiveCursor = state.events.length;
   }
   const active = beamState.active(now, 2200).slice(-8);
-  if (!active.length) return;
   const xStart = geom.W * 0.62;
   const xEnd = geom.W * 0.93;
+  const lanes = [
+    { type: 'tool.start', label: 'START →', y: geom.H * 0.22 },
+    { type: 'tool.end', label: '← END', y: geom.H * 0.34 },
+    { type: 'tool.fail', label: 'FAIL', y: geom.H * 0.46 },
+    { type: 'tool.retry', label: 'RETRY', y: geom.H * 0.58 },
+  ];
   ctx.save();
+  ctx.font = '7px "Cascadia Code", Consolas, monospace';
+  for (const lane of lanes) {
+    const seen = active.some((pulse) => pulse.type === lane.type);
+    ctx.strokeStyle = 'rgba(180,180,192,.20)';
+    ctx.setLineDash([2, 4]);
+    ctx.beginPath(); ctx.moveTo(xStart, lane.y); ctx.lineTo(xEnd, lane.y); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = lane.type === 'tool.retry' ? 'rgba(150,150,162,.55)' : 'rgba(225,225,235,.65)';
+    ctx.fillText(lane.label, xStart, lane.y - 5);
+    if (!seen) {
+      ctx.fillStyle = 'rgba(120,120,132,.55)';
+      ctx.fillText(lane.type === 'tool.retry' ? 'UNOBSERVED / NO SCHEMA TYPE' : 'UNOBSERVED', xEnd - 76, lane.y - 5);
+    }
+  }
   for (let i = 0; i < active.length; i += 1) {
     const pulse = active[i];
     const alpha = pulseOpacity(pulse, now, 2200);
-    const lane = ((i * 37) % 11) / 10;
-    const y = geom.H * 0.24 + lane * geom.H * 0.38;
-    const width = (xEnd - xStart) * (0.45 + lane * 0.45);
-    ctx.globalAlpha = Math.min(0.9, alpha) * (pulse.confidence === 'confirmed' ? 1 : 0.6);
-    ctx.strokeStyle = pulse.direction === 'fail' ? '#c98383' : '#ffffff';
-    ctx.lineWidth = pulse.direction === 'fail' ? 1.4 : 1.6;
+    const lane = lanes.find((item) => item.type === pulse.type) || lanes[0];
+    const y = lane.y;
+    const width = (xEnd - xStart) * (0.45 + ((i * 37) % 10) / 20);
+    ctx.globalAlpha = Math.min(0.95, alpha) * (pulse.confidence === 'confirmed' ? 1 : 0.6);
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 1.6;
     ctx.setLineDash(pulse.type === 'tool.retry' ? [3, 3] : []);
     ctx.beginPath();
     if (pulse.direction === 'in') {
       ctx.moveTo(xStart + width, y);
       ctx.lineTo(xStart + width * 0.25, y);
+      ctx.lineTo(xStart + width * 0.25 + 5, y - 3);
+      ctx.moveTo(xStart + width * 0.25, y);
+      ctx.lineTo(xStart + width * 0.25 + 5, y + 3);
     } else if (pulse.direction === 'fail') {
       ctx.moveTo(xStart, y);
-      ctx.lineTo(xStart + width * 0.7, y);
-      ctx.lineTo(xStart + width * 0.8, y - 4);
+      ctx.lineTo(xStart + width * 0.55, y);
+      ctx.lineTo(xStart + width * 0.62, y - 5);
+      ctx.lineTo(xStart + width * 0.70, y + 5);
+      ctx.lineTo(xStart + width * 0.78, y);
     } else {
       ctx.moveTo(xStart, y);
       ctx.lineTo(xStart + width, y);
+      ctx.lineTo(xStart + width - 5, y - 3);
+      ctx.moveTo(xStart + width, y);
+      ctx.lineTo(xStart + width - 5, y + 3);
     }
     ctx.stroke();
-    ctx.globalAlpha = Math.min(0.95, alpha);
-    ctx.fillStyle = pulse.direction === 'fail' ? '#c98383' : '#ffffff';
-    ctx.beginPath();
-    ctx.arc(xStart + width, y, 2, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.font = '7px "Cascadia Code", Consolas, monospace';
-    ctx.fillText(pulse.direction === 'fail' ? 'FAIL' : pulse.direction === 'in' ? 'END' : pulse.type === 'tool.retry' ? 'RETRY' : 'START', xStart, y - 3);
+    ctx.globalAlpha = Math.min(0.9, alpha);
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath(); ctx.arc(xStart + width, y, 1.8, 0, Math.PI * 2); ctx.fill();
+    if (i === active.length - 1) {
+      ctx.fillStyle = 'rgba(225,225,235,.7)';
+      ctx.fillText(`${pulse.type} · ${pulse.eventId.slice(0, 14)}`, xStart, y + 8);
+    }
   }
   ctx.setLineDash([]);
   ctx.globalAlpha = 1;
   ctx.restore();
+  window.__halofluxBeams = active.map((pulse) => ({ eventId: pulse.eventId, type: pulse.type, source: pulse.source, confidence: pulse.confidence }));
 }
 
 function arcRadius(geom) {
@@ -1650,17 +1706,21 @@ function renderLabMonitor() {
   const toolLine = active?.toolName
     ? `${active.toolName} · ${active.lastToolDurationMs == null ? '—' : `${active.lastToolDurationMs} ms`} · ${active.lastToolCorrelated ? 'CORRELATED' : (active.selectedToolEventCount ? 'UNCORRELATED' : '—')}`
     : '—';
+  const latestEvent = state.events[state.events.length - 1] || null;
   detail(els.labWorkspaceDetails, [
     ['HOST / STATE', active ? `${active.host} / ${active.state}` : '— / disconnected'],
-    ['MODEL', unknown(active?.model)],
+    ['RUN', latestEvent?.metadata?.runId || latestEvent?.runId || '—'],
     ['STEP / TURN', active ? `${metric(active.step)} / ${metric(active.turn)}` : '— / —'],
     ['TOOL / DURATION', toolLine],
-    ['TOKENS / S', metric(active?.tokensPerSecond)],
+    ['PHASE', active?.state || '—'],
+    ['LAST EVENT', latestEvent ? `${formatClock(latestEvent.timestamp)} · ${latestEvent.eventType}` : '—'],
+    ['EVENT ID', latestEvent?.eventId || '—'],
   ]);
   detail(els.labSourceDetails, [
     ['TRANSPORT', projection.mode.toUpperCase()],
     ['SOURCE', unknown(active?.source)],
     ['CONFIDENCE', unknown(active?.confidence)],
+    ['MODEL', unknown(active?.model)],
     ['CONTEXT USED', metric(active?.contextUsed)],
     ['CONTEXT LIMIT', metric(active?.contextLimit)],
   ]);
@@ -1673,18 +1733,18 @@ function renderLabMonitor() {
   ]);
   detail(els.labTypeDetails, projection.types.length ? projection.types.map(([key, countValue]) => [key, countValue]) : [['EVENT TYPES', '—']]);
 
-  const token = buildTokenTelemetry({ events: state.events, sessions: state.sessions, selectedSessionId: state.selectedSessionId });
+  const token = buildTokenTelemetry({ events: state.events, sessions: state.sessions, selectedSessionId: state.selectedSessionId, snapshotTimestamp: clockNow, snapshotMode: state.replay ? 'replay' : 'current' });
   const tokenValue = (field) => field.value === null ? 'UNAVAILABLE' : `${field.value} · ${field.status}`;
   detail(els.labTokenDetails, [
+    ['SESSION', token.sessionResolution],
     ['OUTPUT', tokenValue(token.field.outputTokens)],
-    ['INPUT', tokenValue(token.field.inputTokens)],
-    ['CACHED', tokenValue(token.field.cachedTokens)],
+    ['COVERAGE', `${token.field.outputTokens.outputEndWithToken}/${token.field.outputTokens.outputEndTotal} output.end`],
     ['CONTEXT', tokenValue(token.field.contextUsed)],
-    ['MODEL', token.model || '—'],
   ]);
   if (els.labTokenFoot) {
+    const coverage = `${Math.round((token.field.outputTokens.coverage || 0) * 100)}% COVERAGE`;
     els.labTokenFoot.textContent = token.available
-      ? `${token.simulated ? 'SIMULATED · ' : ''}${token.samples.length} OUTPUT SAMPLES · ${token.contextSnapshots.length} CONTEXT SNAPSHOTS · input/cache/reasoning/TTFT UNAVAILABLE`
+      ? `${token.simulated ? 'SIMULATED · ' : ''}${token.hostSamples.length} HOST OUTPUT SAMPLES · ${coverage} · input/cache/reasoning/TTFT UNAVAILABLE`
       : 'UNAVAILABLE · no request-level usage fields forwarded';
   }
   const instrumentKey = `${state.selectedSessionId}:${state.events.length}:${Math.floor(clockNow / 500)}:${state.mode}`;
@@ -1694,6 +1754,7 @@ function renderLabMonitor() {
     drawDifferenceField(selectedEvents);
     drawSourceRoutes(selectedEvents);
     drawMethodMatrix(selectedEvents);
+    drawParticleField(selectedEvents, clockNow);
     drawValidationCurves(selectedEvents, clockNow);
     drawTokenTelemetry(token);
   }
