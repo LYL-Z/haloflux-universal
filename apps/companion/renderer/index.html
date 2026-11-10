@@ -94,6 +94,7 @@
         <span id="link-text">连接中</span>
       </div>
       <button class="icon-btn agent-toggle" id="btn-agents" type="button" aria-controls="agent-panel" aria-expanded="false" title="显示/隐藏 Agent 列表" aria-label="显示或隐藏 Agent 列表"><span class="label-wide">AGENTS</span><span class="label-narrow">AG</span></button>
+      <button class="icon-btn lab-toggle" id="btn-lab" type="button" aria-controls="lab-console" aria-expanded="false" title="显示/隐藏实验仪表" aria-label="显示或隐藏实验仪表"><span class="label-wide">LAB</span><span class="label-narrow">LB</span></button>
       <button class="icon-btn trace-btn" id="btn-trace" type="button" title="执行链研究面板" aria-label="打开执行链研究面板"><span class="label-wide">TRACE</span><span class="label-narrow">TR</span></button>
       <button class="icon-btn" id="btn-params" type="button" title="视觉参数" aria-label="视觉参数">
         <svg><use href="#i-sliders" /></svg>
@@ -194,7 +195,7 @@
         <ol id="lab-feed-rows" class="lab-rows"></ol>
         <div class="lab-feed-detail" id="lab-feed-detail" aria-live="polite">SELECT AN EVENT FOR ALLOWLISTED FIELDS</div>
       </section>
-      <section class="lab-cell lab-trace"><h2>TOOL / EXECUTION FIELD</h2><canvas class="lab-mini-canvas" id="lab-rate-canvas" aria-label="工具事件到达率"></canvas><div class="lab-cell-foot" id="lab-rate-window">—</div><div class="lab-cell-foot" id="lab-tool-summary">—</div></section>
+      <section class="lab-cell lab-trace"><h2>TOOL / WATERFALL</h2><canvas class="lab-mini-canvas" id="lab-rate-canvas" aria-label="工具事件到达率"></canvas><canvas class="lab-mini-canvas lab-waterfall-canvas" id="lab-waterfall-canvas" aria-label="工具瀑布"></canvas><div class="lab-cell-foot" id="lab-rate-window">—</div><div class="lab-cell-foot" id="lab-tool-summary">—</div></section>
       <section class="lab-cell lab-workspace"><h2>RUN / PHASE WORKSPACE</h2><div class="lab-details" id="lab-workspace-details"></div></section>
       <section class="lab-cell lab-sources"><h2>SOURCE / PROVENANCE</h2><div class="lab-details" id="lab-source-details"></div></section>
       <section class="lab-cell lab-validation"><h2>VALIDATION / FAILURE BUFFER</h2><canvas class="lab-mini-canvas lab-fail-canvas" id="lab-fail-canvas" aria-label="失败与错误事件"></canvas><div class="lab-details" id="lab-validation-details"></div></section>
@@ -444,6 +445,7 @@
     <div class="trace-tabs" role="tablist">
       <button id="trace-tab-waterfall" type="button" role="tab" aria-selected="true">TOOL WATERFALL</button>
       <button id="trace-tab-dag" type="button" role="tab" aria-selected="false">EXECUTION DAG</button>
+      <button id="trace-tab-network" type="button" role="tab" aria-selected="false">EVIDENCE NETWORK</button>
       <button id="trace-tab-critical" type="button" role="tab" aria-selected="false">CRITICAL PATH</button>
     </div>
     <div id="trace-body" class="trace-body"></div>

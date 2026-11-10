@@ -1,10 +1,15 @@
 ﻿{
-    "generatedAt":  "2026-11-10T11:47:04.2338029Z",
+    "generatedAt":  "2026-11-10T12:34:10.0506300Z",
     "repository":  "LYL-Z/haloflux-universal",
     "branch":  "feat/paper-lab-p2",
-    "sourceHead":  "97178fb",
-    "note":  "P4.1-R3+R4 artifacts. Videos are binary evidence; reports contain analysis. Raw Chrome trace is gzip JSON.",
+    "sourceHead":  "829f34d",
+    "note":  "P4.1 artifacts plus P4.2 final video; reports contain analysis.",
     "files":  [
+                  {
+                      "path":  "artifacts/p4/P42-INDEX.md",
+                      "bytes":  836,
+                      "sha256":  "6b54394222638cc6514163de259cff8c55cf360b12a4ef0e810da45a434ddb92"
+                  },
                   {
                       "path":  "artifacts/p4/R4-INDEX.md",
                       "bytes":  769,
@@ -34,6 +39,11 @@
                       "path":  "artifacts/p4/video/live-replay-35s-r3.webm",
                       "bytes":  34872577,
                       "sha256":  "9f3468b24e614e195718a45de642565d6bbddd7e30d995bc269ee161b06388aa"
+                  },
+                  {
+                      "path":  "artifacts/p4/video/p42-final-35s.webm",
+                      "bytes":  35136795,
+                      "sha256":  "992e4fa78e4fd37ce11389aeb3cf593a23b54a329309982903d7101d02ce955b"
                   },
                   {
                       "path":  "artifacts/p4/video/replay-full-p3.mp4",

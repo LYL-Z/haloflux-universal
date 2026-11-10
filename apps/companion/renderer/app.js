@@ -38,6 +38,9 @@ import { parseObsidianMetadata } from './obsidian-metadata.mjs';
 import { eventRate, METRIC_REGISTRY, toolWaterfall, criticalPath } from '../../../packages/analytics/src/index.mjs';
 import { prepareReplay } from './replay-engine.mjs';
 import { replayNow } from './replay-clock.mjs';
+import { buildTimeArc, angleForTimestamp, timestampForRatio, eventIndexAtTimestamp } from './time-arc.mjs';
+import { buildEvidenceGraph } from './evidence-network.mjs';
+import { createBeamState, pulseOpacity } from './event-beams.mjs';
 import { parseReplayAt, collectReplayPages } from './replay-history.mjs';
 
 /* ------------------------------------------------------------------ *
@@ -190,6 +193,7 @@ const els = {
   labKpiErrors: $('lab-kpi-errors'),
   labRateCanvas: $('lab-rate-canvas'),
   labRateWindow: $('lab-rate-window'),
+  labWaterfallCanvas: $('lab-waterfall-canvas'),
   labTimeCanvas: $('lab-time-canvas'),
   labFailCanvas: $('lab-fail-canvas'),
   labMatrixCanvas: $('lab-matrix-canvas'),
@@ -212,10 +216,13 @@ const els = {
   traceClose: $('trace-close'),
   traceWaterfallTab: $('trace-tab-waterfall'),
   traceDagTab: $('trace-tab-dag'),
+  traceNetworkTab: $('trace-tab-network'),
   traceCriticalTab: $('trace-tab-critical'),
   btnTrace: $('btn-trace'),
   btnAgents: $('btn-agents'),
   agentPanel: $('agent-panel'),
+  btnLab: $('btn-lab'),
+  labConsole: $('lab-console'),
   feedMode: $('feed-mode'),
   linkStatus: $('link-status'),
   linkText: $('link-text'),
@@ -312,6 +319,8 @@ const viz = createVisualizer({
   watchdog: true,
 });
 viz.start();
+viz.setExtraOverlay?.((ctx, info) => { drawTimeArc(ctx, info); drawEventBeams(ctx, info); });
+els.canvas?.addEventListener('click', handleTimeArcClick);
 if (Object.keys(initialOverrides).length > 0) {
   viz.setParams(initialOverrides);
 }
@@ -615,6 +624,8 @@ function closeAllOverlays() {
   const hadPanel = Boolean((els.tracePanel && !els.tracePanel.hidden) || (els.labEvidence && !els.labEvidence.hidden));
   if (els.tracePanel) els.tracePanel.hidden = true;
   if (els.labEvidence) els.labEvidence.hidden = true;
+  document.body.classList.remove('lab-open');
+  els.btnLab?.setAttribute('aria-expanded', 'false');
   setAgentsOpen(false);
   if (hadPanel) els.btnTrace?.focus();
 }
@@ -876,6 +887,41 @@ function canvasContext(canvas) {
 let lastRate = null;
 let lastFailureCount = 0;
 let traceTab = 'waterfall';
+let lastWaterfallRows = [];
+
+function drawToolWaterfallCanvas(events) {
+  const surface = canvasContext(els.labWaterfallCanvas);
+  if (!surface) return;
+  const { ctx, width, height } = surface;
+  const result = toolWaterfall(events.slice(-500));
+  lastWaterfallRows = result.rows.slice(-12).reverse();
+  ctx.strokeStyle = '#34343f';
+  ctx.beginPath();
+  ctx.moveTo(0, height - 2);
+  ctx.lineTo(width, height - 2);
+  ctx.stroke();
+  if (!lastWaterfallRows.length) {
+    ctx.fillStyle = '#7d7d8a';
+    ctx.fillText('NO CORRELATED TOOL ROWS · EVENT STORE INTACT', 2, height / 2 - 3);
+    return;
+  }
+  const rowH = (height - 6) / lastWaterfallRows.length;
+  const maxDuration = Math.max(1, ...lastWaterfallRows.map((row) => Number(row.durationMs) || 0));
+  lastWaterfallRows.forEach((row, index) => {
+    const y = 3 + index * rowH;
+    const label = String(row.toolName || row.eventType || 'tool').slice(0, 11).toUpperCase();
+    ctx.fillStyle = row.status === 'FAILED' ? '#c98383' : row.status === 'UNCORRELATED' ? '#7d7d8a' : '#d7d7e2';
+    ctx.font = '7px "Cascadia Code", Consolas, monospace';
+    ctx.fillText(label, 2, y);
+    const duration = Number(row.durationMs);
+    const x = 68;
+    const barW = Number.isFinite(duration) ? Math.max(2, Math.min(width - x - 9, (duration / maxDuration) * (width - x - 9))) : 2;
+    ctx.fillRect(x, y + 1, barW, Math.max(1, rowH - 3));
+    ctx.fillStyle = '#8f8f9d';
+    ctx.fillText(Number.isFinite(duration) ? `${Math.round(duration)}ms` : (row.status === 'UNCORRELATED' ? 'UNK' : '—'), width - 34, y);
+  });
+}
+
 function drawRateCanvas(events, now = Date.now()) {
   const surface = canvasContext(els.labRateCanvas);
   if (!surface) return;
@@ -969,6 +1015,181 @@ function drawMatrixCanvas() {
 }
 
 /** P4.0 history time band: real event timestamps as ticks; replay cursor. */
+let arcCache = { key: '', arc: null };
+const beamState = createBeamState({ max: 36, minGapMs: 40 });
+let beamReplayCursor = 0;
+let beamLiveCursor = 0;
+
+function drawEventBeams(ctx, info) {
+  const geom = info?.geometry;
+  if (!geom || !(geom.W > 0 && geom.H > 0)) return;
+  const replay = state.replay;
+  const now = performance.now();
+  if (state.reducedMotion || (replay && !replay.playing)) return;
+  if (replay) {
+    if (replay.index < beamReplayCursor) {
+      beamState.seen.clear();
+      beamState.pulses.length = 0;
+      beamReplayCursor = 0;
+    }
+    if (replay.index >= beamReplayCursor) {
+      beamState.ingest(replay.events.slice(beamReplayCursor, replay.index + 1), now);
+      beamReplayCursor = replay.index + 1;
+    }
+  } else if (state.events.length > beamLiveCursor) {
+    // LIVE keeps its own event-id set; REPLAY never mixes into it.
+    beamState.ingest(state.events.slice(beamLiveCursor), now);
+    beamLiveCursor = state.events.length;
+  }
+  const active = beamState.active(now, 2200).slice(-8);
+  if (!active.length) return;
+  const cx = geom.cx;
+  const cy = geom.cy;
+  const radius = arcRadius(geom);
+  const xStart = Math.min(geom.W - 24, cx + radius * 0.55);
+  const xEnd = Math.min(geom.W - 12, cx + radius * 1.9);
+  ctx.save();
+  for (let i = 0; i < active.length; i += 1) {
+    const pulse = active[i];
+    const alpha = pulseOpacity(pulse, now, 2200);
+    const lane = ((i * 37) % 11) / 10;
+    const y = cy - radius * 0.28 + lane * radius * 0.56;
+    const width = (xEnd - xStart) * (0.35 + lane * 0.45);
+    ctx.globalAlpha = Math.min(0.8, alpha) * (pulse.confidence === 'confirmed' ? 1 : 0.55);
+    ctx.strokeStyle = pulse.direction === 'fail' ? '#c98383' : '#e5e5ee';
+    ctx.lineWidth = pulse.direction === 'fail' ? 1 : 1.2;
+    ctx.setLineDash(pulse.type === 'tool.retry' ? [3, 3] : []);
+    ctx.beginPath();
+    if (pulse.direction === 'in') {
+      ctx.moveTo(xStart + width, y);
+      ctx.lineTo(xStart + width * 0.25, y);
+    } else if (pulse.direction === 'fail') {
+      ctx.moveTo(xStart, y);
+      ctx.lineTo(xStart + width * 0.7, y);
+      ctx.lineTo(xStart + width * 0.8, y - 3);
+    } else {
+      ctx.moveTo(xStart, y);
+      ctx.lineTo(xStart + width, y);
+    }
+    ctx.stroke();
+    ctx.globalAlpha = Math.min(0.9, alpha);
+    ctx.fillStyle = pulse.direction === 'fail' ? '#c98383' : '#ffffff';
+    ctx.beginPath();
+    ctx.arc(xStart + width, y, 1.8, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.font = '7px "Cascadia Code", Consolas, monospace';
+    ctx.fillText(pulse.direction === 'fail' ? 'FAIL' : pulse.direction === 'in' ? 'END' : pulse.type === 'tool.retry' ? 'RETRY' : 'START', xStart, y - 3);
+  }
+  ctx.setLineDash([]);
+  ctx.globalAlpha = 1;
+  ctx.restore();
+}
+
+function arcRadius(geom) {
+  return Math.max(80, Math.min(geom.RO || geom.R || 120, Math.min(geom.W, geom.H) * 0.45)) + 6;
+}
+
+function drawTimeArc(ctx, info) {
+  const geom = info?.geometry;
+  if (!geom || !(geom.W > 0 && geom.H > 0)) return;
+  const replay = state.replay;
+  const list = replay ? replay.events : state.events;
+  if (!Array.isArray(list) || list.length === 0) return;
+  const key = replay
+    ? `r:${replay.sessionId}:${list.length}:${list[0]?.timestamp}:${list[list.length - 1]?.timestamp}`
+    : `l:${list.length}:${list[list.length - 1]?.timestamp || 0}`;
+  if (arcCache.key !== key) {
+    arcCache = {
+      key,
+      arc: replay ? buildTimeArc(list, { bins: 256 }) : buildTimeArc(list, { bins: 256, windowMs: 120_000, now: Date.now() }),
+    };
+  }
+  const arc = arcCache.arc;
+  if (!arc || arc.visible === 0) return;
+  const cx = geom.cx;
+  const cy = geom.cy;
+  const radius = arcRadius(geom);
+  const max = Math.max(1, ...arc.counts);
+  ctx.save();
+  // Faint full-circle axis; event ticks are the only bright marks.
+  ctx.strokeStyle = 'rgba(225,225,235,.16)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+  ctx.stroke();
+  for (let i = 0; i < arc.counts.length; i += 1) {
+    const count = arc.counts[i];
+    if (!count) continue;
+    const ratio = i / Math.max(1, arc.counts.length - 1);
+    const angle = ratio * Math.PI * 2;
+    const x1 = cx + Math.sin(angle) * radius;
+    const y1 = cy - Math.cos(angle) * radius;
+    const len = 3 + Math.min(20, (count / max) * 20);
+    const x2 = cx + Math.sin(angle) * (radius + len);
+    const y2 = cy - Math.cos(angle) * (radius + len);
+    ctx.strokeStyle = arc.simulated[i] >= count * 0.5 ? '#b7b28a'
+      : arc.derived[i] >= count * 0.5 ? '#8997a6' : '#e5e5ee';
+    ctx.globalAlpha = 0.4 + Math.min(0.6, count / max);
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+  const cursorEvent = replay ? replay.events[replay.index] : list[list.length - 1];
+  if (cursorEvent && Number.isFinite(cursorEvent.timestamp)) {
+    const ratio = replay ? angleForTimestamp(cursorEvent.timestamp, arc) / (Math.PI * 2) : 1;
+    const angle = ratio * Math.PI * 2;
+    const x1 = cx + Math.sin(angle) * (radius - 8);
+    const y1 = cy - Math.cos(angle) * (radius - 8);
+    const x2 = cx + Math.sin(angle) * (radius + 28);
+    const y2 = cy - Math.cos(angle) * (radius + 28);
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(x2, y2, 2.2, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.fillStyle = 'rgba(232,232,240,.72)';
+  ctx.font = '8px "Cascadia Code", Consolas, monospace';
+  ctx.fillText(`TIME ARC · ${arc.visible} EVENTS`, cx + radius * 0.55, cy - radius - 18);
+  ctx.restore();
+}
+
+function handleTimeArcClick(event) {
+  const replay = state.replay;
+  if (!replay || !arcCache.arc) return;
+  const geom = viz.getGeometry?.();
+  if (!geom) return;
+  const rect = els.canvas.getBoundingClientRect();
+  const x = event.clientX - rect.left;
+  const y = event.clientY - rect.top;
+  const dx = x - geom.cx;
+  const dy = y - geom.cy;
+  const distance = Math.hypot(dx, dy);
+  const radius = arcRadius(geom);
+  if (Math.abs(distance - radius) > 30) return;
+  let angle = Math.atan2(dx, -dy);
+  if (angle < 0) angle += Math.PI * 2;
+  const timestamp = timestampForRatio(angle / (Math.PI * 2), arcCache.arc);
+  const index = eventIndexAtTimestamp(arcCache.arc, timestamp);
+  if (index < 0) return;
+  const target = replay.events[index];
+  if (!target) return;
+  replay.index = index;
+  replay.elapsedMs = Math.max(0, target.timestamp - replay.events[0].timestamp);
+  replay.elapsedBase = replay.elapsedMs;
+  replay.anchor = performance.now();
+  replay.playing = false;
+  if (els.replayPlay) els.replayPlay.textContent = 'RESUME';
+  applyReplayFrame(index);
+}
+
 function drawTimeBand() {
   const surface = canvasContext(els.labTimeCanvas);
   if (!surface) return;
@@ -1075,9 +1296,51 @@ function showTraceEvidence(row) {
   els.labEvidence.hidden = false;
 }
 
+function renderEvidenceNetwork() {
+  const graph = buildEvidenceGraph({
+    sessions: state.sessions,
+    events: state.events,
+    selectedSessionId: state.selectedSessionId,
+    maxEvents: 40,
+  });
+  els.traceBody.appendChild(make('h4', '', `EVIDENCE NETWORK · ${graph.sampledEvents}/${graph.eventCount} EVENTS · ${graph.runCount} RUNS`));
+  els.traceBody.appendChild(make('div', 'trace-note', 'OWNERSHIP = sessionId/runId fields · CAUSAL = parentSpanId matching an observed spanId. No timestamp proximity is used as causality.'));
+  if (!graph.sessionId) {
+    els.traceBody.appendChild(make('div', 'trace-note', 'UNKNOWN · no selected session.'));
+    return;
+  }
+  const cluster = make('div', 'evidence-network');
+  const sessionNode = graph.nodes.find((node) => node.kind === 'session');
+  if (sessionNode) {
+    const line = make('div', 'network-node network-session', `SESSION · ${sessionNode.label} · ${sessionNode.eventCount} events`);
+    cluster.appendChild(line);
+  }
+  for (const node of graph.nodes.filter((item) => item.kind === 'run')) {
+    cluster.appendChild(make('div', 'network-node network-run', `RUN · ${node.label} · ${node.count} events · ${node.sources.join('/')}`));
+  }
+  for (const edge of graph.edges.filter((item) => item.kind === 'causal' || item.kind === 'unknown').slice(-24)) {
+    cluster.appendChild(make('div', edge.kind === 'causal' ? 'network-edge causal' : 'network-edge unknown',
+      `${edge.kind === 'causal' ? 'CAUSAL' : 'UNKNOWN'} · ${edge.from} → ${edge.to} · ${edge.evidence}`));
+  }
+  for (const node of graph.nodes.filter((item) => item.kind === 'event')) {
+    const line = make('div', 'network-node network-event', `EVENT · ${node.label} · ${node.event?.eventId || 'no id'} · ${node.source}/${node.confidence} · ${formatClock(node.timestamp)}`);
+    line.tabIndex = 0;
+    line.setAttribute('role', 'button');
+    line.title = node.evidence || 'observed event';
+    const open = () => showTraceEvidence(node.event);
+    line.addEventListener('click', open);
+    line.addEventListener('keydown', (domEvent) => { if (domEvent.key === 'Enter' || domEvent.key === ' ') { domEvent.preventDefault(); open(); } });
+    cluster.appendChild(line);
+  }
+  els.traceBody.appendChild(cluster);
+  if (graph.unknownParents) els.traceBody.appendChild(make('div', 'trace-note', `${graph.unknownParents} UNKNOWN PARENT EDGE(S) · shown, never repaired by guessing.`));
+  if (graph.unassignedEvents) els.traceBody.appendChild(make('div', 'trace-note', `${graph.unassignedEvents} EVENT(S) WITHOUT runId · ownership UNKNOWN.`));
+  els.traceBody.appendChild(make('div', 'trace-note', graph.limitation));
+}
+
 function setTraceTab(tab) {
   traceTab = tab;
-  for (const [key, button] of [['waterfall', els.traceWaterfallTab], ['dag', els.traceDagTab], ['critical', els.traceCriticalTab]]) {
+  for (const [key, button] of [['waterfall', els.traceWaterfallTab], ['dag', els.traceDagTab], ['network', els.traceNetworkTab], ['critical', els.traceCriticalTab]]) {
     if (button) button.setAttribute('aria-selected', String(key === tab));
   }
   clearNode(els.traceBody);
@@ -1116,6 +1379,8 @@ function setTraceTab(tab) {
       }
     }
     els.traceBody.appendChild(make('div', 'trace-note', 'Edges are shown only when parentSpanId matches an observed spanId; otherwise UNKNOWN.'));
+  } else if (tab === 'network') {
+    renderEvidenceNetwork();
   } else {
     const tasks = state.events
       .filter((event) => event.taskId && event.dependsOn)
@@ -1213,6 +1478,7 @@ function renderLabMonitor() {
   const canvasStart = performance.now();
   drawRateCanvas(selectedEvents, clockNow);
   drawFailureCanvas(selectedEvents, clockNow);
+  drawToolWaterfallCanvas(selectedEvents);
   drawMatrixCanvas();
   drawTimeBand();
   addPerfPhase('canvases', performance.now() - canvasStart);
@@ -1776,10 +2042,30 @@ function bindEvents() {
   });
   els.replayClose?.addEventListener('click', stopReplay);
   els.btnTrace?.addEventListener('click', openTrace);
+  els.labWaterfallCanvas?.addEventListener('click', (event) => {
+    if (!lastWaterfallRows.length) return;
+    const rect = els.labWaterfallCanvas.getBoundingClientRect();
+    const rowH = (rect.height - 6) / lastWaterfallRows.length;
+    const index = Math.max(0, Math.min(lastWaterfallRows.length - 1, Math.floor((event.clientY - rect.top - 3) / rowH)));
+    const row = lastWaterfallRows[index];
+    if (row) showTraceEvidence(row);
+  });
   els.btnAgents?.addEventListener('click', () => {
     const open = !document.body.classList.contains('agents-open');
     if (open && els.tracePanel) els.tracePanel.hidden = true;
     setAgentsOpen(open);
+  });
+  els.btnLab?.addEventListener('click', () => {
+    const open = !document.body.classList.contains('lab-open');
+    document.body.classList.toggle('lab-open', open);
+    els.btnLab.setAttribute('aria-expanded', String(open));
+    if (open) {
+      if (els.tracePanel) els.tracePanel.hidden = true;
+      setAgentsOpen(false);
+      // The canvas changes CSS size when the lab sheet opens; redraw after the
+      // layout has settled so the backing store matches the new clientWidth.
+      requestAnimationFrame(() => renderLabMonitor());
+    }
   });
   els.traceClose?.addEventListener('click', () => {
     if (els.tracePanel) els.tracePanel.hidden = true;
@@ -1787,6 +2073,7 @@ function bindEvents() {
   });
   els.traceWaterfallTab?.addEventListener('click', () => setTraceTab('waterfall'));
   els.traceDagTab?.addEventListener('click', () => setTraceTab('dag'));
+  els.traceNetworkTab?.addEventListener('click', () => setTraceTab('network'));
   els.traceCriticalTab?.addEventListener('click', () => setTraceTab('critical'));
   els.btnParams?.addEventListener('click', () => openDrawer(els.paramsDrawer));
   els.btnSettings?.addEventListener('click', () => openDrawer(els.settingsDrawer));
@@ -2067,6 +2354,9 @@ async function startReplay(sessionId) {
       return false;
     }
     if (state.replay?.timer) clearInterval(state.replay.timer);
+    beamReplayCursor = 0;
+    beamState.seen.clear();
+    beamState.pulses.length = 0;
     const prepareStart = performance.now();
     const prepared = prepareReplay(events);
     const prepareMs = performance.now() - prepareStart;

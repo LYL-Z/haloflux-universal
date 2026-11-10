@@ -150,6 +150,7 @@ export function createVisualizer(options = {}) {
   let currentVisual = stateVisual(undefined, clock());
   let currentSessionView = undefined;
   let sessions = [];
+  let extraOverlay = null;
   let previousState = currentVisual.state;
   let flareAt = -Infinity;
   let lastStats = {
@@ -557,6 +558,7 @@ export function createVisualizer(options = {}) {
       drawStateCue(ctx, info, geom);
       drawSatellites(ctx, geom);
       if (currentVisual.simulated && showSimulatedMark) drawSimulatedMark(ctx, geom);
+      if (extraOverlay) extraOverlay(ctx, info);
     } catch {
       /* overlay decoration must never break the engine frame */
     }
@@ -851,6 +853,8 @@ export function createVisualizer(options = {}) {
     destroy,
     // diagnostics / HUD convenience (also used by the renderer QA hook)
     getStats: () => buildStats(),
+    getGeometry: () => engine.getGeometry(),
+    setExtraOverlay: (fn) => { extraOverlay = typeof fn === 'function' ? fn : null; },
     getVisualState: () => ({
       ...currentVisual,
       session: currentSessionView,

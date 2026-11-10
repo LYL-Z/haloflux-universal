@@ -267,6 +267,8 @@ svg {
 
 .agent-toggle { display: none; }
 #btn-agents { display: none; }
+#btn-lab { display: none; }
+.lab-toggle { display: none; }
 .label-narrow { display: none; }
 
 .link-pill {
@@ -1139,6 +1141,17 @@ body.is-simulated .topbar::after {
 
   .lab-fail-canvas { height: 22px; }
   .lab-matrix-canvas { height: 34px; }
+  .lab-waterfall-canvas { height: 54px; cursor: pointer; }
+
+.evidence-network { display: grid; gap: 3px; margin: 6px 0; }
+.network-node { padding: 3px 5px; border-left: 2px solid #3a3a44; color: #c8c8d2; }
+.network-session { border-left-color: #e5e5ee; color: #f4f4f8; }
+.network-run { margin-left: 10px; border-left-color: #8997a6; }
+.network-event { margin-left: 20px; border-left-color: #5a5a66; overflow-wrap: anywhere; cursor: pointer; }
+.network-event:hover { background: #121218; }
+.network-edge { margin-left: 20px; padding: 2px 5px; border-left: 1px dashed #5a5a66; color: #9a9aa6; font-size: 8px; }
+.network-edge.causal { border-left-color: #e5e5ee; color: #e5e5ee; }
+.network-edge.unknown { border-left-color: #8f8f66; color: #b7b28a; }
 
   .lab-feed-controls {
     display: flex;
@@ -2279,6 +2292,85 @@ body.is-simulated .topbar::after {
 
   #btn-agents {
     display: inline-flex;
+  }
+
+  #btn-lab,
+  .lab-toggle {
+    display: inline-flex;
+  }
+
+  #btn-lab {
+    width: 28px;
+    min-width: 28px;
+    padding: 0;
+    letter-spacing: 0;
+    justify-content: center;
+    font-size: 8px;
+  }
+
+  /* The bottom lab is a separate sheet at 200%, keeping the central visual
+     primary while the dedicated Waterfall remains reachable. */
+  body.lab-open .lab-console {
+    display: block;
+    position: fixed;
+    top: 116px;
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    width: auto;
+    height: auto;
+    max-height: calc(100vh - 128px);
+    overflow-x: hidden;
+    overflow-y: auto;
+    z-index: 92;
+    padding: 12px;
+    border: 1px solid #5a5a66;
+    background: #050507;
+    color: #e8e8ee;
+    font: 10px/1.45 var(--font-mono);
+  }
+
+  body.lab-open .lab-console .lab-ledger,
+  body.lab-open .lab-console .lab-cell:not(.lab-trace) {
+    display: none;
+  }
+
+  body.lab-open .lab-console .lab-board {
+    display: block;
+    padding: 0;
+  }
+
+  body.lab-open .lab-console .lab-cell.lab-trace {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-height: 0;
+    border: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  body.lab-open .lab-console .lab-trace h2 {
+    margin: 0 0 8px;
+    font: 700 10px var(--font-mono);
+    letter-spacing: .08em;
+  }
+
+  body.lab-open .lab-console #lab-rate-canvas {
+    display: none;
+  }
+
+  body.lab-open .lab-console .lab-waterfall-canvas {
+    width: 100% !important;
+    height: 210px;
+    margin: 0 0 6px;
+    background: #050507;
+  }
+
+  body.lab-open .lab-console .lab-cell-foot {
+    color: #9f9fac;
+    font-size: 9px;
+    white-space: normal;
   }
 
   /* Keep the two sheet toggles from colliding with the icon strip at 768px. */

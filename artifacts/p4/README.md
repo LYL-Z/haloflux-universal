@@ -10,6 +10,7 @@ This directory contains the binary/video/trace artifacts referenced by the P4.1-
 | `video/live-replay-35s-r2.webm` | R2 build: same flow, 15.7 fps gate-fail evidence | 551 / 15.74 | `d6fdcd1c59acaa4dc3878120b40ef4c341d5274cc1382ab707cf6bb02d86dd3d` |
 | `video/live-replay-35s-p4.webm` | P4.1 build: same flow, 24.86 fps | 870 / 24.86 | `41ab45d6134069acc75388ddd9a8826ecce26c5e8e3fdf0616b1082e29c78246` |
 | `video/replay-full-p3.mp4` | P3 historical REPLAY clip | 5 s / 4 fps | `9b940b3fa29923ec095dbaef9ebadb55b85b43e17138a973cad6b5f0a4b45d5e` |
+| `video/p42-final-35s.webm` | P4.2 final: LIVE → TRACE → REPLAY → LIVE | 858 / 24.5 | `992e4fa78e4fd37ce11389aeb3cf593a23b54a329309982903d7101d02ce955b` |
 
 Videos are window-only captures (desktopCapturer window source), not full-desktop recordings.
 
