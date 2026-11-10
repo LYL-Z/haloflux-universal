@@ -34,13 +34,13 @@ import {
 } from '../../../packages/visual-core/src/index.js';
 import { createMockStream } from './mock-session.js';
 import { projectMonitor } from './monitor-projection.mjs';
-import { parseObsidianMetadata } from './obsidian-metadata.mjs';
 import { eventRate, METRIC_REGISTRY, toolWaterfall, criticalPath } from '../../../packages/analytics/src/index.mjs';
 import { prepareReplay } from './replay-engine.mjs';
 import { replayNow } from './replay-clock.mjs';
 import { buildTimeArc, angleForTimestamp, timestampForRatio, eventIndexAtTimestamp } from './time-arc.mjs';
 import { buildEvidenceGraph } from './evidence-network.mjs';
 import { createBeamState, pulseOpacity } from './event-beams.mjs';
+import { buildTokenTelemetry } from './token-telemetry.mjs';
 import { parseReplayAt, collectReplayPages } from './replay-history.mjs';
 
 /* ------------------------------------------------------------------ *
@@ -182,9 +182,13 @@ const els = {
   labSourceDetails: $('lab-source-details'),
   labValidationDetails: $('lab-validation-details'),
   labTypeDetails: $('lab-type-details'),
+  labDifferenceCanvas: $('lab-difference-canvas'),
+  labSourceRoutesCanvas: $('lab-source-routes-canvas'),
+  labMethodCanvas: $('lab-method-canvas'),
+  labTokenCanvas: $('lab-token-canvas'),
+  labTokenDetails: $('lab-token-details'),
+  labTokenFoot: $('lab-token-foot'),
   labHosts: $('lab-hosts'),
-  labKnowledgeDetails: $('lab-knowledge-details'),
-  labObsidianFile: $('lab-obsidian-file'),
   labMasthead: $('lab-masthead'),
   labKpiHosts: $('lab-kpi-hosts'),
   labKpiSessions: $('lab-kpi-sessions'),
@@ -958,6 +962,152 @@ function drawRateCanvas(events, now = Date.now()) {
 }
 
 /** Real failures/errors only; absence is explicitly not a pass. */
+function drawMatrixGrid(canvas, rowLabels, colLabels, counts) {
+  const surface = canvasContext(canvas);
+  if (!surface) return;
+  const { ctx, width, height } = surface;
+  const left = 26;
+  const top = 8;
+  const cw = (width - left - 2) / Math.max(1, colLabels.length);
+  const ch = Math.max(2, (height - top - 2) / Math.max(1, rowLabels.length));
+  const max = Math.max(1, ...counts.flat());
+  for (let row = 0; row < rowLabels.length; row += 1) {
+    ctx.fillStyle = '#8f8f9d';
+    ctx.font = '7px "Cascadia Code", Consolas, monospace';
+    ctx.fillText(String(rowLabels[row]).slice(0, 3), 1, top + row * ch + 4);
+    for (let col = 0; col < colLabels.length; col += 1) {
+      const value = counts[row]?.[col] || 0;
+      const alpha = value ? 0.18 + 0.82 * (value / max) : 0.04;
+      ctx.fillStyle = `rgba(225,225,235,${alpha})`;
+      ctx.fillRect(left + col * cw + 1, top + row * ch, Math.max(1, cw - 2), Math.max(1, ch - 2));
+    }
+  }
+  ctx.fillStyle = '#8f8f9d';
+  ctx.font = '7px "Cascadia Code", Consolas, monospace';
+  for (let col = 0; col < colLabels.length; col += 1) {
+    ctx.fillText(String(colLabels[col]).slice(0, 5), left + col * cw, height - 1);
+  }
+}
+
+function drawDifferenceField(events) {
+  if (!els.labDifferenceCanvas) return;
+  const samples = events.slice(-500);
+  const hosts = HOSTS.map((host) => host.id);
+  const sources = ['native', 'derived', 'simulated', 'unknown'];
+  const counts = hosts.map(() => sources.map(() => 0));
+  for (const event of samples) {
+    const row = hosts.indexOf(event.host);
+    if (row < 0) continue;
+    const source = event.source === 'host-native' ? 'native' : event.source === 'derived' ? 'derived' : event.source === 'simulated' ? 'simulated' : 'unknown';
+    counts[row][sources.indexOf(source)] += 1;
+  }
+  drawMatrixGrid(els.labDifferenceCanvas, hosts, sources, counts);
+}
+
+function drawSourceRoutes(events) {
+  if (!els.labSourceRoutesCanvas) return;
+  const samples = events.slice(-500);
+  const hosts = HOSTS.map((host) => host.id);
+  const sources = ['NAT', 'DRV', 'SIM', 'UNK'];
+  const counts = hosts.map(() => sources.map(() => 0));
+  for (const event of samples) {
+    const row = hosts.indexOf(event.host);
+    if (row < 0) continue;
+    const idx = event.source === 'host-native' ? 0 : event.source === 'derived' ? 1 : event.source === 'simulated' ? 2 : 3;
+    counts[row][idx] += 1;
+  }
+  drawMatrixGrid(els.labSourceRoutesCanvas, hosts, sources, counts);
+}
+
+function drawMethodMatrix(events) {
+  if (!els.labMethodCanvas) return;
+  const samples = events.slice(-500);
+  const types = [...new Set(samples.map((event) => event.eventType).filter(Boolean))].slice(-7);
+  const hosts = HOSTS.map((host) => host.id);
+  const counts = types.map(() => hosts.map(() => 0));
+  for (const event of samples) {
+    const row = types.indexOf(event.eventType);
+    const col = hosts.indexOf(event.host);
+    if (row >= 0 && col >= 0) counts[row][col] += 1;
+  }
+  drawMatrixGrid(els.labMethodCanvas, types.length ? types : ['—'], hosts, counts);
+}
+
+function drawValidationCurves(events, now) {
+  const surface = canvasContext(els.labFailCanvas);
+  if (!surface) return;
+  const { ctx, width, height } = surface;
+  const samples = events.filter((event) => Number.isFinite(event.timestamp) && event.timestamp >= now - 120_000);
+  const buckets = 12;
+  const bucketMs = 10_000;
+  const series = [
+    { key: 'tool.start', color: '#e5e5ee', label: 'START' },
+    { key: 'tool.end', color: '#8f9bab', label: 'END' },
+    { key: 'fail', color: '#c98383', label: 'FAIL' },
+  ];
+  ctx.strokeStyle = '#34343f';
+  ctx.beginPath(); ctx.moveTo(0, height - 1); ctx.lineTo(width, height - 1); ctx.stroke();
+  for (const item of series) {
+    const values = Array(buckets).fill(0);
+    for (const event of samples) {
+      const age = now - event.timestamp;
+      if (age < 0 || age >= 120_000) continue;
+      const bucket = buckets - 1 - Math.floor(age / bucketMs);
+      if (bucket < 0 || bucket >= buckets) continue;
+      if (item.key === 'fail' ? /error|fail/i.test(event.eventType || '') : event.eventType === item.key) values[bucket] += 1;
+    }
+    const max = Math.max(1, ...values);
+    ctx.strokeStyle = item.color;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    values.forEach((value, index) => {
+      const x = (index / (buckets - 1)) * width;
+      const y = height - 3 - (value / max) * (height - 7);
+      if (index === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+    ctx.fillStyle = '#8f8f9d';
+    ctx.font = '7px "Cascadia Code", Consolas, monospace';
+    ctx.fillText(item.label, 2, 7 + series.indexOf(item) * 8);
+  }
+  lastFailureCount = samples.filter((event) => /error|fail/i.test(event.eventType || '')).length;
+}
+
+function drawTokenTelemetry(token) {
+  const surface = canvasContext(els.labTokenCanvas);
+  if (!surface) return;
+  const { ctx, width, height } = surface;
+  if (!token.samples.length) {
+    const used = token.field.contextUsed?.value;
+    const limit = token.field.contextLimit?.value;
+    if (Number.isFinite(used)) {
+      const ratio = Number.isFinite(limit) && limit > 0 ? Math.min(1, used / limit) : 0;
+      ctx.fillStyle = '#34343f';
+      ctx.fillRect(4, height - 12, width - 8, 6);
+      ctx.fillStyle = '#e5e5ee';
+      ctx.fillRect(4, height - 12, Math.max(1, (width - 8) * ratio), 6);
+      ctx.fillStyle = '#8f8f9d';
+      ctx.font = '7px "Cascadia Code", Consolas, monospace';
+      ctx.fillText(`CONTEXT ${used}${Number.isFinite(limit) ? ` / ${limit}` : ''} · OUTPUT UNAVAILABLE`, 2, 7);
+      return;
+    }
+    ctx.fillStyle = '#7d7d8a';
+    ctx.font = '8px "Cascadia Code", Consolas, monospace';
+    ctx.fillText('TOKEN USAGE · UNAVAILABLE', 2, height / 2 - 3);
+    return;
+  }
+  const max = Math.max(1, ...token.samples.map((sample) => sample.value));
+  const barW = Math.max(2, (width - 12) / token.samples.length - 1);
+  token.samples.slice(-40).forEach((sample, index) => {
+    const heightPx = Math.max(1, (sample.value / max) * (height - 12));
+    ctx.fillStyle = sample.source === 'simulated' ? '#b7b28a' : '#e5e5ee';
+    ctx.fillRect(6 + index * (barW + 1), height - 4 - heightPx, barW, heightPx);
+  });
+  ctx.fillStyle = '#8f8f9d';
+  ctx.font = '7px "Cascadia Code", Consolas, monospace';
+  ctx.fillText('HOST-REPORTED tokenCount', 2, 7);
+}
+
 function drawFailureCanvas(events, now = Date.now()) {
   const surface = canvasContext(els.labFailCanvas);
   if (!surface) return;
@@ -1043,21 +1193,18 @@ function drawEventBeams(ctx, info) {
   }
   const active = beamState.active(now, 2200).slice(-8);
   if (!active.length) return;
-  const cx = geom.cx;
-  const cy = geom.cy;
-  const radius = arcRadius(geom);
-  const xStart = Math.min(geom.W - 24, cx + radius * 0.55);
-  const xEnd = Math.min(geom.W - 12, cx + radius * 1.9);
+  const xStart = geom.W * 0.62;
+  const xEnd = geom.W * 0.93;
   ctx.save();
   for (let i = 0; i < active.length; i += 1) {
     const pulse = active[i];
     const alpha = pulseOpacity(pulse, now, 2200);
     const lane = ((i * 37) % 11) / 10;
-    const y = cy - radius * 0.28 + lane * radius * 0.56;
-    const width = (xEnd - xStart) * (0.35 + lane * 0.45);
-    ctx.globalAlpha = Math.min(0.8, alpha) * (pulse.confidence === 'confirmed' ? 1 : 0.55);
-    ctx.strokeStyle = pulse.direction === 'fail' ? '#c98383' : '#e5e5ee';
-    ctx.lineWidth = pulse.direction === 'fail' ? 1 : 1.2;
+    const y = geom.H * 0.24 + lane * geom.H * 0.38;
+    const width = (xEnd - xStart) * (0.45 + lane * 0.45);
+    ctx.globalAlpha = Math.min(0.9, alpha) * (pulse.confidence === 'confirmed' ? 1 : 0.6);
+    ctx.strokeStyle = pulse.direction === 'fail' ? '#c98383' : '#ffffff';
+    ctx.lineWidth = pulse.direction === 'fail' ? 1.4 : 1.6;
     ctx.setLineDash(pulse.type === 'tool.retry' ? [3, 3] : []);
     ctx.beginPath();
     if (pulse.direction === 'in') {
@@ -1066,16 +1213,16 @@ function drawEventBeams(ctx, info) {
     } else if (pulse.direction === 'fail') {
       ctx.moveTo(xStart, y);
       ctx.lineTo(xStart + width * 0.7, y);
-      ctx.lineTo(xStart + width * 0.8, y - 3);
+      ctx.lineTo(xStart + width * 0.8, y - 4);
     } else {
       ctx.moveTo(xStart, y);
       ctx.lineTo(xStart + width, y);
     }
     ctx.stroke();
-    ctx.globalAlpha = Math.min(0.9, alpha);
+    ctx.globalAlpha = Math.min(0.95, alpha);
     ctx.fillStyle = pulse.direction === 'fail' ? '#c98383' : '#ffffff';
     ctx.beginPath();
-    ctx.arc(xStart + width, y, 1.8, 0, Math.PI * 2);
+    ctx.arc(xStart + width, y, 2, 0, Math.PI * 2);
     ctx.fill();
     ctx.font = '7px "Cascadia Code", Consolas, monospace';
     ctx.fillText(pulse.direction === 'fail' ? 'FAIL' : pulse.direction === 'in' ? 'END' : pulse.type === 'tool.retry' ? 'RETRY' : 'START', xStart, y - 3);
@@ -1137,8 +1284,7 @@ function drawTimeArc(ctx, info) {
   }
   ctx.globalAlpha = 1;
   const cursorEvent = replay ? replay.events[replay.index] : list[list.length - 1];
-  if (cursorEvent && Number.isFinite(cursorEvent.timestamp)) {
-    const ratio = replay ? angleForTimestamp(cursorEvent.timestamp, arc) / (Math.PI * 2) : 1;
+  if (cursorEvent && Number.isFinite(cursorEvent.timestamp)) {    const ratio = replay ? angleForTimestamp(cursorEvent.timestamp, arc) / (Math.PI * 2) : 1;
     const angle = ratio * Math.PI * 2;
     const x1 = cx + Math.sin(angle) * (radius - 8);
     const y1 = cy - Math.cos(angle) * (radius - 8);
@@ -1158,6 +1304,11 @@ function drawTimeArc(ctx, info) {
   ctx.fillStyle = 'rgba(232,232,240,.72)';
   ctx.font = '8px "Cascadia Code", Consolas, monospace';
   ctx.fillText(`TIME ARC · ${arc.visible} EVENTS`, cx + radius * 0.55, cy - radius - 18);
+  window.__halofluxArc = {
+    cx, cy, radius, index: replay?.index ?? -1,
+    clock: els.replayClock?.textContent || '',
+    arc: { start: arc.start, end: arc.end, visible: arc.visible },
+  };
   ctx.restore();
 }
 
@@ -1400,6 +1551,9 @@ function openTrace() {
   setTraceTab('waterfall');
   els.traceClose?.focus();
 }
+let lastInstrumentAt = 0;
+let lastInstrumentKey = '';
+
 function renderLabMonitor() {
   if (!els.labFeedRows) return;
   const projection = projectMonitor({
@@ -1477,7 +1631,6 @@ function renderLabMonitor() {
   const clockNow = replayNow({ replay: state.replay, liveNow: Date.now() });
   const canvasStart = performance.now();
   drawRateCanvas(selectedEvents, clockNow);
-  drawFailureCanvas(selectedEvents, clockNow);
   drawToolWaterfallCanvas(selectedEvents);
   drawMatrixCanvas();
   drawTimeBand();
@@ -1520,19 +1673,30 @@ function renderLabMonitor() {
   ]);
   detail(els.labTypeDetails, projection.types.length ? projection.types.map(([key, countValue]) => [key, countValue]) : [['EVENT TYPES', '—']]);
 
-  const graph = state.obsidianMetadata;
-  detail(els.labKnowledgeDetails, graph ? [
-    ['NOTES', graph.notes.toLocaleString()],
-    ['RESOLVED LINKS', graph.links.toLocaleString()],
-    ['FOLDERS', graph.folders.toLocaleString()],
-    ['SOURCE', 'LOCAL JSON SNAPSHOT'],
-    ['SYNC', 'STATIC / NO LIVE ACCESS'],
-  ] : [
-    ['VAULT', 'NOT CONNECTED'],
-    ['LINK GRAPH', '—'],
-    ['ACCESS', '未授权 · 不读取笔记'],
+  const token = buildTokenTelemetry({ events: state.events, sessions: state.sessions, selectedSessionId: state.selectedSessionId });
+  const tokenValue = (field) => field.value === null ? 'UNAVAILABLE' : `${field.value} · ${field.status}`;
+  detail(els.labTokenDetails, [
+    ['OUTPUT', tokenValue(token.field.outputTokens)],
+    ['INPUT', tokenValue(token.field.inputTokens)],
+    ['CACHED', tokenValue(token.field.cachedTokens)],
+    ['CONTEXT', tokenValue(token.field.contextUsed)],
+    ['MODEL', token.model || '—'],
   ]);
-
+  if (els.labTokenFoot) {
+    els.labTokenFoot.textContent = token.available
+      ? `${token.simulated ? 'SIMULATED · ' : ''}${token.samples.length} OUTPUT SAMPLES · ${token.contextSnapshots.length} CONTEXT SNAPSHOTS · input/cache/reasoning/TTFT UNAVAILABLE`
+      : 'UNAVAILABLE · no request-level usage fields forwarded';
+  }
+  const instrumentKey = `${state.selectedSessionId}:${state.events.length}:${Math.floor(clockNow / 500)}:${state.mode}`;
+  if (instrumentKey !== lastInstrumentKey || performance.now() - lastInstrumentAt > 500) {
+    lastInstrumentKey = instrumentKey;
+    lastInstrumentAt = performance.now();
+    drawDifferenceField(selectedEvents);
+    drawSourceRoutes(selectedEvents);
+    drawMethodMatrix(selectedEvents);
+    drawValidationCurves(selectedEvents, clockNow);
+    drawTokenTelemetry(token);
+  }
   clearNode(els.labHosts);
   for (const host of projection.hosts) {
     const row = make('button', 'lab-host');
@@ -1950,27 +2114,6 @@ function updateStats(stats) {
  * ------------------------------------------------------------------ */
 
 function bindEvents() {
-  els.labObsidianFile?.addEventListener('change', async () => {
-    const file = els.labObsidianFile.files?.[0];
-    els.labObsidianFile.value = '';
-    if (!file) return;
-    if (file.size > 65536) {
-      toast('元数据文件超过 64 KiB，已拒绝');
-      return;
-    }
-    try {
-      const parsed = parseObsidianMetadata(JSON.parse(await file.text()));
-      if (!parsed) {
-        toast('Obsidian 元数据格式不正确');
-        return;
-      }
-      state.obsidianMetadata = parsed;
-      renderLabMonitor();
-      toast('仅已加载本地汇总数值 · 不读取笔记正文');
-    } catch {
-      toast('元数据 JSON 无法解析');
-    }
-  });
   els.labFeedFilter?.addEventListener('change', () => {
     state.feedFilter = els.labFeedFilter.value;
     renderLabMonitor();

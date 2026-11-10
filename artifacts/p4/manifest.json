@@ -1,14 +1,19 @@
 ﻿{
-    "generatedAt":  "2026-11-10T12:34:10.0506300Z",
+    "generatedAt":  "2026-11-10T13:41:03.6613340Z",
     "repository":  "LYL-Z/haloflux-universal",
     "branch":  "feat/paper-lab-p2",
-    "sourceHead":  "829f34d",
-    "note":  "P4.1 artifacts plus P4.2 final video; reports contain analysis.",
+    "sourceHead":  "3240430",
+    "note":  "P4.1/P4.2/P4.3 artifacts; reports contain analysis.",
     "files":  [
                   {
                       "path":  "artifacts/p4/P42-INDEX.md",
                       "bytes":  836,
                       "sha256":  "6b54394222638cc6514163de259cff8c55cf360b12a4ef0e810da45a434ddb92"
+                  },
+                  {
+                      "path":  "artifacts/p4/P43-INDEX.md",
+                      "bytes":  608,
+                      "sha256":  "76b05d0bde55bd2398bc9c942e5aca0e3a3352cb135bfea15fee34ff8c3ac1f1"
                   },
                   {
                       "path":  "artifacts/p4/R4-INDEX.md",
@@ -44,6 +49,11 @@
                       "path":  "artifacts/p4/video/p42-final-35s.webm",
                       "bytes":  35136795,
                       "sha256":  "992e4fa78e4fd37ce11389aeb3cf593a23b54a329309982903d7101d02ce955b"
+                  },
+                  {
+                      "path":  "artifacts/p4/video/p43-final-35s.webm",
+                      "bytes":  36054646,
+                      "sha256":  "d93d0f1a9d1948e338453d943380eef03852ca9db2db6eb1cd1425ebdfc267df"
                   },
                   {
                       "path":  "artifacts/p4/video/replay-full-p3.mp4",

@@ -108,6 +108,9 @@ server.listen(0, '127.0.0.1', async () => {
   try {
     sample.pagePerf = await win.webContents.executeJavaScript('window.__halofluxPerf || null');
   } catch { /* optional */ }
+  try {
+    sample.arcTest = await win.webContents.executeJavaScript('window.__halofluxArcTest || null');
+  } catch { /* optional */ }
   if (process.env.HALOFLUX_FPS_A11Y === '1') {
     try {
       sample.a11y = await win.webContents.executeJavaScript(`(async () => {

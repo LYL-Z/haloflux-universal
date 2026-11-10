@@ -196,12 +196,12 @@
         <div class="lab-feed-detail" id="lab-feed-detail" aria-live="polite">SELECT AN EVENT FOR ALLOWLISTED FIELDS</div>
       </section>
       <section class="lab-cell lab-trace"><h2>TOOL / WATERFALL</h2><canvas class="lab-mini-canvas" id="lab-rate-canvas" aria-label="工具事件到达率"></canvas><canvas class="lab-mini-canvas lab-waterfall-canvas" id="lab-waterfall-canvas" aria-label="工具瀑布"></canvas><div class="lab-cell-foot" id="lab-rate-window">—</div><div class="lab-cell-foot" id="lab-tool-summary">—</div></section>
-      <section class="lab-cell lab-workspace"><h2>RUN / PHASE WORKSPACE</h2><div class="lab-details" id="lab-workspace-details"></div></section>
-      <section class="lab-cell lab-sources"><h2>SOURCE / PROVENANCE</h2><div class="lab-details" id="lab-source-details"></div></section>
-      <section class="lab-cell lab-validation"><h2>VALIDATION / FAILURE BUFFER</h2><canvas class="lab-mini-canvas lab-fail-canvas" id="lab-fail-canvas" aria-label="失败与错误事件"></canvas><div class="lab-details" id="lab-validation-details"></div></section>
+      <section class="lab-cell lab-workspace"><h2>DIFFERENCE FIELD / RUN</h2><canvas class="lab-mini-canvas lab-difference-canvas" id="lab-difference-canvas" aria-label="事件来源差异场"></canvas><div class="lab-details" id="lab-workspace-details"></div></section>
+      <section class="lab-cell lab-sources"><h2>SOURCE / ROUTES</h2><canvas class="lab-mini-canvas lab-source-routes-canvas" id="lab-source-routes-canvas" aria-label="来源路由矩阵"></canvas><div class="lab-details" id="lab-source-details"></div></section>
+      <section class="lab-cell lab-validation"><h2>VALIDATION / CURVES</h2><canvas class="lab-mini-canvas lab-fail-canvas" id="lab-fail-canvas" aria-label="失败与校验曲线"></canvas><div class="lab-details" id="lab-validation-details"></div></section>
       <section class="lab-cell lab-dispatch"><h2>AGENTS / DISPATCH <span>SELECT HOST</span></h2><canvas class="lab-mini-canvas lab-matrix-canvas" id="lab-matrix-canvas" aria-label="宿主状态矩阵"></canvas><div class="lab-hosts" id="lab-hosts"></div></section>
-      <section class="lab-cell lab-methods"><h2>EVENT / METHOD INDEX</h2><div class="lab-details" id="lab-type-details"></div></section>
-      <section class="lab-cell lab-knowledge"><h2>OBSIDIAN / KNOWLEDGE FIELD <span>OPT-IN</span></h2><div class="lab-details" id="lab-knowledge-details"><div class="lab-detail"><span>VAULT</span><strong>NOT CONNECTED</strong></div><div class="lab-detail"><span>LINK GRAPH</span><strong>—</strong></div><div class="lab-detail"><span>ACCESS</span><strong>未授权 · 不读取笔记</strong></div></div><label class="lab-import">IMPORT LOCAL METADATA JSON<input id="lab-obsidian-file" type="file" accept=".json,application/json" aria-label="导入 Obsidian 本地元数据快照 JSON"></label></section>
+      <section class="lab-cell lab-methods"><h2>EVENT / METHOD INDEX</h2><canvas class="lab-mini-canvas lab-method-canvas" id="lab-method-canvas" aria-label="事件方法索引矩阵"></canvas><div class="lab-details" id="lab-type-details"></div></section>
+      <section class="lab-cell lab-knowledge"><h2>TOKEN TELEMETRY <span>HOST-REPORTED</span></h2><canvas class="lab-mini-canvas lab-token-canvas" id="lab-token-canvas" aria-label="Token 遥测曲线"></canvas><div class="lab-details" id="lab-token-details"></div><div class="lab-cell-foot" id="lab-token-foot">UNAVAILABLE · no request-level usage fields forwarded</div></section>
     </div>
   </section>
 

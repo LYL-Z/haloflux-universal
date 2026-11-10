@@ -1139,8 +1139,12 @@ body.is-simulated .topbar::after {
     margin: 2px 0 3px;
   }
 
-  .lab-fail-canvas { height: 22px; }
+  .lab-fail-canvas { height: 40px; }
   .lab-matrix-canvas { height: 34px; }
+  .lab-difference-canvas,
+  .lab-source-routes-canvas,
+  .lab-method-canvas,
+  .lab-token-canvas { height: 42px; }
   .lab-waterfall-canvas { height: 54px; cursor: pointer; }
 
 .evidence-network { display: grid; gap: 3px; margin: 6px 0; }
@@ -2330,29 +2334,57 @@ body.is-simulated .topbar::after {
     font: 10px/1.45 var(--font-mono);
   }
 
-  body.lab-open .lab-console .lab-ledger,
-  body.lab-open .lab-console .lab-cell:not(.lab-trace) {
+  body.lab-open .lab-console .lab-ledger {
     display: none;
   }
 
   body.lab-open .lab-console .lab-board {
-    display: block;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
     padding: 0;
   }
 
-  body.lab-open .lab-console .lab-cell.lab-trace {
+  body.lab-open .lab-console .lab-cell {
     display: block;
-    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    max-height: 170px;
+    overflow: hidden;
+    padding: 6px;
+    border: 1px solid #2e2e38;
+  }
+
+  body.lab-open .lab-console .lab-cell.lab-trace {
+    grid-column: 1 / -1;
+    display: block;
+    width: auto;
     max-width: 100%;
     min-height: 0;
-    border: 0;
-    padding: 0;
+    padding: 6px;
+    overflow: hidden;
+  }
+
+  body.lab-open .lab-console .lab-cell h2 {
+    margin: 0 0 4px;
+    font: 700 8px var(--font-mono);
+    letter-spacing: .06em;
+  }
+
+  body.lab-open .lab-console .lab-details,
+  body.lab-open .lab-console .lab-detail {
+    font-size: 7px;
+    line-height: 1.3;
+  }
+
+  body.lab-open .lab-console .lab-rows {
+    max-height: 84px;
     overflow: hidden;
   }
 
   body.lab-open .lab-console .lab-trace h2 {
-    margin: 0 0 8px;
-    font: 700 10px var(--font-mono);
+    margin: 0 0 6px;
+    font: 700 9px var(--font-mono);
     letter-spacing: .08em;
   }
 
@@ -2362,8 +2394,8 @@ body.is-simulated .topbar::after {
 
   body.lab-open .lab-console .lab-waterfall-canvas {
     width: 100% !important;
-    height: 210px;
-    margin: 0 0 6px;
+    height: 130px;
+    margin: 0 0 4px;
     background: #050507;
   }
 
